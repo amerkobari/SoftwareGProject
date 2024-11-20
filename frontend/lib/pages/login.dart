@@ -1,6 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:untitled/controllers/authController.dart';
+import 'package:untitled/pages/home.dart';
 import 'package:untitled/pages/signup.dart';
+import 'package:http/http.dart' as http;
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
@@ -16,31 +19,38 @@ class LoginPage extends StatelessWidget {
   );
 
   void _validateAndLogin(BuildContext context) async {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
+  final email = _emailController.text.trim();
+  final password = _passwordController.text.trim();
 
-    // Check if the email or password fields are empty
-    if (email.isEmpty || password.isEmpty) {
-      _showSnackBar(context, 'Please fill in both email and password!');
-      return;
-    }
-
-    // Check if the email is in a valid format
-    if (!_emailRegExp.hasMatch(email)) {
-      _showSnackBar(context, 'Please enter a valid email address!');
-      return;
-    }
-
-    // Call the AuthController to validate credentials with backend
-    var result = await authController.login(email, password);
-
-    if (result['success']) {
-      _showSnackBar(context, result['message'], isError: false);
-      // Navigate to the home screen or the next page
-    } else {
-      _showSnackBar(context, result['message']);
-    }
+  if (email.isEmpty || password.isEmpty) {
+    _showSnackBar(context, 'Please fill in both email and password!');
+    return;
   }
+
+  if (!_emailRegExp.hasMatch(email)) {
+    _showSnackBar(context, 'Please enter a valid email address!');
+    return;
+  }
+
+  // Call the AuthController to validate credentials with backend
+  var result = await authController.login(email, password);
+
+  if (result['success']) {
+    _showSnackBar(context, result['message'], isError: false);
+
+    // Store the token for future requests (e.g., using SharedPreferences)
+    final token = result['token'];
+    print('Token: $token');
+
+    // Navigate to the home screen or the next page
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => HomePage(username: email)), // Replace with your HomePage widget
+    );
+  } else {
+    _showSnackBar(context, result['message']);
+}
+}
 
   void _showSnackBar(BuildContext context, String message, {bool isError = true}) {
     final snackBar = SnackBar(
