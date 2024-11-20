@@ -1,40 +1,72 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthController {
-  final String apiUrl = 'http://localhost:3000/api/auth';
-  final FlutterSecureStorage storage = FlutterSecureStorage();
+  final String baseUrl = "http://10.0.2.2:3000"; // Replace with your backend URL
 
-  // Login function
   Future<Map<String, dynamic>> login(String email, String password) async {
-    final response = await http.post(
-      Uri.parse('$apiUrl/login'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({'email': email, 'password': password}),
-    );
+    final url = Uri.parse('$baseUrl/api/auth/login');
 
-    if (response.statusCode == 200) {
-      var jsonResponse = json.decode(response.body);
-      await storage.write(key: 'token', value: jsonResponse['token']);
-      return {'success': true, 'message': jsonResponse['message']};
-    } else {
-      return {'success': false, 'message': json.decode(response.body)['error']};
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email, 'password': password}),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+
+        // Assuming token is returned in the response
+        final token = responseData['token'];
+
+        return {
+          'success': true,
+          'message': responseData['message'],
+          'token': token,
+        };
+      } else {
+        final responseData = jsonDecode(response.body);
+        return {'success': false, 'message': responseData['error']};
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Unable to connect to the server.'};
     }
   }
 
-  // Register function (for the future implementation)
-  Future<Map<String, dynamic>> register(String email, String password) async {
-    final response = await http.post(
-      Uri.parse('$apiUrl/register'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({'email': email, 'password': password}),
-    );
+   Future<Map<String, dynamic>> register(
+    String username,
+    String email,
+    String phoneNumber,
+    String birthdate,
+    String password,
+    String confirmPassword,
+  ) async {
+    final url = Uri.parse('$baseUrl/api/auth/register');
 
-    if (response.statusCode == 201) {
-      return {'success': true, 'message': 'User registered successfully'};
-    } else {
-      return {'success': false, 'message': json.decode(response.body)['error']};
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'username': username,
+          'email': email,
+          'phoneNumber': phoneNumber,
+          'birthdate': birthdate,
+          'password': password,
+          'confirmPassword': confirmPassword,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        final responseData = jsonDecode(response.body);
+        return {'success': true, 'message': responseData['message']};
+      } else {
+        final responseData = jsonDecode(response.body);
+        return {'success': false, 'message': responseData['error']};
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Unable to connect to the server.'};
     }
   }
 }

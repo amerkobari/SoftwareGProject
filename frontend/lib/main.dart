@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/pages/home.dart';
 import 'package:untitled/pages/login.dart';
-import 'package:untitled/pages/onboarding.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,6 +15,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(fontFamily: 'Poppins'),
-        home:  HomePage());
+        home:   LoginPage());
   }
 }
