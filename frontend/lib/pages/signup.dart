@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:untitled/controllers/authController.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -73,8 +74,22 @@ class _SignUpPageState extends State<SignUpPage> {
       return;
     }
 
-    // If all validations pass, proceed with sign-up logic
-    _showSnackBar('Sign-Up Successful!', isError: false);
+    // Proceed with sign-up logic using the AuthController
+    AuthController().register(
+      username,
+      email,
+      phone,
+      birthdate,
+      password,
+      confirmPassword,
+    ).then((result) {
+      if (result['success']) {
+        _showSnackBar(result['message'], isError: false);
+        // Optionally navigate to another page (e.g., login)
+      } else {
+        _showSnackBar(result['message']);
+      }
+    });
   }
 
   bool _isValidUsername(String username) {
@@ -108,24 +123,25 @@ class _SignUpPageState extends State<SignUpPage> {
     return false;
   }
 
-  bool isPasswordCompliant(String password, [int minLength = 8]) {
-    if (password.isEmpty) {
-      return false;
-    }
-
-    bool hasUppercase = password.contains(RegExp(r'[A-Z]'));
-    bool hasDigits = password.contains(RegExp(r'[0-9]'));
-    bool hasLowercase = password.contains(RegExp(r'[a-z]'));
-    bool hasSpecialCharacters =
-        password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
-    bool hasMinLength = password.length >= minLength;
-
-    return hasDigits &&
-        hasUppercase &&
-        hasLowercase &&
-        hasSpecialCharacters &&
-        hasMinLength;
+bool isPasswordCompliant(String password, [int minLength = 8]) {
+  if (password.isEmpty) {
+    return false;
   }
+
+  bool hasUppercase = password.contains(RegExp(r'[A-Z]'));
+  bool hasDigits = password.contains(RegExp(r'[0-9]'));
+  bool hasLowercase = password.contains(RegExp(r'[a-z]'));
+  bool hasSpecialCharacters =
+      password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>+\-]')); // Added "+" symbol
+  bool hasMinLength = password.length >= minLength;
+
+  return hasDigits &&
+      hasUppercase &&
+      hasLowercase &&
+      hasSpecialCharacters &&
+      hasMinLength;
+}
+
 
   void _showSnackBar(String message, {bool isError = true}) {
     final snackBar = SnackBar(
@@ -260,25 +276,9 @@ class _SignUpPageState extends State<SignUpPage> {
             ),
             const SizedBox(height: 20),
             // Sign Up Button
-            Center(
-              child: ElevatedButton(
-                onPressed: _validateAndSignUp,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40,
-                    vertical: 15,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Text(
-                  'Sign Up',
-                  style: TextStyle(
-                    color: Colors.black,
-                  ),
-                ),
-              ),
+            ElevatedButton(
+              onPressed: _validateAndSignUp,
+              child: const Text('Sign Up'),
             ),
           ],
         ),

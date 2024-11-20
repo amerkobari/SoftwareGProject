@@ -3,7 +3,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:untitled/pages/login.dart'; // Make sure to include this import for SVG support
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final String username; // Add a username field
+
+  const HomePage({super.key, required this.username}); // Add the required parameter
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -34,25 +36,22 @@ class _HomePageState extends State<HomePage> {
       child: TextField(
         decoration: InputDecoration(
           filled: true,
-          fillColor: Colors.white, // White background for the search bar
+          fillColor: Colors.white,
           contentPadding: const EdgeInsets.all(15),
-          hintText:
-              'Search Hardware', // You can change this to your own search text
+          hintText: 'Search Hardware',
           hintStyle: const TextStyle(
             color: Color(0xffDDDADA),
             fontSize: 14,
           ),
           prefixIcon: Padding(
             padding: const EdgeInsets.all(12),
-            child: SvgPicture.asset(
-                'assets/icons/Search.svg'), // Update with your icon
+            child: SvgPicture.asset('assets/icons/Search.svg'),
           ),
-          suffixIcon: Container(
+          suffixIcon: SizedBox(
             width: 100,
             child: IntrinsicHeight(
               child: Row(
-                mainAxisAlignment: MainAxisAlignment
-                    .end, // Return the filter icon to the right
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   const VerticalDivider(
                     color: Colors.black,
@@ -61,15 +60,13 @@ class _HomePageState extends State<HomePage> {
                     thickness: 0.1,
                   ),
                   GestureDetector(
-                    onTap: _showFilterDialog, // Show the filter popup on tap
+                    onTap: _showFilterDialog,
                     child: Padding(
                       padding: const EdgeInsets.all(11.0),
                       child: SvgPicture.asset(
                         'assets/icons/Filter.svg',
-                        width:
-                            30, // Make the icon bigger by adjusting the width
-                        height:
-                            30, // Adjust height to make the icon proportional
+                        width: 30,
+                        height: 30,
                       ),
                     ),
                   ),
@@ -93,11 +90,10 @@ class _HomePageState extends State<HomePage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Filter Options'),
-          content: Column(
+          content: const Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text('Select your filter criteria here.'),
-              // Add more filter options as needed
               TextField(
                 decoration: InputDecoration(hintText: 'Filter by price'),
               ),
@@ -109,14 +105,13 @@ class _HomePageState extends State<HomePage> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
               child: const Text('Close'),
             ),
             TextButton(
               onPressed: () {
-                // Apply the filter logic here
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
               child: const Text('Apply'),
             ),
@@ -130,18 +125,16 @@ class _HomePageState extends State<HomePage> {
   Widget _homePageContent() {
     return Stack(
       children: [
-        // Main Home Page Content
         SingleChildScrollView(
           child: Column(
             children: [
-              // Home page content starts here
               Container(
-                height: 600, // Adjust the size as per your content
-                width: double.infinity, // Make the content fill the width
-                decoration: BoxDecoration(
-                  color: Colors.white, // Set the background to white
+                height: 600,
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
                 ),
-                child: Center(
+                child: const Center(
                   child: Text(
                     'Home Page Content',
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
@@ -151,23 +144,8 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-        // Search bar that will appear above the content with box shadow
         _searchField(),
       ],
-    );
-  }
-
-  // Content for MessagesPage (unchanged)
-  Widget _messagesPageContent() {
-    return Center(
-      child: Text('Messages Page Content'),
-    );
-  }
-
-  // Content for CommunityPage (unchanged)
-  Widget _communityPageContent() {
-    return Center(
-      child: Text('Community Page Content'),
     );
   }
 
@@ -198,37 +176,34 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      backgroundColor:
-          Colors.white, // Set the background color of the scaffold to white
+      backgroundColor: Colors.white,
       body: _selectedIndex == 0
-          ? _homePageContent() // Home page content with search bar and filter
+          ? _homePageContent()
           : _selectedIndex == 1
-              ? _messagesPageContent() // Messages page content (unchanged)
-              : _communityPageContent(), // Community page content (unchanged)
+              ? const Center(child: Text('Messages Page Content'))
+              : const Center(child: Text('Community Page Content')),
       drawer: Drawer(
         child: Container(
-          color: Colors.white, // Set drawer background color to white
+          color: Colors.white,
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
               DrawerHeader(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.blue,
                 ),
                 child: Column(
                   children: [
-                    // Use a Flexible widget to prevent overflow
-                    Flexible(
+                    const Flexible(
                       flex: 2,
-                      child: Icon(Icons.account_circle,
-                          size: 100, color: Colors.white),
+                      child: Icon(Icons.account_circle, size: 100, color: Colors.white),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Flexible(
                       flex: 1,
                       child: Text(
-                        'User Name', // Replace with dynamic user data
-                        style: TextStyle(
+                        widget.username, // Display the logged-in username here
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,
                         ),
@@ -238,45 +213,44 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               ListTile(
-                leading: Icon(Icons.account_circle, color: Colors.black),
-                title: Text('Profile'),
+                leading: const Icon(Icons.account_circle, color: Colors.black),
+                title: const Text('Profile'),
                 onTap: () {
                   // Navigate to profile
                 },
               ),
               ListTile(
-                leading: Icon(Icons.shopping_cart, color: Colors.black),
-                title: Text('My Cart'),
+                leading: const Icon(Icons.shopping_cart, color: Colors.black),
+                title: const Text('My Cart'),
                 onTap: () {
-                  // Navigate to profile
+                  // Navigate to cart
                 },
               ),
               ListTile(
-                leading: Icon(Icons.add_business, color: Colors.black),
-                title: Text('Add New Shop'),
+                leading: const Icon(Icons.add_business, color: Colors.black),
+                title: const Text('Add New Shop'),
                 onTap: () {
                   // Navigate to add new shop
                 },
               ),
               ListTile(
-                leading: Icon(Icons.add, color: Colors.black),
-                title: Text('Add New Item'),
+                leading: const Icon(Icons.add, color: Colors.black),
+                title: const Text('Add New Item'),
                 onTap: () {
                   // Navigate to add new item
                 },
               ),
               ListTile(
-                leading: Icon(Icons.store, color: Colors.black),
-                title: Text('My Shops'),
+                leading: const Icon(Icons.store, color: Colors.black),
+                title: const Text('My Shops'),
                 onTap: () {
                   // Navigate to my shops
                 },
               ),
               ListTile(
-                leading: Icon(Icons.logout, color: Colors.black),
-                title: Text('Logout'),
+                leading: const Icon(Icons.logout, color: Colors.black),
+                title: const Text('Logout'),
                 onTap: () {
-                  // Navigate to Login page
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => LoginPage()),
