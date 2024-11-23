@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:untitled/pages/login.dart'; // Make sure to include this import for SVG support
@@ -27,8 +28,8 @@ class _HomePageState extends State<HomePage> {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: const Color(0xff1D1617).withOpacity(0.11),
-            blurRadius: 40,
+            color: const Color(0xff1D1617).withOpacity(0.18),
+            blurRadius: 45,
             spreadRadius: 0.0,
           )
         ],
@@ -123,31 +124,157 @@ class _HomePageState extends State<HomePage> {
 
   // Content for HomePage with BoxShadow on Search Bar
   Widget _homePageContent() {
-    return Stack(
-      children: [
-        SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                height: 600,
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                ),
-                child: const Center(
-                  child: Text(
-                    'Home Page Content',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
+  return Stack(
+    children: [
+      SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _searchField(),
+            const SizedBox(height: 20),
+            // Categories Section
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'Categories',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 10),
+            // Horizontal Swipable Categories
+            SizedBox(
+              height: 100,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  _categoryCard('Laptops', Icons.laptop),
+                  _categoryCard('Smartphones', Icons.smartphone),
+                  _categoryCard('Gaming', Icons.videogame_asset),
+                  _categoryCard('Accessories', Icons.headset),
+                  _categoryCard('Cameras', Icons.camera_alt),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            // Shops Section
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'Shops',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            // Horizontal Swipable Shops
+            SizedBox(
+              height: 150, // Increase the height to accommodate larger shop cards
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  _shopCard('Tech Shop', Icons.store),
+                  _shopCard('Gadget World', Icons.storefront),
+                  _shopCard('Smartphones Plus', Icons.phone_android),
+                  _shopCard('Camera Zone', Icons.camera),
+                  _shopCard('Gaming Hub', Icons.videogame_asset),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            Container(
+              height: 600,
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+              ),
+              child: const Center(
+                child: Text(
+                  'Home Page Content',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ],
         ),
-        _searchField(),
-      ],
+      ),
+    ],
+  );
+}
+
+  // Helper Function for Category Cards with Random Colors
+  Widget _categoryCard(String categoryName, IconData iconData) {
+    final random = Random();
+    final color = Color.fromRGBO(
+      random.nextInt(256),
+      random.nextInt(256),
+      random.nextInt(256),
+      0.3, // Semi-transparent color
+    );
+
+    return Container(
+      width: 120,
+      margin: const EdgeInsets.only(left: 10),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(15),
+        // No shadow applied
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(iconData, size: 40, color: Colors.black),
+          const SizedBox(height: 10),
+          Text(
+            categoryName,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
     );
   }
+
+  // Helper Function for Shop Cards
+  // Helper Function for Shop Cards with Bigger Size
+Widget _shopCard(String shopName, IconData iconData) {
+  return Container(
+    width: 180, // Increased width
+    height: 200, // Increased height
+    margin: const EdgeInsets.only(left: 10),
+    decoration: BoxDecoration(
+      color: Colors.blue.withOpacity(0.1),
+      borderRadius: BorderRadius.circular(15),
+    ),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(iconData, size: 60, color: Colors.black), // Enlarged icon
+        const SizedBox(height: 10),
+        Text(
+          shopName,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 16, // Slightly larger font size
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -157,7 +284,7 @@ class _HomePageState extends State<HomePage> {
           'HardwareBazzar',
           style: TextStyle(
             color: Colors.black,
-            fontSize: 18,
+            fontSize: 22,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -261,10 +388,9 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
+
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: const [
+        items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
@@ -274,10 +400,13 @@ class _HomePageState extends State<HomePage> {
             label: 'Messages',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.people),
+            icon: Icon(Icons.group),
             label: 'Community',
           ),
         ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.blue,
+        onTap: _onItemTapped,
       ),
     );
   }

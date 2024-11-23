@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/pages/home.dart';
 import 'package:untitled/pages/login.dart';
+import 'package:untitled/pages/signup.dart';
 
 void main() {
   runApp(const MyApp());
@@ -9,12 +10,13 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(fontFamily: 'Poppins'),
-        home:   LoginPage());
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(fontFamily: 'Poppins'),
+      //  home: const SignUpPage(),
+      home: const HomePage(username: 'John Doe'), // Set HomePage as the initial screen
+    );
   }
 }

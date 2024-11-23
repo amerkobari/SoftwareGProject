@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/controllers/authController.dart';
+import 'package:untitled/pages/login.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -15,6 +16,9 @@ class _SignUpPageState extends State<SignUpPage> {
   final _birthdateController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   void _validateAndSignUp() {
     // Extract field values
@@ -36,45 +40,38 @@ class _SignUpPageState extends State<SignUpPage> {
       return;
     }
 
-    // Username validation (only alphanumeric characters, underscores, and hyphens)
     if (!_isValidUsername(username)) {
       _showSnackBar(
           'Username must only contain letters, numbers, underscores, or hyphens.');
       return;
     }
 
-    // Email validation
     if (!_isValidEmail(email)) {
       _showSnackBar('Invalid email format. Use user@example.com');
       return;
     }
 
-    // Phone number validation
     if (!_isValidPhone(phone)) {
       _showSnackBar('Phone number must start with "05" and have 10 digits.');
       return;
     }
 
-    // Birthdate validation (user should be older than 2015)
     if (!_isOldEnough(birthdate)) {
       _showSnackBar('You must be at least 18 years old!');
       return;
     }
 
-    // Password validation (at least 8 characters, contains letters, numbers, and symbols)
     if (!isPasswordCompliant(password)) {
       _showSnackBar(
           'Password must be at least 8 characters and include letters, numbers, and special characters.');
       return;
     }
 
-    // Confirm password check
     if (password != confirmPassword) {
       _showSnackBar('Passwords do not match!');
       return;
     }
 
-    // Proceed with sign-up logic using the AuthController
     AuthController().register(
       username,
       email,
@@ -85,7 +82,6 @@ class _SignUpPageState extends State<SignUpPage> {
     ).then((result) {
       if (result['success']) {
         _showSnackBar(result['message'], isError: false);
-        // Optionally navigate to another page (e.g., login)
       } else {
         _showSnackBar(result['message']);
       }
@@ -93,8 +89,7 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   bool _isValidUsername(String username) {
-    final usernameRegex =
-        RegExp(r'^[a-zA-Z0-9_-]+$'); // Letters, numbers, underscores, hyphens
+    final usernameRegex = RegExp(r'^[a-zA-Z0-9_-]+$');
     return usernameRegex.hasMatch(username);
   }
 
@@ -105,8 +100,7 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   bool _isValidPhone(String phone) {
-    final phoneRegex =
-        RegExp(r'^05\d{8}$'); // Starts with 05 and exactly 10 digits
+    final phoneRegex = RegExp(r'^05\d{8}$');
     return phoneRegex.hasMatch(phone);
   }
 
@@ -115,7 +109,6 @@ class _SignUpPageState extends State<SignUpPage> {
     if (dateParts.length == 3) {
       final birthYear = int.tryParse(dateParts[0]);
       final currentYear = DateTime.now().year;
-
       if (birthYear != null && currentYear - birthYear >= 18) {
         return true;
       }
@@ -123,25 +116,24 @@ class _SignUpPageState extends State<SignUpPage> {
     return false;
   }
 
-bool isPasswordCompliant(String password, [int minLength = 8]) {
-  if (password.isEmpty) {
-    return false;
+  bool isPasswordCompliant(String password, [int minLength = 8]) {
+    if (password.isEmpty) {
+      return false;
+    }
+
+    bool hasUppercase = password.contains(RegExp(r'[A-Z]'));
+    bool hasDigits = password.contains(RegExp(r'[0-9]'));
+    bool hasLowercase = password.contains(RegExp(r'[a-z]'));
+    bool hasSpecialCharacters =
+        password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>+\-]'));
+    bool hasMinLength = password.length >= minLength;
+
+    return hasDigits &&
+        hasUppercase &&
+        hasLowercase &&
+        hasSpecialCharacters &&
+        hasMinLength;
   }
-
-  bool hasUppercase = password.contains(RegExp(r'[A-Z]'));
-  bool hasDigits = password.contains(RegExp(r'[0-9]'));
-  bool hasLowercase = password.contains(RegExp(r'[a-z]'));
-  bool hasSpecialCharacters =
-      password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>+\-]')); // Added "+" symbol
-  bool hasMinLength = password.length >= minLength;
-
-  return hasDigits &&
-      hasUppercase &&
-      hasLowercase &&
-      hasSpecialCharacters &&
-      hasMinLength;
-}
-
 
   void _showSnackBar(String message, {bool isError = true}) {
     final snackBar = SnackBar(
@@ -162,13 +154,22 @@ bool isPasswordCompliant(String password, [int minLength = 8]) {
           'Sign Up',
           style: TextStyle(
             color: Colors.black,
-            fontSize: 18,
+            fontSize: 22,
             fontWeight: FontWeight.bold,
           ),
         ),
         backgroundColor: Colors.white,
         elevation: 0.0,
         centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => LoginPage()),
+            );
+          },
+        ),
       ),
       backgroundColor: Colors.white,
       body: Padding(
@@ -185,7 +186,6 @@ bool isPasswordCompliant(String password, [int minLength = 8]) {
               ),
             ),
             const SizedBox(height: 20),
-            // Username
             TextField(
               controller: _usernameController,
               decoration: InputDecoration(
@@ -197,7 +197,6 @@ bool isPasswordCompliant(String password, [int minLength = 8]) {
               ),
             ),
             const SizedBox(height: 20),
-            // Email
             TextField(
               controller: _emailController,
               decoration: InputDecoration(
@@ -209,12 +208,15 @@ bool isPasswordCompliant(String password, [int minLength = 8]) {
               ),
             ),
             const SizedBox(height: 20),
-            // Phone Number
             TextField(
               controller: _phoneController,
               keyboardType: TextInputType.phone,
               decoration: InputDecoration(
                 labelText: 'Phone Number',
+                hintText: '05xxxxxxxx',
+                hintStyle: const TextStyle(
+                  color: Color(0xffDDDADA),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -222,7 +224,6 @@ bool isPasswordCompliant(String password, [int minLength = 8]) {
               ),
             ),
             const SizedBox(height: 20),
-            // Birthdate
             TextField(
               controller: _birthdateController,
               readOnly: true,
@@ -249,36 +250,73 @@ bool isPasswordCompliant(String password, [int minLength = 8]) {
               ),
             ),
             const SizedBox(height: 20),
-            // Password
             TextField(
               controller: _passwordController,
-              obscureText: true,
+              obscureText: !_isPasswordVisible,
               decoration: InputDecoration(
                 labelText: 'Password',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
                 prefixIcon: const Icon(Icons.lock),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _isPasswordVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _isPasswordVisible = !_isPasswordVisible;
+                    });
+                  },
+                ),
               ),
             ),
             const SizedBox(height: 20),
-            // Confirm Password
             TextField(
               controller: _confirmPasswordController,
-              obscureText: true,
+              obscureText: !_isConfirmPasswordVisible,
               decoration: InputDecoration(
                 labelText: 'Confirm Password',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
                 prefixIcon: const Icon(Icons.lock),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _isConfirmPasswordVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                    });
+                  },
+                ),
               ),
             ),
             const SizedBox(height: 20),
-            // Sign Up Button
-            ElevatedButton(
-              onPressed: _validateAndSignUp,
-              child: const Text('Sign Up'),
+            Center(
+              child: ElevatedButton(
+                onPressed: _validateAndSignUp,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 15,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text(
+                  'Sign Up',
+                  style: TextStyle(
+                    color: Colors.black,
+                  ),
+                ),
+              ),
             ),
           ],
         ),
