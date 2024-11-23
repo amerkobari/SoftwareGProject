@@ -5,9 +5,14 @@ import 'package:untitled/pages/home.dart';
 import 'package:untitled/pages/signup.dart';
 import 'package:http/http.dart' as http;
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   LoginPage({super.key});
 
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -18,39 +23,41 @@ class LoginPage extends StatelessWidget {
     r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
   );
 
+  bool _obscurePassword = true; // Password visibility state
+
   void _validateAndLogin(BuildContext context) async {
-  final email = _emailController.text.trim();
-  final password = _passwordController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
 
-  if (email.isEmpty || password.isEmpty) {
-    _showSnackBar(context, 'Please fill in both email and password!');
-    return;
+    if (email.isEmpty || password.isEmpty) {
+      _showSnackBar(context, 'Please fill in both email and password!');
+      return;
+    }
+
+    if (!_emailRegExp.hasMatch(email)) {
+      _showSnackBar(context, 'Please enter a valid email address!');
+      return;
+    }
+
+    // Call the AuthController to validate credentials with backend
+    var result = await authController.login(email, password);
+
+    if (result['success']) {
+      _showSnackBar(context, result['message'], isError: false);
+
+      // Store the token for future requests (e.g., using SharedPreferences)
+      final token = result['token'];
+      print('Token: $token');
+
+      // Navigate to the home screen or the next page
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage(username: email)),
+      );
+    } else {
+      _showSnackBar(context, result['message']);
+    }
   }
-
-  if (!_emailRegExp.hasMatch(email)) {
-    _showSnackBar(context, 'Please enter a valid email address!');
-    return;
-  }
-
-  // Call the AuthController to validate credentials with backend
-  var result = await authController.login(email, password);
-
-  if (result['success']) {
-    _showSnackBar(context, result['message'], isError: false);
-
-    // Store the token for future requests (e.g., using SharedPreferences)
-    final token = result['token'];
-    print('Token: $token');
-
-    // Navigate to the home screen or the next page
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => HomePage(username: email)), // Replace with your HomePage widget
-    );
-  } else {
-    _showSnackBar(context, result['message']);
-}
-}
 
   void _showSnackBar(BuildContext context, String message, {bool isError = true}) {
     final snackBar = SnackBar(
@@ -104,13 +111,23 @@ class LoginPage extends StatelessWidget {
             const SizedBox(height: 20),
             TextField(
               controller: _passwordController,
-              obscureText: true,
+              obscureText: _obscurePassword, // Bind to the state
               decoration: InputDecoration(
                 labelText: 'Password',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
                 prefixIcon: const Icon(Icons.lock),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscurePassword = !_obscurePassword;
+                    });
+                  },
+                ),
               ),
             ),
             const SizedBox(height: 20),
