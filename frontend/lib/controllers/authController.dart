@@ -121,4 +121,38 @@ class AuthController {
       return {'success': false, 'message': 'Unable to connect to the server.'};
     }
   }
+
+
+    Future<Map<String, dynamic>> sendVerificationCode(String email) async {
+    final url = Uri.parse('$baseUrl/api/auth/send-verification-code');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email}),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        // Print response data for debugging purposes
+        print('Response Data: $responseData');
+        return {
+          'success': true,
+          'message': responseData['message'],
+          'code': responseData['verificationCode'], // Include verification code if returned
+        };
+      } else {
+        final responseData = jsonDecode(response.body);
+        return {
+          'success': false,
+          'message': responseData['message'] ?? 'Failed to send verification code',
+        };
+      }
+    } catch (e) {
+      print('Error: $e');
+      return {'success': false, 'message': 'Unable to connect to the server.'};
+    }
+  }
 }
+

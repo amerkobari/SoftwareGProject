@@ -1,4 +1,3 @@
-// controllers/authController.js
 const User = require('../models/user');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
@@ -13,7 +12,7 @@ const transporter = nodemailer.createTransport({
 });
 
 // Generate random 6-digit code
-function generateResetCode() {
+function generateCode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
@@ -28,7 +27,7 @@ exports.sendResetCode = async (req, res) => {
     }
 
     // Generate reset code and expiration time
-    const resetCode = generateResetCode();
+    const resetCode = generateCode();
     user.resetCode = resetCode;
     user.resetCodeExpires = Date.now() + 15 * 60 * 1000; // Code valid for 15 minutes
     await user.save();
@@ -41,7 +40,7 @@ exports.sendResetCode = async (req, res) => {
       text: `Your password reset code is: ${resetCode}`,
     });
 
-    res.json({ success: true, message: 'Reset code sent successfully' , resetCode });
+    res.json({ success: true, message: 'Reset code sent successfully', resetCode });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Server error' });
@@ -75,3 +74,30 @@ exports.resetPassword = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
+// Send verification code
+exports.sendVerificationCode = async (req, res) => {
+    const { email } = req.body;
+  
+    try {
+      // Generate a verification code
+      const verificationCode = generateCode();
+  
+      // Send the verification code via email
+      await transporter.sendMail({
+        from: 'rentitoutco@gmail.com',
+        to: email,
+        subject: 'Verification Code',
+        text: `Your verification code is: ${verificationCode}`,
+      });
+  
+      res.status(200).json({ success: true, message: 'Verification code sent successfully.', verificationCode });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Server error' });
+    }
+  };
+  
+  
+
+

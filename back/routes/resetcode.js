@@ -1,4 +1,3 @@
-// routes/authRoutes.js
 const express = require('express');
 const authController = require('../controller/resetcode');
 
@@ -9,5 +8,11 @@ router.post('/send-reset-code', authController.sendResetCode);
 
 // Endpoint to reset password
 router.post('/reset-password', authController.resetPassword);
+
+// Endpoint to send verification code
+router.post('/send-verification-code', authController.sendVerificationCode);
+
+// Endpoint to verify user during sign-up
+// router.post('/verify-user', authController.verifyUser);
 
 module.exports = router;
