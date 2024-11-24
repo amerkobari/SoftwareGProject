@@ -6,7 +6,8 @@ import 'package:untitled/pages/login.dart'; // Make sure to include this import 
 class HomePage extends StatefulWidget {
   final String username; // Add a username field
 
-  const HomePage({super.key, required this.username}); // Add the required parameter
+  const HomePage(
+      {super.key, required this.username}); // Add the required parameter
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -124,89 +125,90 @@ class _HomePageState extends State<HomePage> {
 
   // Content for HomePage with BoxShadow on Search Bar
   Widget _homePageContent() {
-  return Stack(
-    children: [
-      SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _searchField(),
-            const SizedBox(height: 20),
-            // Categories Section
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                'Categories',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            // Horizontal Swipable Categories
-            SizedBox(
-              height: 100,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  _categoryCard('Laptops', Icons.laptop),
-                  _categoryCard('Smartphones', Icons.smartphone),
-                  _categoryCard('Gaming', Icons.videogame_asset),
-                  _categoryCard('Accessories', Icons.headset),
-                  _categoryCard('Cameras', Icons.camera_alt),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            // Shops Section
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                'Shops',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            // Horizontal Swipable Shops
-            SizedBox(
-              height: 150, // Increase the height to accommodate larger shop cards
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  _shopCard('Tech Shop', Icons.store),
-                  _shopCard('Gadget World', Icons.storefront),
-                  _shopCard('Smartphones Plus', Icons.phone_android),
-                  _shopCard('Camera Zone', Icons.camera),
-                  _shopCard('Gaming Hub', Icons.videogame_asset),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            Container(
-              height: 600,
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-              ),
-              child: const Center(
+    return Stack(
+      children: [
+        SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _searchField(),
+              const SizedBox(height: 20),
+              // Categories Section
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
-                  'Home Page Content',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  'Categories',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 10),
+              // Horizontal Swipable Categories
+              SizedBox(
+                height: 100,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    _categoryCard('Laptops', Icons.laptop),
+                    _categoryCard('Smartphones', Icons.smartphone),
+                    _categoryCard('Gaming', Icons.videogame_asset),
+                    _categoryCard('Accessories', Icons.headset),
+                    _categoryCard('Cameras', Icons.camera_alt),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Shops Section
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  'Shops',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              // Horizontal Swipable Shops
+              SizedBox(
+                height:
+                    150, // Increase the height to accommodate larger shop cards
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    _shopCard('Tech Shop', Icons.store),
+                    _shopCard('Gadget World', Icons.storefront),
+                    _shopCard('Smartphones Plus', Icons.phone_android),
+                    _shopCard('Camera Zone', Icons.camera),
+                    _shopCard('Gaming Hub', Icons.videogame_asset),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                height: 600,
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                ),
+                child: const Center(
+                  child: Text(
+                    'Home Page Content',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
 
   // Helper Function for Category Cards with Random Colors
   Widget _categoryCard(String categoryName, IconData iconData) {
@@ -246,42 +248,39 @@ class _HomePageState extends State<HomePage> {
 
   // Helper Function for Shop Cards
   // Helper Function for Shop Cards with Bigger Size
-Widget _shopCard(String shopName, IconData iconData) {
-  return Container(
-    width: 180, // Increased width
-    height: 200, // Increased height
-    margin: const EdgeInsets.only(left: 10),
-    decoration: BoxDecoration(
-      color: Colors.blue.withOpacity(0.1),
-      borderRadius: BorderRadius.circular(15),
-    ),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(iconData, size: 60, color: Colors.black), // Enlarged icon
-        const SizedBox(height: 10),
-        Text(
-          shopName,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontSize: 16, // Slightly larger font size
-            fontWeight: FontWeight.bold,
+  Widget _shopCard(String shopName, IconData iconData) {
+    return Container(
+      width: 180, // Increased width
+      height: 200, // Increased height
+      margin: const EdgeInsets.only(left: 10),
+      decoration: BoxDecoration(
+        color: Colors.blue.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(iconData, size: 60, color: Colors.black), // Enlarged icon
+          const SizedBox(height: 10),
+          Text(
+            shopName,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 16, // Slightly larger font size
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-      ],
-    ),
-  );
-}
-
-
-
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'HardwareBazzar',
+          'HardwareBazaar',
           style: TextStyle(
             color: Colors.black,
             fontSize: 22,
@@ -323,7 +322,8 @@ Widget _shopCard(String shopName, IconData iconData) {
                   children: [
                     const Flexible(
                       flex: 2,
-                      child: Icon(Icons.account_circle, size: 100, color: Colors.white),
+                      child: Icon(Icons.account_circle,
+                          size: 100, color: Colors.white),
                     ),
                     const SizedBox(height: 10),
                     Flexible(
@@ -343,7 +343,17 @@ Widget _shopCard(String shopName, IconData iconData) {
                 leading: const Icon(Icons.account_circle, color: Colors.black),
                 title: const Text('Profile'),
                 onTap: () {
-                  // Navigate to profile
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.star, color: Colors.black),
+                title: const Text('Favorites'),
+                onTap: () {
+                  // Navigate to cart
                 },
               ),
               ListTile(
@@ -354,24 +364,33 @@ Widget _shopCard(String shopName, IconData iconData) {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.add_business, color: Colors.black),
-                title: const Text('Add New Shop'),
+                leading: const Icon(Icons.store, color: Colors.black),
+                title: const Text('My Shops'),
                 onTap: () {
-                  // Navigate to add new shop
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                  );
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.add, color: Colors.black),
                 title: const Text('Add New Item'),
                 onTap: () {
-                  // Navigate to add new item
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginPage()),
+                  );
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.store, color: Colors.black),
-                title: const Text('My Shops'),
+                leading: const Icon(Icons.add_business, color: Colors.black),
+                title: const Text('Add New Shop'),
                 onTap: () {
-                  // Navigate to my shops
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginPage()),
+                  );
                 },
               ),
               ListTile(
@@ -388,7 +407,6 @@ Widget _shopCard(String shopName, IconData iconData) {
           ),
         ),
       ),
-
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(

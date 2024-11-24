@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:untitled/pages/home.dart';
 import 'package:untitled/pages/login.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -68,7 +69,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   // Navigate to the login page after onboarding is complete
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => LoginPage()),
+                    MaterialPageRoute(builder: (context) => HomePage(username: '')),
                   );
                 },
                 child: const Text("Get Started"),
