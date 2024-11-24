@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:untitled/controllers/authController.dart';
 import 'package:untitled/pages/login.dart';
@@ -19,6 +21,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+  String? _verificationCode;
 
   void _validateAndSignUp() {
     // Extract field values
@@ -72,16 +75,106 @@ class _SignUpPageState extends State<SignUpPage> {
       return;
     }
 
-    AuthController().register(
-      username,
-      email,
-      phone,
-      birthdate,
-      password,
-      confirmPassword,
-    ).then((result) {
+    // Show the verification popup
+    _showVerificationDialog(email, username, phone, birthdate, password);
+  }
+
+  void _showVerificationDialog(
+      String email, String username, String phone, String birthdate, String password) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        final _codeController = TextEditingController();
+        bool _isLoading = false;
+
+        void _sendCode() async {
+          setState(() {
+            _isLoading = true;
+          });
+
+          final result = await AuthController().sendVerificationCode(email);
+          setState(() {
+            _isLoading = false;
+          });
+
+          if (result['success']) {
+            _verificationCode = result['code'];
+            _showSnackBar('Verification code sent to your email.', isError: false);
+          } else {
+            _showSnackBar(result['message']);
+          }
+        }
+
+        void _verifyCodeAndSignUp() {
+          final enteredCode = _codeController.text.trim();
+
+          if (enteredCode.isEmpty) {
+            _showSnackBar('Please enter the verification code.');
+            return;
+          }
+
+          if (enteredCode == _verificationCode) {
+            Navigator.pop(context); // Close the dialog
+            _completeSignUp(username, email, phone, birthdate, password);
+          } else {
+            _showSnackBar('Incorrect verification code.');
+          }
+        }
+
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Verify Email'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Enter the verification code sent to your email:'),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: _codeController,
+                    decoration: const InputDecoration(
+                      labelText: 'Verification Code',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  if (_isLoading)
+                    const CircularProgressIndicator()
+                  else
+                    ElevatedButton(
+                      onPressed: _sendCode,
+                      child: const Text('Send Code'),
+                    ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: _verifyCodeAndSignUp,
+                  child: const Text('Verify'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _completeSignUp(String username, String email, String phone, String birthdate, String password) {
+    AuthController()
+        .register(username, email, phone, birthdate, password, password)
+        .then((result) {
       if (result['success']) {
-        _showSnackBar(result['message'], isError: false);
+        _showSnackBar('User registered successfully!', isError: false);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+        );
       } else {
         _showSnackBar(result['message']);
       }
@@ -222,7 +315,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 prefixIcon: const Icon(Icons.phone),
               ),
-            ),
+),
             const SizedBox(height: 20),
             TextField(
               controller: _birthdateController,
@@ -248,7 +341,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 prefixIcon: const Icon(Icons.calendar_today),
               ),
-            ),
+),
             const SizedBox(height: 20),
             TextField(
               controller: _passwordController,
@@ -297,7 +390,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
             ),
- const SizedBox(height: 20),
+           const SizedBox(height: 20),
                 Center(
                   child: ElevatedButton(
                     onPressed: _validateAndSignUp,
@@ -320,7 +413,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                     ),
                   ),
-                ),
+  ),
           ],
         ),
       ),
