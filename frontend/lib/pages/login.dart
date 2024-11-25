@@ -68,6 +68,27 @@ class _LoginPageState extends State<LoginPage> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
+  bool isPasswordCompliant(String password, [int minLength = 8]) {
+  if (password.isEmpty) {
+    return false;
+  }
+
+  bool hasUppercase = password.contains(RegExp(r'[A-Z]'));
+  bool hasDigits = password.contains(RegExp(r'[0-9]'));
+  bool hasLowercase = password.contains(RegExp(r'[a-z]'));
+  bool hasSpecialCharacters =
+      password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>+\-]'));
+  bool hasMinLength = password.length >= minLength;
+
+  return hasDigits &&
+      hasUppercase &&
+      hasLowercase &&
+      hasSpecialCharacters &&
+      hasMinLength;
+}
+
+
+
   // Forgot Password Functionality
   void _forgotPassword(BuildContext context) {
   final emailController = TextEditingController();
@@ -161,6 +182,14 @@ class _LoginPageState extends State<LoginPage> {
                       }
                       if (newPassword != confirmPassword) {
                         _showSnackBar(context, 'Passwords do not match.');
+                        return;
+                      }
+                      // Check password compliance
+                      if (!isPasswordCompliant(newPassword)) {
+                        _showSnackBar(
+                          context,
+                          'Password must be at least 8 characters and include letters, numbers, and special characters.',
+                        );
                         return;
                       }
 
