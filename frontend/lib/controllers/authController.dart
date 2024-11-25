@@ -1,36 +1,58 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 class AuthController {
   final String baseUrl = "http://10.0.2.2:3000"; // Replace with your backend URL
 
   /// **Login Method**
   Future<Map<String, dynamic>> login(String email, String password) async {
-    final url = Uri.parse('$baseUrl/api/auth/login');
+  final url = Uri.parse('$baseUrl/api/auth/login');
 
-    try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': email, 'password': password}),
-      );
+  try {
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email, 'password': password}),
+    );
 
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
 
-        return {
-          'success': true,
-          'message': responseData['message'],
-          'token': responseData['token'], // Token returned from backend
-        };
-      } else {
-        final responseData = jsonDecode(response.body);
-        return {'success': false, 'message': responseData['error'] ?? 'Login failed'};
+      // Check if token is null
+      final token = responseData['token'];
+      if (token == null) {
+        print('Token is null in the response');
+        return {'success': false, 'message': 'Login failed: No token returned from server'};
       }
-    } catch (e) {
-      return {'success': false, 'message': 'Unable to connect to the server.'};
+
+      // Decode the JWT to get the username
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+
+      // Check if username exists in the token payload
+      if (!decodedToken.containsKey('username') || decodedToken['username'] == null) {
+        print('Username is missing in the token payload');
+        return {'success': false, 'message': 'Login failed: Invalid token payload'};
+      }
+
+      String username = decodedToken['username'];
+
+      return {
+        'success': true,
+        'message': responseData['message'],
+        'token': token, // Token returned from backend
+        'username': username, // Username extracted from the token
+      };
+    } else {
+      final responseData = jsonDecode(response.body);
+      return {'success': false, 'message': responseData['error'] ?? 'Login failed'};
     }
+  } catch (e) {
+    print('Exception occurred during login: $e');
+    return {'success': false, 'message': 'Unable to connect to the server.'};
   }
+}
+
 
   /// **Register Method**
   Future<Map<String, dynamic>> register(
