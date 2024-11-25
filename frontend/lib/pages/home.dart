@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:untitled/pages/accessories.dart';
+import 'package:untitled/pages/addnewitem.dart';
 import 'package:untitled/pages/case.dart';
 import 'package:untitled/pages/cpu.dart';
 import 'package:untitled/pages/gpu.dart';
@@ -164,7 +165,7 @@ class _HomePageState extends State<HomePage> {
                     _categoryCard('GPU', 'assets/icons/gpu.png'),
                     _categoryCard('RAM', 'assets/icons/ram.png'),
                     _categoryCard('Hard Disk', 'assets/icons/hard-disk.png'),
-                    _categoryCard('Mother Boards', 'assets/icons/motherboard.png'),
+                    _categoryCard('Motherboards', 'assets/icons/motherboard.png'),
                     _categoryCard('Case', 'assets/icons/case.png'),
                     _categoryCard('Monitors', 'assets/icons/monitor.png'),
                     _categoryCard('Accessories', 'assets/icons/accessorise.png'),
@@ -431,7 +432,7 @@ class _HomePageState extends State<HomePage> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => LoginPage()),
+                    MaterialPageRoute(builder: (context) => AddItemPage()),
                   );
                 },
               ),

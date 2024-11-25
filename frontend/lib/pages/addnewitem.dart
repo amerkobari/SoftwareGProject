@@ -14,12 +14,33 @@ class _AddItemPageState extends State<AddItemPage> {
   String title = '';
   String description = '';
   String price = '';
-  String category = '';
-  String condition = '';
-  String location = '';
+  String? category;
+  String? condition;
+  String? location;
   List<File> images = [];
 
   final ImagePicker _picker = ImagePicker();
+
+  // Options for dropdowns
+  final List<String> categories = ['CPU', 'GPU', 'RAM', 'Hard Disk', 'Motherboard', 'Case', 'Monitors', 'Accessories'];
+  final List<String> conditions = ['New', 'Used'];
+  final List<String> cites = [
+    'Jerusalem',
+    'Gaza',
+    'Ramallah',
+    'Hebron',
+    'Nablus',
+    'Bethlehem',
+    'Jenin',
+    'Tulkarm',
+    'Qalqilya',
+    'Jericho',
+    'Salfit',
+    'Tubas',
+    'Rafah',
+    'Khan Yunis',
+    'Deir al-Balah'
+  ];
 
   // Function to pick images
   Future<void> pickImages() async {
@@ -37,26 +58,21 @@ class _AddItemPageState extends State<AddItemPage> {
 
     _formKey.currentState!.save();
 
-    // Mock User ID (Replace with actual user ID from your app's authentication)
-  
     String userId = "64a0d7a9d43e4c321be52b9c";
 
-    // Prepare image upload and form data
     var request = http.MultipartRequest(
       'POST',
-      Uri.parse('http://10.0.2.2:3000/api/auth/add-item'), // Replace with your backend URL
+      Uri.parse('http://10.0.2.2:3000/api/auth/add-item'),
     );
 
-    // Add text fields to request
     request.fields['userId'] = userId;
     request.fields['title'] = title;
     request.fields['description'] = description;
     request.fields['price'] = price;
-    request.fields['category'] = category;
-    request.fields['condition'] = condition;
-    request.fields['location'] = location;
+    request.fields['category'] = category!;
+    request.fields['condition'] = condition!;
+    request.fields['location'] = location!;
 
-    // Add images to request
     for (var image in images) {
       request.files.add(await http.MultipartFile.fromPath(
         'images',
@@ -64,7 +80,6 @@ class _AddItemPageState extends State<AddItemPage> {
       ));
     }
 
-    // Send request
     var response = await request.send();
     if (response.statusCode == 200) {
       final resData = await response.stream.bytesToString();
@@ -77,7 +92,6 @@ class _AddItemPageState extends State<AddItemPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to add item. Please try again.')),
       );
-      // Print the response body
       print(await response.stream.bytesToString());
     }
   }
@@ -86,7 +100,18 @@ class _AddItemPageState extends State<AddItemPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add New Item'),
+        title: const Text(
+          'Add New Item',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0.0,
+        centerTitle: true,
+        
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -133,40 +158,67 @@ class _AddItemPageState extends State<AddItemPage> {
                     price = value!;
                   },
                 ),
-                TextFormField(
+                DropdownButtonFormField<String>(
                   decoration: InputDecoration(labelText: 'Category'),
+                  value: category,
+                  items: categories.map((cat) {
+                    return DropdownMenuItem(
+                      value: cat,
+                      child: Text(cat),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      category = value!;
+                    });
+                  },
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a category';
+                    if (value == null) {
+                      return 'Please select a category';
                     }
                     return null;
                   },
-                  onSaved: (value) {
-                    category = value!;
-                  },
                 ),
-                TextFormField(
+                DropdownButtonFormField<String>(
                   decoration: InputDecoration(labelText: 'Condition'),
+                  value: condition,
+                  items: conditions.map((cond) {
+                    return DropdownMenuItem(
+                      value: cond,
+                      child: Text(cond),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      condition = value!;
+                    });
+                  },
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please specify the condition';
+                    if (value == null) {
+                      return 'Please select a condition';
                     }
                     return null;
-                  },
-                  onSaved: (value) {
-                    condition = value!;
                   },
                 ),
-                TextFormField(
-                  decoration: InputDecoration(labelText: 'Location'),
+                DropdownButtonFormField<String>(
+                  decoration: InputDecoration(labelText: 'City'),
+                  value: location,
+                  items: cites.map((loc) {
+                    return DropdownMenuItem(
+                      value: loc,
+                      child: Text(loc),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      location = value!;
+                    });
+                  },
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a location';
+                    if (value == null) {
+                      return 'Please select a location';
                     }
                     return null;
-                  },
-                  onSaved: (value) {
-                    location = value!;
                   },
                 ),
                 SizedBox(height: 20),
