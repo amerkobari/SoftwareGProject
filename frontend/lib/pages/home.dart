@@ -244,7 +244,7 @@ class _HomePageState extends State<HomePage> {
           builder: (context) {
             switch (categoryName) {
               case 'CPU':
-                return CPUPage(git );
+                return CPUPage();
               case 'GPU':
                 return GPUPage();
               case 'RAM':
