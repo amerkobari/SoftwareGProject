@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 class MonitorsPage extends StatelessWidget {
+  const MonitorsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -14,8 +14,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(fontFamily: 'Poppins'),
-        // home:  AddItemPage(),
-      home: const HomePage(username: 'Guest'), // Set HomePage as the initial screen
+      home: AddItemPage(),
+      // home: const HomePage(username: 'Guest'), // Set HomePage as the initial screen
     );
   }
 }

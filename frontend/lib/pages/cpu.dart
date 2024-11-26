@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CPUPage extends StatelessWidget {
+  const CPUPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
