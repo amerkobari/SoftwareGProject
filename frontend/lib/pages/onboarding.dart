@@ -69,7 +69,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   // Navigate to the login page after onboarding is complete
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => HomePage(username: '')),
+                    MaterialPageRoute(builder: (context) => const HomePage(username: '')),
                   );
                 },
                 child: const Text("Get Started"),

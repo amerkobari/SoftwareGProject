@@ -85,17 +85,17 @@ class _SignUpPageState extends State<SignUpPage> {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        final _codeController = TextEditingController();
-        bool _isLoading = false;
+        final codeController = TextEditingController();
+        bool isLoading = false;
 
-        void _sendCode() async {
+        void sendCode() async {
           setState(() {
-            _isLoading = true;
+            isLoading = true;
           });
 
           final result = await AuthController().sendVerificationCode(email);
           setState(() {
-            _isLoading = false;
+            isLoading = false;
           });
 
           if (result['success']) {
@@ -106,8 +106,8 @@ class _SignUpPageState extends State<SignUpPage> {
           }
         }
 
-        void _verifyCodeAndSignUp() {
-          final enteredCode = _codeController.text.trim();
+        void verifyCodeAndSignUp() {
+          final enteredCode = codeController.text.trim();
 
           if (enteredCode.isEmpty) {
             _showSnackBar('Please enter the verification code.');
@@ -132,18 +132,18 @@ class _SignUpPageState extends State<SignUpPage> {
                   const Text('Enter the verification code sent to your email:'),
                   const SizedBox(height: 10),
                   TextField(
-                    controller: _codeController,
+                    controller: codeController,
                     decoration: const InputDecoration(
                       labelText: 'Verification Code',
                       border: OutlineInputBorder(),
                     ),
                   ),
                   const SizedBox(height: 10),
-                  if (_isLoading)
+                  if (isLoading)
                     const CircularProgressIndicator()
                   else
                     ElevatedButton(
-                      onPressed: _sendCode,
+                      onPressed: sendCode,
                       child: const Text('Send Code'),
                     ),
                 ],
@@ -154,7 +154,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   child: const Text('Cancel'),
                 ),
                 ElevatedButton(
-                  onPressed: _verifyCodeAndSignUp,
+                  onPressed: verifyCodeAndSignUp,
                   child: const Text('Verify'),
                 ),
               ],
@@ -259,7 +259,7 @@ class _SignUpPageState extends State<SignUpPage> {
           onPressed: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => LoginPage()),
+              MaterialPageRoute(builder: (context) => const LoginPage()),
             );
           },
         ),

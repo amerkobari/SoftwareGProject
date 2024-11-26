@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 class MotherboardPage extends StatelessWidget {
+  const MotherboardPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

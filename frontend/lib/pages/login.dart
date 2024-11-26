@@ -1,10 +1,7 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:untitled/controllers/authController.dart';
 import 'package:untitled/pages/home.dart';
 import 'package:untitled/pages/signup.dart';
-import 'package:http/http.dart' as http;
-import 'dart:math';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
 class LoginPage extends StatefulWidget {

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CasePage extends StatelessWidget {
+  const CasePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

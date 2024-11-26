@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class AddItemPage extends StatefulWidget {
+  const AddItemPage({super.key});
+
   @override
   _AddItemPageState createState() => _AddItemPageState();
 }
@@ -18,13 +20,16 @@ class _AddItemPageState extends State<AddItemPage> {
   String? condition;
   String? location;
   List<File> images = [];
+  bool acceptTerms = false;
+  bool acceptTermsError = true;
+
 
   final ImagePicker _picker = ImagePicker();
 
   // Options for dropdowns
   final List<String> categories = ['CPU', 'GPU', 'RAM', 'Hard Disk', 'Motherboard', 'Case', 'Monitors', 'Accessories'];
   final List<String> conditions = ['New', 'Used'];
-  final List<String> cites = [
+  final List<String> cities = [
     'Jerusalem',
     'Gaza',
     'Ramallah',
@@ -44,7 +49,7 @@ class _AddItemPageState extends State<AddItemPage> {
 
   // Function to pick images
   Future<void> pickImages() async {
-    final List<XFile>? pickedFiles = await _picker.pickMultiImage();
+    final List<XFile> pickedFiles = await _picker.pickMultiImage();
     if (pickedFiles != null) {
       setState(() {
         images = pickedFiles.map((file) => File(file.path)).toList();
@@ -85,12 +90,12 @@ class _AddItemPageState extends State<AddItemPage> {
       final resData = await response.stream.bytesToString();
       final resJson = json.decode(resData);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Item added successfully!')),
+        const SnackBar(content: Text('Item added successfully!')),
       );
       Navigator.pop(context);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to add item. Please try again.')),
+        const SnackBar(content: Text('Failed to add item. Please try again.')),
       );
       print(await response.stream.bytesToString());
     }
@@ -99,6 +104,7 @@ class _AddItemPageState extends State<AddItemPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
           'Add New Item',
@@ -111,10 +117,9 @@ class _AddItemPageState extends State<AddItemPage> {
         backgroundColor: Colors.white,
         elevation: 0.0,
         centerTitle: true,
-        
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
@@ -122,7 +127,7 @@ class _AddItemPageState extends State<AddItemPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TextFormField(
-                  decoration: InputDecoration(labelText: 'Title'),
+                  decoration: const InputDecoration(labelText: 'Title'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter a title';
@@ -134,7 +139,7 @@ class _AddItemPageState extends State<AddItemPage> {
                   },
                 ),
                 TextFormField(
-                  decoration: InputDecoration(labelText: 'Description'),
+                  decoration: const InputDecoration(labelText: 'Description'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter a description';
@@ -146,7 +151,7 @@ class _AddItemPageState extends State<AddItemPage> {
                   },
                 ),
                 TextFormField(
-                  decoration: InputDecoration(labelText: 'Price'),
+                  decoration: const InputDecoration(labelText: 'Price'),
                   keyboardType: TextInputType.number,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -158,52 +163,78 @@ class _AddItemPageState extends State<AddItemPage> {
                     price = value!;
                   },
                 ),
-                DropdownButtonFormField<String>(
-                  decoration: InputDecoration(labelText: 'Category'),
-                  value: category,
-                  items: categories.map((cat) {
-                    return DropdownMenuItem(
-                      value: cat,
-                      child: Text(cat),
+                
+                SizedBox(height: 30), // Increased space before 'Category'
+                const Text(
+                  'Category',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 10.0,
+                  runSpacing: 10.0,
+                  children: categories.map((cat) {
+                    return ChoiceChip(
+                      label: Text(cat),
+                      selected: category == cat,
+                      selectedColor: Colors.blue,  // Set background color to blue when selected
+                      backgroundColor: Colors.blue.withOpacity(0.1),  // Set background color to gray when not selected
+                      onSelected: (selected) {
+                        setState(() {
+                          category = selected ? cat : null;
+                        });
+                      },
                     );
                   }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      category = value!;
-                    });
-                  },
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Please select a category';
-                    }
-                    return null;
-                  },
+                  
                 ),
-                DropdownButtonFormField<String>(
-                  decoration: InputDecoration(labelText: 'Condition'),
-                  value: condition,
-                  items: conditions.map((cond) {
-                    return DropdownMenuItem(
-                      value: cond,
-                      child: Text(cond),
+                if (category == null)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      'Please select a category',
+                      style: TextStyle(color: Colors.red, fontSize: 12),
+                    ),
+                  ),
+
+                // Similar code for 'Condition'
+                const SizedBox(height: 20),
+                const Text(
+                  'Condition',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 10.0,
+                  runSpacing: 10.0,
+                  children: conditions.map((cond) {
+                    return ChoiceChip(
+                      label: Text(cond),
+                      selected: condition == cond,
+                      selectedColor: Colors.blue,  // Set background color to blue when selected
+                      backgroundColor: Colors.blue.withOpacity(0.1),  // Set background color to gray when not selected
+                      onSelected: (selected) {
+                        setState(() {
+                          condition = selected ? cond : null;
+                        });
+                      },
                     );
                   }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      condition = value!;
-                    });
-                  },
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Please select a condition';
-                    }
-                    return null;
-                  },
                 ),
+
+                if (condition == null)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      'Please select a condition',
+                      style: TextStyle(color: Colors.red, fontSize: 12),
+                    ),
+                  ),
+                const SizedBox(height: 20),
                 DropdownButtonFormField<String>(
-                  decoration: InputDecoration(labelText: 'City'),
+                  decoration: const InputDecoration(labelText: 'City'),
                   value: location,
-                  items: cites.map((loc) {
+                  items: cities.map((loc) {
                     return DropdownMenuItem(
                       value: loc,
                       child: Text(loc),
@@ -224,32 +255,142 @@ class _AddItemPageState extends State<AddItemPage> {
                 SizedBox(height: 20),
                 Text(
                   'Images',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 SizedBox(height: 10),
-                ElevatedButton(
-                  onPressed: pickImages,
-                  child: Text('Pick Images'),
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.92, // Make the box 90% of the screen width
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),    
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: Offset(0, 3), // Shadow position
+                      ),
+                    ],
+                    border: Border.all(color: Colors.grey.shade300),
+                  ),
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: pickImages,
+                        icon: Icon(Icons.add_photo_alternate_outlined, color: Colors.white),
+                        label: Text('Pick Images', style: TextStyle(color: Colors.white)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      images.isNotEmpty
+                          ? GridView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3,
+                                crossAxisSpacing: 10,
+                                mainAxisSpacing: 10,
+                              ),
+                              itemCount: images.length,
+                              itemBuilder: (context, index) {
+                                return Stack(
+                                  clipBehavior: Clip.none,
+                                  children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(color: Colors.grey),
+                                        image: DecorationImage(
+                                          image: FileImage(images[index]),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: -8,
+                                      right: -8,
+                                      child: IconButton(
+                                        icon: Icon(Icons.close, color: Colors.red),
+                                        onPressed: () {
+                                          setState(() {
+                                            images.removeAt(index);
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            )
+                          : Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.photo_library_outlined, size: 50, color: Colors.grey),
+                                SizedBox(height: 10),
+                                Text(
+                                  'No images selected',
+                                  style: TextStyle(color: Colors.grey, fontSize: 14),
+                                ),
+                              ],
+                            ),
+                    ],
+                  ),
                 ),
-                SizedBox(height: 10),
-                images.isNotEmpty
-                    ? Wrap(
-                        spacing: 10,
-                        children: images
-                            .map((img) => Image.file(
-                                  img,
-                                  width: 100,
-                                  height: 100,
-                                  fit: BoxFit.cover,
-                                ))
-                            .toList(),
-                      )
-                    : Text('No images selected'),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: submitItem,
-                  child: Text('Submit Item'),
+                const SizedBox(height: 20),
+            CheckboxListTile(
+              title: const Text('5% of the sale will be charged as a fee'),
+              value: acceptTerms,
+              onChanged: (value) {
+                setState(() {
+                  acceptTerms = value!;
+                  acceptTermsError = !acceptTerms; // Reset error if checked
+                });
+              },
+            ),
+            if (acceptTermsError)
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0),
+                child: Text(
+                  'You must accept the fee to proceed',
+                  style: TextStyle(color: Colors.red, fontSize: 12),
                 ),
+              ),
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 30.0), // Add bottom padding here
+                  child: Center(
+                    child: ElevatedButton(
+                      onPressed: submitItem,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 30,
+                          vertical: 10,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        backgroundColor: Colors.blue, // Solid blue button
+                      ),
+                      
+                      child: const Text(
+                        'Submit Item',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
               ],
             ),
           ),
