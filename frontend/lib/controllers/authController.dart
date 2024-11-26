@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 class AuthController {
   final String baseUrl = "http://10.0.2.2:3000"; // Replace with your backend URL
 
   /// **Login Method**
-  Future<Map<String, dynamic>> login(String email, String password) async {
+Future<Map<String, dynamic>> login(String email, String password) async {
   final url = Uri.parse('$baseUrl/api/auth/login');
 
   try {
@@ -19,29 +19,36 @@ class AuthController {
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
 
-      // Check if token is null
+      // Check if the token exists
       final token = responseData['token'];
       if (token == null) {
-        print('Token is null in the response');
         return {'success': false, 'message': 'Login failed: No token returned from server'};
       }
 
-      // Decode the JWT to get the username
+      // Decode the JWT to get the username and userId
       Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
 
-      // Check if username exists in the token payload
+      // Validate the token payload
       if (!decodedToken.containsKey('username') || decodedToken['username'] == null) {
-        print('Username is missing in the token payload');
-        return {'success': false, 'message': 'Login failed: Invalid token payload'};
+        return {'success': false, 'message': 'Login failed: Invalid token payload (username missing)'};
+      }
+      if (!decodedToken.containsKey('id') || decodedToken['id'] == null) {
+        return {'success': false, 'message': 'Login failed: Invalid token payload (userId missing)'};
       }
 
       String username = decodedToken['username'];
+      String userId = decodedToken['id'];
+
+      // Store the token in SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', token);
 
       return {
         'success': true,
         'message': responseData['message'],
-        'token': token, // Token returned from backend
+        'token': token,     // Token returned from the backend
         'username': username, // Username extracted from the token
+        'userId': userId,   // User ID extracted from the token
       };
     } else {
       final responseData = jsonDecode(response.body);

@@ -1,4 +1,6 @@
 const express = require("express");
+require('dotenv').config();
+const secretKey = process.env.JWT_SECRET;
 const bodyParser = require("body-parser")
 const loginRoute = require("./routes/login.routes.js");
 const resetRoute = require("./routes/resetcode.js");

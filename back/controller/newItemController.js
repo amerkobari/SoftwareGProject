@@ -3,7 +3,11 @@ const Item = require('../models/newItemModel');
 // Add a new item
 exports.addItem = async (req, res) => {
     try {
-        const { userId, title, description, price, category, condition, location } = req.body;
+        const { title, description, price, category, condition, location } = req.body;
+
+        // Get userId from the middleware
+        const userId = req.userId;
+        const username = req.username;
 
         // Handle uploaded files (if images are uploaded)
         const images = req.files ? req.files.map(file => file.path) : [];
@@ -33,6 +37,7 @@ exports.addItem = async (req, res) => {
     }
 };
 
+
 // Get all items
 exports.getAllItems = async (req, res) => {
     try {
@@ -56,14 +61,14 @@ exports.getItemById = async (req, res) => {
     }
 };
 
-// Update an item by ID 
+// Update an item by ID
 exports.updateItem = async (req, res) => {
     try {
         const { title, description, price, category, condition, location } = req.body;
-        const item = await Item.findById(req.params.id);    
+        const item = await Item.findById(req.params.id);
         if (!item) {
             return res.status(404).json({ message: 'Item not found' });
-        } 
+        }
         item.title = title;
         item.description = description;
         item.price = price;
@@ -87,6 +92,7 @@ exports.updateItem = async (req, res) => {
     }
 };
 
+// Delete an item by ID
 exports.deleteItem = async (req, res) => {
     try {
         const item = await Item.findById(req.params.id);
@@ -98,4 +104,67 @@ exports.deleteItem = async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
-}
+};
+
+// Get items by user ID
+exports.getItemsByUser = async (req, res) => {
+    try {
+        const items = await Item.find({ userId: req.params.userId });
+        res.json(items);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Get items by category
+exports.getItemsByCategory = async (req, res) => {
+    try {
+        const items = await Item.find({ category: req.params.category });
+        res.json(items);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Get items by title
+exports.getItemsByTitle = async (req, res) => {
+    try {
+        const items = await Item.find({ title: { $regex: req.params.title, $options: 'i' } });
+        res.json(items);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Get items by price range
+exports.getItemsByPriceRange = async (req, res) => {
+    try {
+        const { minPrice, maxPrice } = req.query;
+        const items = await Item.find({
+            price: { $gte: minPrice, $lte: maxPrice }
+        });
+        res.json(items);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Get items by condition
+exports.getItemsByCondition = async (req, res) => {
+    try {
+        const items = await Item.find({ condition: req.params.condition });
+        res.json(items);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Get items by date
+exports.getItemsByDate = async (req, res) => {
+    try {
+        const items = await Item.find({ createdAt: { $gte: new Date(req.params.date) } });
+        res.json(items);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
