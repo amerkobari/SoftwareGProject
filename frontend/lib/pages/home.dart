@@ -1,16 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:untitled/pages/accessories.dart';
-import 'package:untitled/pages/addnewitem.dart';
-import 'package:untitled/pages/case.dart';
-import 'package:untitled/pages/cpu.dart';
-import 'package:untitled/pages/gpu.dart';
-import 'package:untitled/pages/hard-disk.dart';
-import 'package:untitled/pages/login.dart';
-import 'package:untitled/pages/monitor.dart';
-import 'package:untitled/pages/motherboard.dart';
-import 'package:untitled/pages/ram.dart'; // Make sure to include this import for SVG support
+import 'package:untitled/pages/login.dart'; // Make sure to include this import for SVG support
 
 class HomePage extends StatefulWidget {
   final String username; // Add a username field
@@ -161,14 +152,11 @@ class _HomePageState extends State<HomePage> {
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   children: [
-                    _categoryCard('CPU', 'assets/icons/cpu.png'),
-                    _categoryCard('GPU', 'assets/icons/gpu.png'),
-                    _categoryCard('RAM', 'assets/icons/ram.png'),
-                    _categoryCard('Hard Disk', 'assets/icons/hard-disk.png'),
-                    _categoryCard('Motherboards', 'assets/icons/motherboard.png'),
-                    _categoryCard('Case', 'assets/icons/case.png'),
-                    _categoryCard('Monitors', 'assets/icons/monitor.png'),
-                    _categoryCard('Accessories', 'assets/icons/accessorise.png'),
+                    _categoryCard('Laptops', Icons.laptop),
+                    _categoryCard('Smartphones', Icons.smartphone),
+                    _categoryCard('Gaming', Icons.videogame_asset),
+                    _categoryCard('Accessories', Icons.headset),
+                    _categoryCard('Cameras', Icons.camera_alt),
                   ],
                 ),
               ),
@@ -223,64 +211,27 @@ class _HomePageState extends State<HomePage> {
   }
 
   // Helper Function for Category Cards with Random Colors
-  Widget _categoryCard(String categoryName, String imagePath) {
-  final random = Random();
-  final color = Color.fromRGBO(
-    random.nextInt(256),
-    random.nextInt(256),
-    random.nextInt(256),
-    0.3, // Semi-transparent color
-  );
+  Widget _categoryCard(String categoryName, IconData iconData) {
+    final random = Random();
+    final color = Color.fromRGBO(
+      random.nextInt(256),
+      random.nextInt(256),
+      random.nextInt(256),
+      0.3, // Semi-transparent color
+    );
 
-  // Determine custom size for RAM and Accessories
-  double imageSize = (categoryName == 'RAM' ) ? 40 : 40;
-
-  return GestureDetector(
-    onTap: () {
-      // Navigate to the corresponding page
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) {
-            switch (categoryName) {
-              case 'CPU':
-                return CPUPage();
-              case 'GPU':
-                return GPUPage();
-              case 'RAM':
-                return RAMPage();
-              case 'Hard Disk':
-                return HardDiskPage();
-              case 'Mother Boards':
-                return MotherboardPage();
-              case 'Case':
-                return CasePage();
-              case 'Monitors':
-                return MonitorsPage();
-              case 'Accessories':
-                return AccessoriesPage();
-              default:
-                return HomePage(username: widget.username);
-            }
-          },
-        ),
-      );
-    },
-    child: Container(
+    return Container(
       width: 120,
       margin: const EdgeInsets.only(left: 10),
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(15),
+        // No shadow applied
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(
-            imagePath,
-            height: imageSize,
-            width: imageSize,
-          ),
+          Icon(iconData, size: 40, color: Colors.black),
           const SizedBox(height: 10),
           Text(
             categoryName,
@@ -292,12 +243,8 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-    ),
-  );
-}
-
-
-
+    );
+  }
 
   // Helper Function for Shop Cards
   // Helper Function for Shop Cards with Bigger Size
@@ -432,7 +379,7 @@ class _HomePageState extends State<HomePage> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => AddItemPage()),
+                    MaterialPageRoute(builder: (context) => LoginPage()),
                   );
                 },
               ),
@@ -442,7 +389,7 @@ class _HomePageState extends State<HomePage> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                    MaterialPageRoute(builder: (context) => LoginPage()),
                   );
                 },
               ),
@@ -452,7 +399,7 @@ class _HomePageState extends State<HomePage> {
                 onTap: () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                    MaterialPageRoute(builder: (context) => LoginPage()),
                   );
                 },
               ),

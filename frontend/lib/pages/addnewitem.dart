@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'dart:convert';
-
+import 'package:shared_preferences/shared_preferences.dart';
 class AddItemPage extends StatefulWidget {
   const AddItemPage({super.key});
 
@@ -50,27 +52,82 @@ class _AddItemPageState extends State<AddItemPage> {
   // Function to pick images
   Future<void> pickImages() async {
     final List<XFile> pickedFiles = await _picker.pickMultiImage();
-    if (pickedFiles != null) {
-      setState(() {
-        images = pickedFiles.map((file) => File(file.path)).toList();
-      });
+    setState(() {
+      images = pickedFiles.map((file) => File(file.path)).toList();
+    });
     }
-  }
 
   // Function to send data to the API
-  Future<void> submitItem() async {
-    if (!_formKey.currentState!.validate()) return;
+Future<void>  submitItem() async {
 
-    _formKey.currentState!.save();
+if (acceptTermsError) {
+  return showDialog(
+    context: context,
+    builder: (_) => AlertDialog(
+      title: const Text('Error'),
+      content: const Text('Please accept on the terms.'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('OK'),
+        ),
+      ],
+    ),
+  );
+}
 
-    String userId = "64a0d7a9d43e4c321be52b9c";
 
+
+if (images.isEmpty) {
+  return showDialog(
+    context: context,
+    builder: (_) => AlertDialog(
+      title: const Text('Error'),
+      content: const Text('Please upload at least one image.'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('OK'),
+        ),
+      ],
+    ),
+  );
+}
+
+
+
+  if (!_formKey.currentState!.validate()) return;
+
+  _formKey.currentState!.save();
+
+  // Retrieve the token from shared preferences or wherever it's stored
+  String token = await _getToken(); // You need to implement _getToken method to fetch the saved token
+
+  if (token.isEmpty) {
+    print("Token is empty");
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('No token found, please login again.')),
+    );
+    return;
+  }
+
+  // Decode the token to get the userId
+  try {
+    Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+    String userId = decodedToken['id']; // Assuming the userId is stored in the 'id' field of the token
+    String username = decodedToken['username'];
+    print("YOUR USER NAMEEEEEEEEEE $username");
+    print("YOUR IDDDDDDDDDDDDDD $userId");
     var request = http.MultipartRequest(
       'POST',
       Uri.parse('http://10.0.2.2:3000/api/auth/add-item'),
     );
 
+    // Add token to the request headers for authentication
+    request.headers['Authorization'] = 'Bearer $token';
+
     request.fields['userId'] = userId;
+    request.fields['username']= username;
     request.fields['title'] = title;
     request.fields['description'] = description;
     request.fields['price'] = price;
@@ -86,7 +143,7 @@ class _AddItemPageState extends State<AddItemPage> {
     }
 
     var response = await request.send();
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       final resData = await response.stream.bytesToString();
       final resJson = json.decode(resData);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -95,11 +152,27 @@ class _AddItemPageState extends State<AddItemPage> {
       Navigator.pop(context);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to add item. Please try again.')),
+        const SnackBar(content: Text('Failed to add item.')),
       );
       print(await response.stream.bytesToString());
     }
+  } catch (e) {
+    print("Error decoding token: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Invalid token, please login again.')),
+    );
   }
+}
+
+// Helper function to get the token
+Future<String> _getToken() async {
+  // Fetch the token from shared preferences, secure storage, or any method you are using to store the token
+  // Example:
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.getString('token') ?? '';
+  // For this example, you can just return a dummy token or whatever method you use to store the token.
+  return 'your_token_here'; // Replace with the actual token fetching logic
+}
 
   @override
   Widget build(BuildContext context) {
@@ -153,6 +226,7 @@ class _AddItemPageState extends State<AddItemPage> {
                 TextFormField(
                   decoration: const InputDecoration(labelText: 'Price'),
                   keyboardType: TextInputType.number,
+                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter a price';
@@ -164,7 +238,7 @@ class _AddItemPageState extends State<AddItemPage> {
                   },
                 ),
                 
-                SizedBox(height: 30), // Increased space before 'Category'
+                const SizedBox(height: 30), // Increased space before 'Category'
                 const Text(
                   'Category',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -252,12 +326,12 @@ class _AddItemPageState extends State<AddItemPage> {
                     return null;
                   },
                 ),
-                SizedBox(height: 20),
-                Text(
+                const SizedBox(height: 20),
+                const Text(
                   'Images',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Container(
                   width: MediaQuery.of(context).size.width * 0.92, // Make the box 90% of the screen width
                   decoration: BoxDecoration(
@@ -268,32 +342,32 @@ class _AddItemPageState extends State<AddItemPage> {
                         color: Colors.grey.withOpacity(0.2),    
                         spreadRadius: 2,
                         blurRadius: 5,
-                        offset: Offset(0, 3), // Shadow position
+                        offset: const Offset(0, 3), // Shadow position
                       ),
                     ],
                     border: Border.all(color: Colors.grey.shade300),
                   ),
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
                       ElevatedButton.icon(
                         onPressed: pickImages,
-                        icon: Icon(Icons.add_photo_alternate_outlined, color: Colors.white),
-                        label: Text('Pick Images', style: TextStyle(color: Colors.white)),
+                        icon: const Icon(Icons.add_photo_alternate_outlined, color: Colors.white),
+                        label: const Text('Pick Images', style: TextStyle(color: Colors.white)),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                         ),
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       images.isNotEmpty
                           ? GridView.builder(
                               shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              physics: const NeverScrollableScrollPhysics(),
+                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 3,
                                 crossAxisSpacing: 10,
                                 mainAxisSpacing: 10,
@@ -317,7 +391,7 @@ class _AddItemPageState extends State<AddItemPage> {
                                       top: -8,
                                       right: -8,
                                       child: IconButton(
-                                        icon: Icon(Icons.close, color: Colors.red),
+                                        icon: const Icon(Icons.close, color: Colors.red),
                                         onPressed: () {
                                           setState(() {
                                             images.removeAt(index);
@@ -329,7 +403,7 @@ class _AddItemPageState extends State<AddItemPage> {
                                 );
                               },
                             )
-                          : Column(
+                          : const Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(Icons.photo_library_outlined, size: 50, color: Colors.grey),
