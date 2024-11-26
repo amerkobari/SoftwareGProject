@@ -244,14 +244,14 @@ class _HomePageState extends State<HomePage> {
           builder: (context) {
             switch (categoryName) {
               case 'CPU':
-                return CPUPage();
+                return CPUPage(git );
               case 'GPU':
                 return GPUPage();
               case 'RAM':
                 return RAMPage();
               case 'Hard Disk':
                 return HardDiskPage();
-              case 'Mother Boards':
+              case 'Motherboards':
                 return MotherboardPage();
               case 'Case':
                 return CasePage();
