@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 class AuthController {
   final String baseUrl = "http://10.0.2.2:3000"; // Replace with your backend URL
 
@@ -40,8 +40,8 @@ Future<Map<String, dynamic>> login(String email, String password) async {
       String userId = decodedToken['id'];
 
       // Store the token in SharedPreferences
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('token', token);
+      // final prefs = await SharedPreferences.getInstance();
+      // await prefs.setString('token', token);
 
       return {
         'success': true,
@@ -183,5 +183,19 @@ Future<Map<String, dynamic>> login(String email, String password) async {
       return {'success': false, 'message': 'Unable to connect to the server.'};
     }
   }
+
+    Future<List<Map<String, dynamic>>> fetchItems(String category) async {
+    final url = Uri.parse('$baseUrl/api/auth/get-items-by-category/$category');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data.map((item) => item as Map<String, dynamic>).toList();
+    } else {
+      throw Exception('Failed to load items');
+    }
+  }
 }
+
+
 
