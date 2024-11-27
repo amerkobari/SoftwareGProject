@@ -5,14 +5,19 @@ exports.addItem = async (req, res) => {
     try {
         const { title, description, price, category, condition, location } = req.body;
 
-        // Get userId from the middleware
+        // Get userId and username from middleware
         const userId = req.userId;
         const username = req.username;
 
-        // Handle uploaded files (if images are uploaded)
-        const images = req.files ? req.files.map(file => file.path) : [];
+        // Process uploaded images
+        const images = req.files
+            ? req.files.map(file => ({
+                data: file.buffer,         // Binary data for the image
+                contentType: file.mimetype // Image MIME type
+            }))
+            : []; // Default to an empty array if no images are uploaded
 
-        // Create a new item document
+        // Create a new item
         const newItem = new Item({
             userId,
             username,
@@ -25,7 +30,7 @@ exports.addItem = async (req, res) => {
             location,
         });
 
-        // Save the item to the database
+        // Save to the database
         const savedItem = await newItem.save();
 
         res.status(201).json({
@@ -38,28 +43,47 @@ exports.addItem = async (req, res) => {
 };
 
 
-// Get all items
+// Get all items (with images as base64)
 exports.getAllItems = async (req, res) => {
     try {
         const items = await Item.find().sort({ createdAt: -1 });
-        res.json(items);
+        const itemsWithImages = items.map(item => ({
+            ...item.toObject(),
+            images: item.images.map(image => ({
+                data: image.data.toString('base64'),
+                contentType: image.contentType,
+            })),
+        }));
+        res.json(itemsWithImages);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
 
-// Get a single item by ID
+// Get a single item by ID (with images as base64)
 exports.getItemById = async (req, res) => {
     try {
         const item = await Item.findById(req.params.id);
         if (!item) {
             return res.status(404).json({ message: 'Item not found' });
         }
-        res.json(item);
+
+        const formattedItem = {
+            ...item.toObject(),
+            imageUrls: item.images?.map(image => {
+                if (image?.data) {
+                    return `data:${image.contentType};base64,${image.data.toString('base64')}`;
+                }
+                return null;
+            }) || [],
+        };
+        
+        res.json(formattedItem);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
+
 
 // Update an item by ID
 exports.updateItem = async (req, res) => {

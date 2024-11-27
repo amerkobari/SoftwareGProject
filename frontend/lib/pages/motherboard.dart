@@ -14,7 +14,7 @@ class MotherboardPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Motherboards',
+          'Mootherboard',
           style: TextStyle(
             color: Colors.black,
             fontSize: 22,
@@ -26,8 +26,7 @@ class MotherboardPage extends StatelessWidget {
         centerTitle: true,
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
-        // Fetching Motherboard items from the database
-        future: authController.fetchItems('Motherboard'), // Use fetchItems with 'Motherboard' category
+        future: authController.fetchItems('Motherboard'), // Use fetchItems with 'cpu' category
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -43,55 +42,34 @@ class MotherboardPage extends StatelessWidget {
             itemCount: items.length,
             itemBuilder: (context, index) {
               final item = items[index];
-              final imageUrl = item['images'] != null && item['images'].isNotEmpty
-                  ? '$baseUrl/${item['images'][0]}' // Full URL to the image
-                  : null; // Fallback to default asset
-
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                 child: ListTile(
-                  leading: imageUrl != null
-                      ? Image.network(
-                          imageUrl,
-                          width: 40,
-                          height: 40,
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Image.asset(
-                              'assets/icons/motherboard.png', // Default motherboard icon
-                              width: 40,
-                              height: 40,
-                              fit: BoxFit.contain,
-                            );
-                          },
-                        )
-                      : Image.asset(
-                          'assets/icons/motherboard.png', // Default motherboard icon
-                          width: 40,
-                          height: 40,
-                          fit: BoxFit.contain,
-                        ),
-                  title: Text(
-                    item['title'] ?? 'No Title', // Fallback for missing title
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  leading: Image.asset(
+                    'assets/icons/monitor.png',
+                    width: 40,
+                    height: 40,
+                    fit: BoxFit.contain,
                   ),
-                  subtitle: Text(
-                    item['description'] ?? 'No Description', // Fallback for missing description
-                  ),
+                  title: Text(item['title'] ?? 'No Title', // Title from schema
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Text(item['description'] ?? 'No Description'), // Description from schema
                   trailing: Text(
-                    '₪${item['price']?.toString() ?? 'N/A'}', // Fallback for missing price
+                    '₪${item['price']?.toStringAsFixed(2) ?? 'N/A'}',
                     style: const TextStyle(
-                      color: Colors.green,
-                      fontWeight: FontWeight.bold,
-                    ),
+                        color: Colors.green, fontWeight: FontWeight.bold),
                   ),
-                  onTap: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => ItemPage(itemData: item),
-                    //   ),
-                    // );
+                  onTap: () async {
+                    // Navigate to ItemPage with API call
+                    final itemId = item['_id']; // Assuming each item has an 'id'
+                    //print the item id
+                    print("ITEM IDDDDDDDDDDDDDDDDDDDDDDDD $itemId");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ItemPage(itemId: itemId),
+                      ),
+                    );
                   },
                 ),
               );
