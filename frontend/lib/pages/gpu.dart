@@ -1,38 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:untitled/pages/itempage.dart';
+import 'package:untitled/controllers/authController.dart'; // Adjust the path as necessary
 
 class GPUPage extends StatelessWidget {
-  const GPUPage({super.key});
+  GPUPage({super.key});
+
+  // Instance of AuthController
+  final AuthController authController = AuthController();
 
   @override
   Widget build(BuildContext context) {
-    // Mock data for testing
-    final List<Map<String, dynamic>> mockItems = [
-      {
-        'name': 'Intel Core i9-12900K',
-        'description': '16-Core, 3.2 GHz, LGA 1700 Socket',
-        'price': 599.99
-      },
-      {
-        'name': 'AMD Ryzen 9 5950X',
-        'description': '16-Core, 3.4 GHz, AM4 Socket',
-        'price': 549.99
-      },
-      {
-        'name': 'Intel Core i5-12600K',
-        'description': '10-Core, 3.7 GHz, LGA 1700 Socket',
-        'price': 319.99
-      },
-      {
-        'name': 'AMD Ryzen 5 5600X',
-        'description': '6-Core, 3.7 GHz, AM4 Socket',
-        'price': 199.99
-      },
-    ];
-
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'CPU',
+          'GPU',
           style: TextStyle(
             color: Colors.black,
             fontSize: 22,
@@ -43,26 +24,59 @@ class GPUPage extends StatelessWidget {
         elevation: 0.0,
         centerTitle: true,
       ),
-      body: ListView.builder(
-        itemCount: mockItems.length,
-        itemBuilder: (context, index) {
-          final item = mockItems[index];
-          return Card(
-            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            child: ListTile(
-              leading: Image.asset(
-                'assets/icons/gpu.png',
-                width: 40,
-                height: 40,
-                fit: BoxFit.contain,
-              ),
-              title: Text(item['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: Text(item['description']),
-              trailing: Text(
-                '\₪${item['price']}',
-                style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-              ),
-            ),
+      body: FutureBuilder<List<Map<String, dynamic>>>( // Fetching GPU items from the database
+        future: authController.fetchItems('GPU'), // Use fetchItems with 'GPU' category
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No items found'));
+          }
+
+          final items = snapshot.data!;
+
+          return ListView.builder(
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              final item = items[index];
+              return Card(
+                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                child: ListTile(
+                  leading: item['images'] != null && item['images'].isNotEmpty
+                      ? Image.network(
+                          item['images'][0], // Display the first image from the images array
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.contain,
+                        )
+                      : Image.asset(
+                          'assets/icons/gpu.png', // Default image if no image is available
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.contain,
+                        ),
+                  title: Text(item['title'] ?? 'No Title', // Title from schema
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Text(item['description'] ?? 'No Description', // Description from schema
+                  ),
+                  trailing: Text(
+                    '₪${item['price']?.toStringAsFixed(2) ?? 'N/A'}', // Price from schema
+                    style: const TextStyle(
+                        color: Colors.green, fontWeight: FontWeight.bold),
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ItemPage(itemData: item),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
           );
         },
       ),

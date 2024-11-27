@@ -1,38 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/pages/itempage.dart';
+import 'package:untitled/controllers/authController.dart'; // Adjust the path as necessary
 
 class CPUPage extends StatelessWidget {
-  const CPUPage({super.key});
+  CPUPage({super.key});
+
+  // Instance of AuthController
+  final AuthController authController = AuthController();
 
   @override
   Widget build(BuildContext context) {
-    // Mock data for testing
-    final List<Map<String, dynamic>> mockItems = [
-      {
-        'name': 'Intel Core i9-12900K Processor',
-        'description': 'The Intel Core i9-12900K is a high-performance processor...',
-        'price': 599.99,
-      },
-      // Add more mock items if needed
-    ];
-    
-
-    final mockItem = {
-      'title': 'Intel Core i9-12900K Processor',
-      'imageUrls': [
-        'assets/icons/cpu.png',
-        'assets/icons/gpu.png',
-        'assets/icons/cpu.png',
-        'assets/icons/case.png',
-        
-      ],
-      'username': 'JohnDoe',
-      'price': 599.99,
-      'condition': 'New',
-      'description': 'The Intel Core i9-12900K is a high-performance processor...',
-      'location': 'New York, USA',
-    };
-
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -47,37 +24,59 @@ class CPUPage extends StatelessWidget {
         elevation: 0.0,
         centerTitle: true,
       ),
-      body: ListView.builder(
-        itemCount: mockItems.length,
-        itemBuilder: (context, index) {
-          final item = mockItems[index];
-          return Card(
-            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            child: ListTile(
-              leading: Image.asset(
-                'assets/icons/cpu.png',
-                width: 40,
-                height: 40,
-                fit: BoxFit.contain,
-              ),
-              title: Text(item['name'],
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: Text(item['description']),
-              trailing: Text(
-                '\₪${item['price']}',
-                style: const TextStyle(
-                    color: Colors.green, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                // Navigate to the detail page with the selected item
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ItemPage(itemData: mockItem),
+      body: FutureBuilder<List<Map<String, dynamic>>>( // Fetching CPU items from the database
+        future: authController.fetchItems('CPU'), // Use fetchItems with 'CPU' category
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No items found'));
+          }
+
+          final items = snapshot.data!;
+
+          return ListView.builder(
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              final item = items[index];
+              return Card(
+                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                child: ListTile(
+                  leading: item['images'] != null && item['images'].isNotEmpty
+                      ? Image.network(
+                          item['images'][0], // Display the first image from the images array
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.contain,
+                        )
+                      : Image.asset(
+                          'assets/icons/cpu.png', // Default image if no image is available
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.contain,
+                        ),
+                  title: Text(item['title'] ?? 'No Title', // Title from schema
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Text(item['description'] ?? 'No Description', // Description from schema
                   ),
-                );
-              },
-            ),
+                  trailing: Text(
+                    '₪${item['price']?.toStringAsFixed(2) ?? 'N/A'}', // Price from schema
+                    style: const TextStyle(
+                        color: Colors.green, fontWeight: FontWeight.bold),
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ItemPage(itemData: item),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
           );
         },
       ),

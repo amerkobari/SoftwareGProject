@@ -326,13 +326,11 @@ class _SignUpPageState extends State<SignUpPage> {
                   firstDate: DateTime(1900),
                   lastDate: DateTime.now(),
                 );
-                if (pickedDate != null) {
-                  setState(() {
-                    _birthdateController.text =
-                        "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
-                  });
-                }
-              },
+                setState(() {
+                  _birthdateController.text =
+                      "${pickedDate?.year}-${pickedDate?.month}-${pickedDate?.day}";
+                                });
+                            },
               decoration: InputDecoration(
                 labelText: 'Birthdate',
                 border: OutlineInputBorder(

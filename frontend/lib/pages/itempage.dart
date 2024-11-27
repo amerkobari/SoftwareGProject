@@ -29,8 +29,8 @@ class _ItemPageState extends State<ItemPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
-        iconTheme: IconThemeData(color: Colors.white),
-        titleTextStyle: TextStyle(color: Colors.white, fontSize: 18),
+        iconTheme: const IconThemeData(color: Colors.white),
+        titleTextStyle: const TextStyle(color: Colors.white, fontSize: 18),
         title: Text(widget.itemData['title']),
       ),
       body: SingleChildScrollView(
@@ -78,9 +78,9 @@ class _ItemPageState extends State<ItemPage> {
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               "Description:",
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
@@ -97,7 +97,6 @@ class _ItemPageState extends State<ItemPage> {
               onPressed: () {
                 _addToCart(widget.itemData); // Add item to cart
               },
-              child: const Text('Add to Cart', style: TextStyle(fontSize: 20, color: Colors.white)),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                 shape: RoundedRectangleBorder(
@@ -105,6 +104,7 @@ class _ItemPageState extends State<ItemPage> {
                 ),
                 backgroundColor: Colors.blue, // Solid blue button
               ),
+              child: const Text('Add to Cart', style: TextStyle(fontSize: 20, color: Colors.white)),
             ),
           ],
         ),

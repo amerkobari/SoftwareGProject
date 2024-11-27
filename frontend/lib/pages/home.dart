@@ -244,21 +244,21 @@ class _HomePageState extends State<HomePage> {
           builder: (context) {
             switch (categoryName) {
               case 'CPU':
-                return CPUPage();
+                return  CPUPage();
               case 'GPU':
-                return GPUPage();
+                return  GPUPage();
               case 'RAM':
-                return RAMPage();
+                return  RAMPage();
               case 'Hard Disk':
-                return HardDiskPage();
+                return  HardDiskPage();
               case 'Motherboards':
-                return MotherboardPage();
+                return  MotherboardPage();
               case 'Case':
-                return CasePage();
+                return  CasePage();
               case 'Monitors':
-                return MonitorsPage();
+                return  MonitorsPage();
               case 'Accessories':
-                return AccessoriesPage();
+                return  AccessoriesPage();
               default:
                 return HomePage(username: widget.username);
             }
@@ -432,7 +432,7 @@ class _HomePageState extends State<HomePage> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => AddItemPage()),
+                    MaterialPageRoute(builder: (context) => const AddItemPage()),
                   );
                 },
               ),
