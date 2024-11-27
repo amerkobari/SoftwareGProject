@@ -60,7 +60,9 @@ class CPUPage extends StatelessWidget {
                   ),
                   onTap: () async {
                     // Navigate to ItemPage with API call
-                    final itemId = item['id']; // Assuming each item has an 'id'
+                    final itemId = item['_id']; // Assuming each item has an 'id'
+                    //print the item id
+                    print("ITEM IDDDDDDDDDDDDDDDDDDDDDDDD $itemId");
                     Navigator.push(
                       context,
                       MaterialPageRoute(

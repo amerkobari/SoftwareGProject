@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/controllers/authController.dart';
+import 'dart:convert';
+import 'dart:typed_data';
 
 class ItemPage extends StatefulWidget {
   final String itemId; // Pass only item ID instead of the entire item data
@@ -58,24 +60,33 @@ class _ItemPageState extends State<ItemPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Display images as a carousel or scrollable list
-                      SizedBox(
-                        height: 200,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: _itemData!['imageUrls'].length,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Image.network(
-                                _itemData!['imageUrls'][index], // Display each image
-                                width: 200,
-                                height: 200,
-                                fit: BoxFit.cover,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
+                SizedBox(
+  height: 200,
+  child: _itemData?['imageUrls'] == null || _itemData!['imageUrls'].isEmpty
+      ? const Center(child: Text('No images available'))
+      : ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: _itemData!['imageUrls'].length,
+          itemBuilder: (context, index) {
+            final image = _itemData!['imageUrls'][index];
+            // Check if image is base64 encoded
+            if (image is String && image.startsWith('data:')) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Image.memory(
+                  Base64Decoder().convert(image.split(',')[1]), // Convert base64 to byte array
+                  width: 200,
+                  height: 200,
+                  fit: BoxFit.cover,
+                ),
+              );
+            } else {
+              return const SizedBox(); // Handle invalid base64 or null image
+            }
+          },
+        ),
+),
+                      
                       const SizedBox(height: 16),
                       Text(
                         _itemData!['title'],
@@ -88,7 +99,7 @@ class _ItemPageState extends State<ItemPage> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        "Price: \$${_itemData!['price']}",
+                        "Price: ₪${_itemData!['price']}",
                         style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),

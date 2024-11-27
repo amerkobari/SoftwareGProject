@@ -1,17 +1,21 @@
 const mongoose = require('mongoose');
 
+const imageSchema = new mongoose.Schema({
+    data: Buffer, // Store image data in binary format
+    contentType: String, // MIME type of the image
+});
+
 const itemSchema = new mongoose.Schema({
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    username: {type: mongoose.Schema.Types.String, ref: 'User', required: true},
+    userId: { type: mongoose.Schema.Types.ObjectId, required: true },
+    username: { type: String, required: true },
     title: { type: String, required: true },
-    description: { type: String, required: true },
-    images: [{ type: String }], // Array of image URLs
+    description: { type: String },
+    images: [imageSchema], // Store multiple images
     price: { type: Number, required: true },
     category: { type: String, required: true },
-    condition: { type: String, required: true },
-    location: { type: String, required: true },
+    condition: { type: String },
+    location: { type: String },
     createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now },
 });
 
 module.exports = mongoose.model('Item', itemSchema);
