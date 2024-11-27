@@ -195,6 +195,21 @@ Future<Map<String, dynamic>> login(String email, String password) async {
       throw Exception('Failed to load items');
     }
   }
+
+
+   Future<Map<String, dynamic>> getItemById(String itemId) async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/api/auth/get-item/$itemId'));
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body) as Map<String, dynamic>;
+      } else {
+        throw Exception('Failed to load item. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching item: $e');
+    }
+  }
 }
 
 

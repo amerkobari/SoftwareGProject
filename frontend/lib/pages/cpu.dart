@@ -3,7 +3,7 @@ import 'package:untitled/pages/itempage.dart';
 import 'package:untitled/controllers/authController.dart'; // Adjust the path as necessary
 
 class CPUPage extends StatelessWidget {
-  CPUPage({super.key});
+   CPUPage({super.key});
 
   // Instance of AuthController
   final AuthController authController = AuthController();
@@ -24,8 +24,8 @@ class CPUPage extends StatelessWidget {
         elevation: 0.0,
         centerTitle: true,
       ),
-      body: FutureBuilder<List<Map<String, dynamic>>>( // Fetching CPU items from the database
-        future: authController.fetchItems('CPU'), // Use fetchItems with 'CPU' category
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: authController.fetchItems('CPU'), // Use fetchItems with 'cpu' category
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -44,33 +44,27 @@ class CPUPage extends StatelessWidget {
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                 child: ListTile(
-                  leading: item['images'] != null && item['images'].isNotEmpty
-                      ? Image.network(
-                          item['images'][0], // Display the first image from the images array
-                          width: 40,
-                          height: 40,
-                          fit: BoxFit.contain,
-                        )
-                      : Image.asset(
-                          'assets/icons/cpu.png', // Default image if no image is available
-                          width: 40,
-                          height: 40,
-                          fit: BoxFit.contain,
-                        ),
+                  leading: Image.asset(
+                    'assets/icons/cpu.png',
+                    width: 40,
+                    height: 40,
+                    fit: BoxFit.contain,
+                  ),
                   title: Text(item['title'] ?? 'No Title', // Title from schema
                       style: const TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Text(item['description'] ?? 'No Description', // Description from schema
-                  ),
+                  subtitle: Text(item['description'] ?? 'No Description'), // Description from schema
                   trailing: Text(
-                    '₪${item['price']?.toStringAsFixed(2) ?? 'N/A'}', // Price from schema
+                    '₪${item['price']?.toStringAsFixed(2) ?? 'N/A'}',
                     style: const TextStyle(
                         color: Colors.green, fontWeight: FontWeight.bold),
                   ),
-                  onTap: () {
+                  onTap: () async {
+                    // Navigate to ItemPage with API call
+                    final itemId = item['id']; // Assuming each item has an 'id'
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ItemPage(itemData: item),
+                        builder: (context) => ItemPage(itemId: itemId),
                       ),
                     );
                   },
