@@ -7,6 +7,7 @@ class MonitorsPage extends StatelessWidget {
 
   // Instance of AuthController
   final AuthController authController = AuthController();
+  final String baseUrl = 'http://10.0.2.2:3000/uploads'; // Backend URL
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +25,8 @@ class MonitorsPage extends StatelessWidget {
         elevation: 0.0,
         centerTitle: true,
       ),
-      body: FutureBuilder<List<Map<String, dynamic>>>( // Fetching Monitor items from the database
-        future: authController.fetchItems('Monitor'), // Use fetchItems with 'Monitor' category
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: authController.fetchItems('Monitors'), // Fetch monitor items
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -41,38 +42,56 @@ class MonitorsPage extends StatelessWidget {
             itemCount: items.length,
             itemBuilder: (context, index) {
               final item = items[index];
+              final imageUrl = item['images'] != null &&
+                      item['images'].isNotEmpty
+                  ? '$baseUrl/${item['images'][0]}' // Full URL to the image
+                  : null; // Fallback to default asset
+
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                 child: ListTile(
-                  leading: item['images'] != null && item['images'].isNotEmpty
+                  leading: imageUrl != null
                       ? Image.network(
-                          item['images'][0], // Display the first image from the images array
+                          imageUrl,
                           width: 40,
                           height: 40,
                           fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Image.asset(
+                              'assets/icons/monitor.png',
+                              width: 40,
+                              height: 40,
+                              fit: BoxFit.contain,
+                            );
+                          },
                         )
                       : Image.asset(
-                          'assets/icons/monitor.png', // Default image if no image is available
+                          'assets/icons/monitor.png',
                           width: 40,
                           height: 40,
                           fit: BoxFit.contain,
                         ),
-                  title: Text(item['title'] ?? 'No Title', // Title from schema
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Text(item['description'] ?? 'No Description', // Description from schema
+                  title: Text(
+                    item['title'] ?? 'No Title', // Fallback for missing title
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text(
+                    item['description'] ?? 'No Description', // Fallback for missing description
                   ),
                   trailing: Text(
-                    '₪${item['price']?.toStringAsFixed(2) ?? 'N/A'}', // Price from schema
+                    '₪${item['price']?.toString() ?? 'N/A'}', // Fallback for missing price
                     style: const TextStyle(
-                        color: Colors.green, fontWeight: FontWeight.bold),
+                      color: Colors.green,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ItemPage(itemData: item),
-                      ),
-                    );
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => ItemPage(itemData: item),
+                    //   ),
+                    // );
                   },
                 ),
               );
