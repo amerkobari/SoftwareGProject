@@ -184,6 +184,19 @@ Future<Map<String, dynamic>> login(String email, String password) async {
     }
   }
 
+  Future<List<Map<String, dynamic>>> fetchShops() async {
+  final url = Uri.parse('$baseUrl/api/auth/get-allshops'); // Replace with your endpoint
+  final response = await http.get(url);
+
+  if (response.statusCode == 200) {
+    final List<dynamic> data = json.decode(response.body);
+    return data.map((shop) => shop as Map<String, dynamic>).toList();
+  } else {
+    throw Exception('Failed to load shops');
+  }
+}
+
+
     Future<List<Map<String, dynamic>>> fetchItems(String category) async {
     final url = Uri.parse('$baseUrl/api/auth/get-items-by-category/$category');
     final response = await http.get(url);

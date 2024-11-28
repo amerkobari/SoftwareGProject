@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:untitled/controllers/authController.dart';
 import 'package:untitled/pages/accessories.dart';
 import 'package:untitled/pages/addnewitem.dart';
 import 'package:untitled/pages/addnewshop.dart';
@@ -24,6 +26,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+    final AuthController authController = AuthController();
+
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
@@ -188,20 +192,36 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 10),
               // Horizontal Swipable Shops
-              SizedBox(
-                height:
-                    150, // Increase the height to accommodate larger shop cards
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    _shopCard('Tech Shop', Icons.store),
-                    _shopCard('Gadget World', Icons.storefront),
-                    _shopCard('Smartphones Plus', Icons.phone_android),
-                    _shopCard('Camera Zone', Icons.camera),
-                    _shopCard('Gaming Hub', Icons.videogame_asset),
-                  ],
-                ),
-              ),
+              FutureBuilder<List<Map<String, dynamic>>>(
+              future: authController.fetchShops(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No shops available'));
+                } else {
+                  final shops = snapshot.data!;
+                  return SizedBox(
+                    height: 200,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: shops.length,
+                      itemBuilder: (context, index) {
+                        final shop = shops[index];
+                        return _shopCard(
+                          shop['name'] ?? 'Unknown Shop',
+                          shop['logoUrl'], // Pass logo data (base64 or URL)
+                        );
+                      },
+                    ),
+                  );
+                }
+              },
+            ),
+
+
               const SizedBox(height: 20),
               Container(
                 height: 600,
@@ -302,32 +322,69 @@ class _HomePageState extends State<HomePage> {
 
   // Helper Function for Shop Cards
   // Helper Function for Shop Cards with Bigger Size
-  Widget _shopCard(String shopName, IconData iconData) {
-    return Container(
-      width: 180, // Increased width
-      height: 200, // Increased height
-      margin: const EdgeInsets.only(left: 10),
-      decoration: BoxDecoration(
-        color: Colors.blue.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(iconData, size: 60, color: Colors.black), // Enlarged icon
-          const SizedBox(height: 10),
-          Text(
-            shopName,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 16, // Slightly larger font size
-              fontWeight: FontWeight.bold,
+  Widget _shopCard(String shopName, dynamic logo) {
+  return Container(
+    width: 180, // Adjusted card width
+    height: 200, // Adjusted card height
+    margin: const EdgeInsets.only(left: 10),
+    decoration: BoxDecoration(
+      color: Colors.blue.withOpacity(0.1),
+      borderRadius: BorderRadius.circular(15),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.1),
+          blurRadius: 5,
+          offset: const Offset(0, 5),
+        ),
+      ],
+    ),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        // Display image with circular border
+        SizedBox(
+          height: 80,
+          width: 80,
+          child: ClipOval(
+            child: Builder(
+              builder: (context) {
+                if (logo == null || logo.isEmpty) {
+                  return const Center(child: Icon(Icons.error, size: 40, color: Colors.grey));
+                } else if (logo.startsWith('data:')) {
+                  // Base64 encoded image
+                  return Image.memory(
+                    Base64Decoder().convert(logo.split(',')[1]),
+                    fit: BoxFit.cover,
+                  );
+                } else {
+                  // URL image
+                  return Image.network(
+                    logo,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Center(child: Icon(Icons.error, size: 40, color: Colors.grey)),
+                  );
+                }
+              },
             ),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+        const SizedBox(height: 10),
+        // Shop Name
+        Text(
+          shopName,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+
 
   @override
   Widget build(BuildContext context) {
