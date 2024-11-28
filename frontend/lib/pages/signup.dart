@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:untitled/controllers/authController.dart';
 import 'package:untitled/pages/login.dart';
@@ -78,8 +77,8 @@ class _SignUpPageState extends State<SignUpPage> {
     _showVerificationDialog(email, username, phone, birthdate, password);
   }
 
-  void _showVerificationDialog(
-      String email, String username, String phone, String birthdate, String password) {
+  void _showVerificationDialog(String email, String username, String phone,
+      String birthdate, String password) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -99,7 +98,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
           if (result['success']) {
             _verificationCode = result['code'];
-            _showSnackBar('Verification code sent to your email.', isError: false);
+            _showSnackBar('Verification code sent to your email.',
+                isError: false);
           } else {
             _showSnackBar(result['message']);
           }
@@ -164,7 +164,8 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  void _completeSignUp(String username, String email, String phone, String birthdate, String password) {
+  void _completeSignUp(String username, String email, String phone,
+      String birthdate, String password) {
     AuthController()
         .register(username, email, phone, birthdate, password, password)
         .then((result) {
@@ -314,7 +315,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 prefixIcon: const Icon(Icons.phone),
               ),
-),
+            ),
             const SizedBox(height: 20),
             TextField(
               controller: _birthdateController,
@@ -329,8 +330,8 @@ class _SignUpPageState extends State<SignUpPage> {
                 setState(() {
                   _birthdateController.text =
                       "${pickedDate?.year}-${pickedDate?.month}-${pickedDate?.day}";
-                                });
-                            },
+                });
+              },
               decoration: InputDecoration(
                 labelText: 'Birthdate',
                 border: OutlineInputBorder(
@@ -338,7 +339,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 prefixIcon: const Icon(Icons.calendar_today),
               ),
-),
+            ),
             const SizedBox(height: 20),
             TextField(
               controller: _passwordController,
@@ -387,30 +388,30 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
             ),
-           const SizedBox(height: 20),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: _validateAndSignUp,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 30,
-                        vertical: 10,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      backgroundColor: Colors.blue, // Solid blue button
-                    ),
-                    child: const Text(
-                      'Sign Up',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
+            const SizedBox(height: 20),
+            Center(
+              child: ElevatedButton(
+                onPressed: _validateAndSignUp,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 30,
+                    vertical: 10,
                   ),
-  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  backgroundColor: Colors.blue, // Solid blue button
+                ),
+                child: const Text(
+                  'Sign Up',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
