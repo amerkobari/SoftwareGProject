@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/controllers/authController.dart';
 import 'dart:convert';
-import 'dart:typed_data';
 
 class ItemPage extends StatefulWidget {
   final String itemId; // Pass only item ID instead of the entire item data

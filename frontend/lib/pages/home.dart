@@ -362,106 +362,126 @@ class _HomePageState extends State<HomePage> {
           : _selectedIndex == 1
               ? const Center(child: Text('Messages Page Content'))
               : const Center(child: Text('Community Page Content')),
-      drawer: Drawer(
-        child: Container(
-          color: Colors.white,
-          child: ListView(
-            padding: EdgeInsets.zero,
+     drawer: Drawer(
+  child: Container(
+    color: Colors.white,
+    child: ListView(
+      padding: EdgeInsets.zero,
+      children: [
+        DrawerHeader(
+          decoration: const BoxDecoration(
+            color: Colors.blue,
+          ),
+          child: Column(
             children: [
-              DrawerHeader(
-                decoration: const BoxDecoration(
-                  color: Colors.blue,
+              const Flexible(
+                flex: 2,
+                child: Icon(Icons.account_circle, size: 100, color: Colors.white),
+              ),
+              const SizedBox(height: 10),
+              Flexible(
+                flex: 1,
+                child: Text(
+                  widget.username, // Display the logged-in username here
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                  ),
                 ),
-                child: Column(
-                  children: [
-                    const Flexible(
-                      flex: 2,
-                      child: Icon(Icons.account_circle,
-                          size: 100, color: Colors.white),
-                    ),
-                    const SizedBox(height: 10),
-                    Flexible(
-                      flex: 1,
-                      child: Text(
-                        widget.username, // Display the logged-in username here
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              ListTile(
-                leading: const Icon(Icons.account_circle, color: Colors.black),
-                title: const Text('Profile'),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const LoginPage()),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.star, color: Colors.black),
-                title: const Text('Favorites'),
-                onTap: () {
-                  // Navigate to cart
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.shopping_cart, color: Colors.black),
-                title: const Text('My Cart'),
-                onTap: () {
-                  // Navigate to cart
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.store, color: Colors.black),
-                title: const Text('My Shops'),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const LoginPage()),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.add, color: Colors.black),
-                title: const Text('Add New Item'),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const AddItemPage()),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.add_business, color: Colors.black),
-                title: const Text('Add New Shop'),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const AddNewShopPage()),
-                  );
-                },
-              ),
-
-              ListTile(
-                leading: const Icon(Icons.logout, color: Colors.black),
-                title: const Text('Logout'),
-                onTap: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const LoginPage()),
-                  );
-                },
               ),
             ],
           ),
         ),
-      ),
+        if (widget.username == 'Guest') ...[
+          ListTile(
+            leading: const Icon(Icons.star, color: Colors.black),
+            title: const Text('Favorites'),
+            onTap: () {
+              // Navigate to Favorites
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.shopping_cart, color: Colors.black),
+            title: const Text('My Cart'),
+            onTap: () {
+              // Navigate to My Cart
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.login, color: Colors.black),
+            title: const Text('Login'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginPage()),
+              );
+            },
+          ),
+        ] else ...[
+          ListTile(
+            leading: const Icon(Icons.account_circle, color: Colors.black),
+            title: const Text('Profile'),
+            onTap: () {
+              // Navigate to Profile
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.star, color: Colors.black),
+            title: const Text('Favorites'),
+            onTap: () {
+              // Navigate to Favorites
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.shopping_cart, color: Colors.black),
+            title: const Text('My Cart'),
+            onTap: () {
+              // Navigate to My Cart
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.store, color: Colors.black),
+            title: const Text('My Shops'),
+            onTap: () {
+              // Navigate to My Shops
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.add, color: Colors.black),
+            title: const Text('Add New Item'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AddItemPage()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.add_business, color: Colors.black),
+            title: const Text('Add New Shop'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AddNewShopPage()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.logout, color: Colors.black),
+            title: const Text('Logout'),
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const HomePage(username: 'Guest')),
+              );
+            },
+          ),
+        ],
+      ],
+    ),
+  ),
+),
+
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
