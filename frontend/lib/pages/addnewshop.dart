@@ -4,7 +4,7 @@ import 'dart:io'; // Required for File type
 import 'package:flutter/services.dart';
 
 class AddNewShopPage extends StatefulWidget {
-  const AddNewShopPage({Key? key}) : super(key: key);
+  const AddNewShopPage({super.key});
 
   @override
   _AddNewShopPageState createState() => _AddNewShopPageState();
@@ -12,7 +12,7 @@ class AddNewShopPage extends StatefulWidget {
 
 class _AddNewShopPageState extends State<AddNewShopPage> {
   final _formKey = GlobalKey<FormState>();  // Form key for validation
-  bool _acceptTerms = false;
+  final bool _acceptTerms = false;
   String city = ''; // Variable to store selected city
   String shopName = '';
   String description = '';
