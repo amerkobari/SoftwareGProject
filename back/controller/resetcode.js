@@ -97,7 +97,23 @@ exports.sendVerificationCode = async (req, res) => {
       res.status(500).json({ success: false, message: 'Server error' });
     }
   };
+
+  exports.sendNewShopMail = async (req, res) => {
+    const { email } = req.body;
   
+    try {
+      // Send the verification code via email
+      await transporter.sendMail({
+        from: 'rentitoutco@gmail.com',
+        to: email,
+        subject: 'New Shop Request',
+        text: `Your shop has been requested and waiting for the admin to accept it`,
   
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Server error' });
+    }
+  }
 
 

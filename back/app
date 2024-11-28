@@ -5,6 +5,7 @@ const bodyParser = require("body-parser")
 const loginRoute = require("./routes/login.routes.js");
 const resetRoute = require("./routes/resetcode.js");
 const addnewItem = require("./routes/newItemroute.js");
+const addShop = require("./routes/newShopRoutes.js");
 // const ToDoRoute = require('./routes/todo.router');
 const app = express();
 app.use(bodyParser.json())
@@ -12,5 +13,6 @@ app.use(bodyParser.json())
 app.use('/api/auth', loginRoute);
 app.use('/api/auth', resetRoute);
 app.use('/api/auth', addnewItem);
+app.use('/api/auth', addShop);
 // app.use("/",ToDoRoute);
 module.exports = app;
