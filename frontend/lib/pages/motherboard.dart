@@ -14,7 +14,7 @@ class MotherboardPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Mootherboard',
+          'Motherboard',
           style: TextStyle(
             color: Colors.black,
             fontSize: 22,
