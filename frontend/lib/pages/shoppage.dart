@@ -66,35 +66,42 @@ class _ShopPageState extends State<ShopPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Shop details
-                      SizedBox(
-                        height: 200,
-                        child: _shopData?['logo'] == null
-                            ? const Center(child: Text('No logo available'))
-                            : ClipOval(
-                                child: Builder(
-                                  builder: (context) {
-                                    final logo = _shopData!['logo'];
-                                    if (logo.startsWith('data:')) {
-                                      return Image.memory(
-                                        Base64Decoder().convert(logo.split(',')[1]),
-                                        fit: BoxFit.cover,
-                                        width: 200,
-                                        height: 200,
-                                      );
-                                    } else {
-                                      return Image.network(
-                                        logo,
-                                        fit: BoxFit.cover,
-                                        width: 200,
-                                        height: 200,
-                                        errorBuilder: (context, error, stackTrace) =>
-                                            const Center(child: Icon(Icons.error, size: 50)),
-                                      );
-                                    }
-                                  },
-                                ),
-                              ),
-                      ),
+                     SizedBox(
+  height: 200,
+  child: _shopData?['logoUrl'] == null
+      ? const Center(child: Text('No logo available'))
+      : Builder(
+          builder: (context) {
+            final logoUrl = _shopData!['logoUrl'];
+            // Check if the logo is base64-encoded
+            if (logoUrl is String && logoUrl.startsWith('data:')) {
+              return ClipOval(
+                child: Image.memory(
+                  Base64Decoder().convert(logoUrl.split(',')[1]),
+                  width: 200,
+                  height: 200,
+                  fit: BoxFit.cover,
+                ),
+              );
+            } else if (logoUrl is String) {
+              // If logo is a URL
+              return ClipOval(
+                child: Image.network(
+                  logoUrl,
+                  width: 200,
+                  height: 200,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) =>
+                      const Center(child: Icon(Icons.error, size: 50)),
+                ),
+              );
+            } else {
+              return const Center(child: Text('Invalid logo format'));
+            }
+          },
+        ),
+),
+
                       const SizedBox(height: 16),
                       Text(
                         _shopData!['shopName'],
