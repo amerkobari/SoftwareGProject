@@ -13,7 +13,8 @@ import 'package:untitled/pages/hard-disk.dart';
 import 'package:untitled/pages/login.dart';
 import 'package:untitled/pages/monitor.dart';
 import 'package:untitled/pages/motherboard.dart';
-import 'package:untitled/pages/ram.dart'; // Make sure to include this import for SVG support
+import 'package:untitled/pages/ram.dart';
+import 'package:untitled/pages/shoppage.dart'; // Make sure to include this import for SVG support
 
 class HomePage extends StatefulWidget {
   final String username; // Add a username field
@@ -210,10 +211,21 @@ class _HomePageState extends State<HomePage> {
                       itemCount: shops.length,
                       itemBuilder: (context, index) {
                         final shop = shops[index];
-                        return _shopCard(
+                        return  GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ShopPage(shopId: shop['_id']),
+                            ),
+                          );
+                        },
+                        child: _shopCard(
                           shop['shopName'] ?? 'Unknown Shop',
                           shop['logoUrl'], // Pass logo data (base64 or URL)
-                        );
+                        ),
+                      );
+
                       },
                     ),
                   );

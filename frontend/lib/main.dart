@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/pages/home.dart';
+import 'package:untitled/pages/shoppage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,8 +14,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(fontFamily: 'Poppins'),
-      // home: const AddItemPage(),
-      home: const HomePage(username: 'Tariq'), // Set HomePage as the initial screen
+       home: const ShopPage(shopId: '123',),
+      // home: const HomePage(username: 'Tariq'), // Set HomePage as the initial screen
     );
   }
 }
