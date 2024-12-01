@@ -6,12 +6,17 @@ exports.addNewShop = async (req, res) => {
         const { city, shopName, description, shopAddress, email, phoneNumber } = req.body;
 
         // Process uploaded logo
-        const logo = req.file
-            ? {
-                data: req.file.buffer,         // Binary data for the image
-                contentType: req.file.mimetype // Image MIME type
+        let logo = null;
+        if (req.file) {
+            try {
+                logo = {
+                    data: req.file.buffer,         // Binary data for the image
+                    contentType: req.file.mimetype // Image MIME type
+                };
+            } catch (err) {
+                console.error("Error processing uploaded logo:", err.message);
             }
-            : null;
+        }
 
         // Create a new shop
         const newShop = new NewShop({
@@ -32,37 +37,64 @@ exports.addNewShop = async (req, res) => {
             shop: savedShop,
         });
     } catch (error) {
+        console.error("Error adding new shop:", error.message);
         res.status(500).json({ message: 'Failed to add shop', error: error.message });
     }
 
     console.log('Body:', req.body);
     console.log('File:', req.file);
-
 };
 
-
+// Get all shops
 exports.getAllShops = async (req, res) => {
     try {
         const shops = await NewShop.find().sort({ createdAt: -1 });
-        res.json(shops);
+
+        const formattedShops = shops.map(shop => {
+            const logo = shop.logo;
+            const formattedLogo = logo?.data
+                ? `data:${logo.contentType};base64,${logo.data.toString('base64')}`
+                : null;
+
+            return {
+                ...shop.toObject(),
+                logoUrl: formattedLogo, // Add the processed logo as a new property
+            };
+        });
+
+        res.json(formattedShops);
     } catch (err) {
+        console.error("Error fetching all shops:", err.message);
         res.status(500).json({ error: err.message });
     }
 };
 
+
+// Get shop by ID
 exports.getShopById = async (req, res) => {
     try {
         const shop = await NewShop.findById(req.params.id);
         if (!shop) {
             return res.status(404).json({ message: 'Shop not found' });
         }
-        res.json(shop);
+
+        // Format the shop data similarly to the item
+        const formattedShop = {
+            ...shop.toObject(), // Convert the Mongoose document to a plain object
+            logoUrl: shop.logo?.data
+                ? `data:${shop.logo.contentType};base64,${shop.logo.data.toString('base64')}`
+                : null, // Format the logo into a Base64 string
+        };
+
+        res.json(formattedShop);
     } catch (err) {
+        console.error(`Error fetching shop by ID (${req.params.id}):`, err.message);
         res.status(500).json({ error: err.message });
     }
 };
 
-//get shop by name
+
+// Get shop by name
 exports.getShopByName = async (req, res) => {
     try {
         const shop = await NewShop.findOne({ shopName: req.params.shopName });
@@ -70,8 +102,8 @@ exports.getShopByName = async (req, res) => {
             return res.status(404).json({ message: 'Shop not found' });
         }
         res.json(shop);
-    }
-    catch (err) {
+    } catch (err) {
+        console.error(`Error fetching shop by name (${req.params.shopName}):`, err.message);
         res.status(500).json({ error: err.message });
     }
-}
+};

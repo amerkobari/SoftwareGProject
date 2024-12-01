@@ -334,10 +334,10 @@ class _HomePageState extends State<HomePage> {
 
   // Helper Function for Shop Cards
   // Helper Function for Shop Cards with Bigger Size
-  Widget _shopCard(String shopName, dynamic logo) {
+ Widget _shopCard(String shopName, dynamic logo) {
   return Container(
-    width: 180, // Adjusted card width
-    height: 200, // Adjusted card height
+    width: 180,
+    height: 200,
     margin: const EdgeInsets.only(left: 10),
     decoration: BoxDecoration(
       color: Colors.blue.withOpacity(0.1),
@@ -364,17 +364,26 @@ class _HomePageState extends State<HomePage> {
                   return const Center(child: Icon(Icons.error, size: 40, color: Colors.grey));
                 } else if (logo.startsWith('data:')) {
                   // Base64 encoded image
-                  return Image.memory(
-                    Base64Decoder().convert(logo.split(',')[1]),
-                    fit: BoxFit.cover,
-                  );
+                  try {
+                    return Image.memory(
+                      Base64Decoder().convert(logo.split(',')[1]),
+                      fit: BoxFit.cover,
+                    );
+                  } catch (e) {
+                    print('Error decoding base64 logo: $e');
+                    return const Center(child: Icon(Icons.error, size: 40, color: Colors.grey));
+                  }
                 } else {
                   // URL image
                   return Image.network(
                     logo,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) =>
-                        const Center(child: Icon(Icons.error, size: 40, color: Colors.grey)),
+                    height: 80,
+                    width: 80,
+                    errorBuilder: (context, error, stackTrace) {
+                      print('Error loading image: $error');
+                      return const Center(child: Icon(Icons.error, size: 40, color: Colors.grey));
+                    },
                   );
                 }
               },
@@ -510,7 +519,7 @@ class _HomePageState extends State<HomePage> {
           ),
           ListTile(
             leading: const Icon(Icons.store, color: Colors.black),
-            title: const Text('My Shops'),
+            title: const Text('My Shop'),
             onTap: () {
               // Navigate to My Shops
             },
@@ -527,7 +536,7 @@ class _HomePageState extends State<HomePage> {
           ),
           ListTile(
             leading: const Icon(Icons.add_business, color: Colors.black),
-            title: const Text('Add New Shop'),
+            title: const Text('Request New Shop'),
             onTap: () {
               Navigator.push(
                 context,
