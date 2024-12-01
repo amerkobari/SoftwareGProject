@@ -5,13 +5,13 @@ exports.addNewShop = async (req, res) => {
     try {
         const { city, shopName, description, shopAddress, email, phoneNumber } = req.body;
 
-        // Process uploaded logo (binary data)
+        // Process uploaded logo
         const logo = req.file
             ? {
-                data: req.file.buffer,        // Binary data for the logo
-                contentType: req.file.mimetype // Logo MIME type
+                data: req.file.buffer,         // Binary data for the image
+                contentType: req.file.mimetype // Image MIME type
             }
-            : null; // Default to null if no logo is uploaded
+            : null;
 
         // Create a new shop
         const newShop = new NewShop({
@@ -21,7 +21,7 @@ exports.addNewShop = async (req, res) => {
             shopAddress,
             email,
             phoneNumber,
-            logo, // Storing the logo in binary format
+            logo,
         });
 
         // Save to the database
@@ -34,6 +34,10 @@ exports.addNewShop = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: 'Failed to add shop', error: error.message });
     }
+
+    console.log('Body:', req.body);
+    console.log('File:', req.file);
+
 };
 
 

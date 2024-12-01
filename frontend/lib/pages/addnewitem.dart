@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'dart:convert';
-// import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 class AddItemPage extends StatefulWidget {
   const AddItemPage({super.key});
 
@@ -136,10 +136,7 @@ if (images.isEmpty) {
     request.fields['location'] = location!;
 
     for (var image in images) {
-      request.files.add(await http.MultipartFile.fromPath(
-        'images',
-        image.path,
-      ));
+      request.files.add(await http.MultipartFile.fromPath('images',image.path,));
     }
 
     var response = await request.send();
@@ -168,8 +165,8 @@ if (images.isEmpty) {
 Future<String> _getToken() async {
   // Fetch the token from shared preferences, secure storage, or any method you are using to store the token
   // Example:
-  // SharedPreferences prefs = await SharedPreferences.getInstance();
-  // return prefs.getString('token') ?? '';
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.getString('token') ?? '';
   // For this example, you can just return a dummy token or whatever method you use to store the token.
   return 'your_token_here'; // Replace with the actual token fetching logic
 }
