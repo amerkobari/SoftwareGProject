@@ -50,56 +50,67 @@ class _ItemPageState extends State<ItemPage> {
         title: Text(_itemData?['title'] ?? 'Loading...'),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator()) // Show loading indicator
+          ? const Center(
+              child: CircularProgressIndicator()) // Show loading indicator
           : _itemData == null
-              ? const Center(child: Text('Item not found')) // Handle case where item data is null
+              ? const Center(
+                  child: Text(
+                      'Item not found')) // Handle case where item data is null
               : SingleChildScrollView(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Display images as a carousel or scrollable list
-                SizedBox(
-  height: 200,
-  child: _itemData?['imageUrls'] == null || _itemData!['imageUrls'].isEmpty
-      ? const Center(child: Text('No images available'))
-      : ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: _itemData!['imageUrls'].length,
-          itemBuilder: (context, index) {
-            final image = _itemData!['imageUrls'][index];
-            // Check if image is base64 encoded
-            if (image is String && image.startsWith('data:')) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Image.memory(
-                  Base64Decoder().convert(image.split(',')[1]), // Convert base64 to byte array
-                  width: 200,
-                  height: 200,
-                  fit: BoxFit.cover,
-                ),
-              );
-            } else {
-              return const SizedBox(); // Handle invalid base64 or null image
-            }
-          },
-        ),
-),
-                      
+                      SizedBox(
+                        height: 200,
+                        child: _itemData?['imageUrls'] == null ||
+                                _itemData!['imageUrls'].isEmpty
+                            ? const Center(child: Text('No images available'))
+                            : ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: _itemData!['imageUrls'].length,
+                                itemBuilder: (context, index) {
+                                  final image = _itemData!['imageUrls'][index];
+                                  // Check if image is base64 encoded
+                                  if (image is String &&
+                                      image.startsWith('data:')) {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8.0),
+                                      child: Image.memory(
+                                        Base64Decoder().convert(image
+                                                .split(',')[
+                                            1]), // Convert base64 to byte array
+                                        width: 200,
+                                        height: 200,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    );
+                                  } else {
+                                    return const SizedBox(); // Handle invalid base64 or null image
+                                  }
+                                },
+                              ),
+                      ),
+
                       const SizedBox(height: 16),
                       Text(
                         _itemData!['title'],
-                        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         "Seller: ${_itemData!['username']}",
-                        style: const TextStyle(fontSize: 16, color: Colors.grey),
+                        style:
+                            const TextStyle(fontSize: 16, color: Colors.grey),
                       ),
                       const SizedBox(height: 16),
                       Text(
                         "Price: ₪${_itemData!['price']}",
-                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
                       Text(
@@ -109,7 +120,8 @@ class _ItemPageState extends State<ItemPage> {
                       const SizedBox(height: 16),
                       const Text(
                         "Description:",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
                       Text(
@@ -126,17 +138,22 @@ class _ItemPageState extends State<ItemPage> {
                         onPressed: () {
                           // Handle "Add to Cart"
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('${_itemData!['title']} added to cart!')),
+                            SnackBar(
+                                content: Text(
+                                    '${_itemData!['title']} added to cart!')),
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 30, vertical: 10),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
                           backgroundColor: Colors.blue, // Solid blue button
                         ),
-                        child: const Text('Add to Cart', style: TextStyle(fontSize: 20, color: Colors.white)),
+                        child: const Text('Add to Cart',
+                            style:
+                                TextStyle(fontSize: 20, color: Colors.white)),
                       ),
                     ],
                   ),
