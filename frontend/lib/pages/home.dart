@@ -211,7 +211,7 @@ class _HomePageState extends State<HomePage> {
                       itemBuilder: (context, index) {
                         final shop = shops[index];
                         return _shopCard(
-                          shop['name'] ?? 'Unknown Shop',
+                          shop['shopName'] ?? 'Unknown Shop',
                           shop['logoUrl'], // Pass logo data (base64 or URL)
                         );
                       },

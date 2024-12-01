@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,12 +25,20 @@ Future<void> addNewShop({
   request.fields['email'] = email;
   request.fields['phoneNumber'] = phoneNumber;
 
-  if (logo != null) {
+ if (logo != null) {
+    print('Logo path: ${logo.path}');
     request.files.add(await http.MultipartFile.fromPath('logo', logo.path));
-  }
+} else {
+    print('Logo is null');
+}
+
+  print('Sending request with logo: ${logo?.path}');
 
   final response = await request.send();
 
+
+  //print the response 
+  print("THIS IS THE RESPONSE $response");
   if (response.statusCode == 201) {
     print('Shop added successfully!');
   } else {
@@ -56,7 +63,7 @@ class _AddNewShopPageState extends State<AddNewShopPage> {
   String shopAddress = '';
   String email = '';
   String phoneNumber = '';
-  File? _logoImage;
+  File? logo;
   final ImagePicker _picker = ImagePicker();
 
   // List of Palestinian cities
@@ -82,7 +89,7 @@ class _AddNewShopPageState extends State<AddNewShopPage> {
     final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
-        _logoImage = File(pickedFile.path);
+        logo = File(pickedFile.path);
       });
     }
   }
@@ -97,7 +104,7 @@ class _AddNewShopPageState extends State<AddNewShopPage> {
           shopAddress: shopAddress,
           email: email,
           phoneNumber: phoneNumber,
-          logo: _logoImage,
+          logo: logo,
         );
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Shop added successfully!')),
@@ -247,10 +254,10 @@ class _AddNewShopPageState extends State<AddNewShopPage> {
                       border: Border.all(color: Colors.grey),
                       borderRadius: BorderRadius.circular(8.0),
                     ),
-                    child: _logoImage == null
+                    child: logo == null
                         ? const Center(child: Text('Tap to pick a logo'))
                         : Image.file(
-                            _logoImage!,
+                            logo!,
                             fit: BoxFit.cover,
                           ),
                   ),
