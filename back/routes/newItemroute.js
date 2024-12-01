@@ -10,7 +10,7 @@ const upload = multer({ storage });
 
 // Add a new item with images
 router.post('/add-item', verifyToken, upload.array('images', 5), itemController.addItem);
-
+router.post('/add-item-withId', itemController.addItemId);
 // Get all items
 router.get('/get-items', itemController.getAllItems);
 

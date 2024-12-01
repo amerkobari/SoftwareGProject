@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:untitled/controllers/authController.dart';
 
 // Function to add a new shop
 Future<void> addNewShop({
@@ -57,6 +58,7 @@ class AddNewShopPage extends StatefulWidget {
 
 class _AddNewShopPageState extends State<AddNewShopPage> {
   final _formKey = GlobalKey<FormState>();
+  final authController = AuthController(); // Define the authController
   String city = '';
   String shopName = '';
   String description = '';
@@ -97,8 +99,7 @@ class _AddNewShopPageState extends State<AddNewShopPage> {
       });
     }
   }
-
-  Future<void> _submitShop() async {
+Future<void> _submitShop() async {
     if (_formKey.currentState?.validate() ?? false) {
       try {
         await addNewShop(
@@ -110,15 +111,37 @@ class _AddNewShopPageState extends State<AddNewShopPage> {
           phoneNumber: phoneNumber,
           logo: logo,
         );
-        ScaffoldMessenger.of(context).showSnackBar(
+
+          ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Shop added successfully!')),
         );
+
+        final result = await authController.sendNewShopMail(email);
+        if (result['success']) {
+          _showSnackBar(context, result['message'], isError: false);
+        } else {
+          _showSnackBar(context, result['message']);
+        }
+      
+        
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error adding shop: $error')),
         );
       }
     }
+  }
+
+ 
+
+
+  void _showSnackBar(BuildContext context, String message, {bool isError = true}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Colors.red : Colors.green,
+      ),
+    );
   }
 
   @override
