@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 class AuthController {
   final String baseUrl = "http://10.0.2.2:3000"; // Replace with your backend URL
 
@@ -40,8 +40,8 @@ Future<Map<String, dynamic>> login(String email, String password) async {
       String userId = decodedToken['id'];
 
       // Store the token in SharedPreferences
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('token', token);
+      // final prefs = await SharedPreferences.getInstance();
+      // await prefs.setString('token', token);
 
       return {
         'success': true,
@@ -223,6 +223,33 @@ Future<Map<String, dynamic>> login(String email, String password) async {
       throw Exception('Error fetching item: $e');
     }
   }
+
+  Future<Map<String, dynamic>> getShopById(String shopId) async {
+  final url = Uri.parse('$baseUrl/api/auth/get-shop/$shopId'); // Replace with your actual endpoint
+
+  try {
+    final response = await http.get(url, headers: {
+      'Content-Type': 'application/json',
+      // Add an Authorization header if your API requires it
+      // 'Authorization': 'Bearer YOUR_ACCESS_TOKEN',
+    });
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body) as Map<String, dynamic>;
+      return {'success': true, 'shop': responseData};
+    } else {
+      final responseData = json.decode(response.body);
+      return {
+        'success': false,
+        'message': responseData['error'] ?? 'Failed to fetch shop details',
+      };
+    }
+  } catch (e) {
+    print('Error fetching shop by ID: $e');
+    return {'success': false, 'message': 'Unable to connect to the server.'};
+  }
+}
+
 }
 
 
