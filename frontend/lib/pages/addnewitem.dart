@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 class AddItemPage extends StatefulWidget {
   const AddItemPage({super.key});
 
@@ -165,8 +165,8 @@ if (images.isEmpty) {
 Future<String> _getToken() async {
   // Fetch the token from shared preferences, secure storage, or any method you are using to store the token
   // Example:
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getString('token') ?? '';
+  // SharedPreferences prefs = await SharedPreferences.getInstance();
+  // return prefs.getString('token') ?? '';
   // For this example, you can just return a dummy token or whatever method you use to store the token.
   return 'your_token_here'; // Replace with the actual token fetching logic
 }
@@ -470,3 +470,175 @@ Future<String> _getToken() async {
     );
   }
 }
+
+class AddItemPage2 extends StatefulWidget {
+  final String shopId;  // Add shopId as a required parameter
+
+  const AddItemPage2({super.key, required this.shopId});  // Initialize shopId
+
+  @override
+  _AddItemPage2State createState() => _AddItemPage2State();
+}
+
+class _AddItemPage2State extends State<AddItemPage2> {
+  // Now, you can access the shopId using widget.shopId
+  final _formKey = GlobalKey<FormState>();
+  String title = '';
+  String description = '';
+  String price = '';
+  String? category;
+  String? condition;
+  String? location;
+  List<File> images = [];
+  bool acceptTerms = false;
+  bool acceptTermsError = true;
+
+  final ImagePicker _picker = ImagePicker();
+
+  // Function to pick images
+  Future<void> pickImages() async {
+    final List<XFile> pickedFiles = await _picker.pickMultiImage();
+    setState(() {
+      images = pickedFiles.map((file) => File(file.path)).toList();
+    });
+  }
+
+  // Function to send data to the API
+  Future<void> submitItem() async {
+    if (acceptTermsError) {
+      return showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text('Error'),
+          content: const Text('Please accept on the terms.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (images.isEmpty) {
+      return showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text('Error'),
+          content: const Text('Please upload at least one image.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (!_formKey.currentState!.validate()) return;
+
+    _formKey.currentState!.save();
+
+    // Retrieve the token
+    String token = await _getToken();
+
+    if (token.isEmpty) {
+      print("Token is empty");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No token found, please login again.')),
+      );
+      return;
+    }
+
+    // Decode the token to get the userId
+    try {
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+      String userId = decodedToken['id']; // Assuming the userId is stored in the 'id' field
+      String username = decodedToken['username'];
+      print("User ID: $userId, Username: $username");
+
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('http://10.0.2.2:3000/api/auth/add-item-withId'),
+      );
+
+      // Add token to the request headers for authentication
+      request.headers['Authorization'] = 'Bearer $token';
+      request.fields['userId'] = userId;
+      request.fields['username'] = username;
+      request.fields['title'] = title;
+      request.fields['description'] = description;
+      request.fields['price'] = price;
+      request.fields['category'] = category!;
+      request.fields['condition'] = condition!;
+      request.fields['location'] = location!;
+      request.fields['shopId'] = widget.shopId;  // Pass shopId to the request
+
+      for (var image in images) {
+        request.files.add(await http.MultipartFile.fromPath('images', image.path));
+      }
+
+      var response = await request.send();
+      if (response.statusCode == 201) {
+        final resData = await response.stream.bytesToString();
+        final resJson = json.decode(resData);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Item added successfully!')),
+        );
+        Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to add item.')),
+        );
+        print(await response.stream.bytesToString());
+      }
+    } catch (e) {
+      print("Error decoding token: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid token, please login again.')),
+      );
+    }
+  }
+
+  // Helper function to get the token
+  Future<String> _getToken() async {
+    return 'your_token_here'; // Replace with actual token fetching logic
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text(
+          'Add New Item',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0.0,
+        centerTitle: true,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // The rest of the code remains the same...
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
