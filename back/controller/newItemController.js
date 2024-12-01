@@ -42,6 +42,42 @@ exports.addItem = async (req, res) => {
     }
 };
 
+//add item with id
+exports.addItemId = async (req, res) => {
+    try {
+        const { title, description, price, category, condition, location, userId } = req.body;
+        // Process uploaded images
+        const images = req.files
+            ? req.files.map(file => ({
+            data: file.buffer,         // Binary data for the image
+            contentType: file.mimetype // Image MIME type
+            }))
+            : []; // Default to an empty array if no images are uploaded
+
+        // Create a new item with the provided userId
+        const newItem = new Item({
+            userId,
+            title,
+            description,
+            images,
+            price,
+            category,
+            condition,
+            location,
+        });
+
+        // Save to the database
+        const savedItem = await newItem.save();
+
+        res.status(201).json({
+            message: 'Item added successfully',
+            item: savedItem,
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
 
 // Get all items (with images as base64)
 exports.getAllItems = async (req, res) => {

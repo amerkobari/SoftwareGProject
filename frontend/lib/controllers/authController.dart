@@ -127,6 +127,42 @@ Future<Map<String, dynamic>> login(String email, String password) async {
     }
   }
 
+ Future<Map<String, dynamic>> sendNewShopMail(String email) async {
+  final url = Uri.parse('$baseUrl/api/auth/send-new-shop-email');
+
+  try {
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email}),
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      // Printing the response data to debug
+      print('Response Data: $responseData');
+      return {
+        'success': true,
+        'message': responseData['message'],
+      };
+    } else {
+      final responseData = jsonDecode(response.body);
+      print('Error Response: $responseData');
+      return {
+        'success': false,
+        'message': responseData['message'] ?? 'Failed to send email',
+      };
+    }
+  } catch (e) {
+    print('Error occurred: $e');
+    return {
+      'success': false,
+      'message': 'Unable to connect to the server.',
+    };
+  }
+}
+
+
   /// **Reset Password**
   // ignore: non_constant_identifier_names
   Future<Map<String, dynamic>> resetPassword(String email, String newPassword,String Verification) async {
