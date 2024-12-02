@@ -68,6 +68,28 @@ exports.getAllShops = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+exports.getShopId = async (req, res) => {
+    try {
+        const email = req.email; // Middleware populates req.email
+        
+
+        // Fetch the shop using the email
+        const shop = await NewShop.findOne({ email });
+       
+
+        if (!shop) {
+            return res.status(404).json({ error: 'Shop not found' });
+        }
+
+       
+        
+        // Return the shop ID as a plain string
+        res.json({ shopId: shop._id.toString() });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
 
 
 // Get shop by ID

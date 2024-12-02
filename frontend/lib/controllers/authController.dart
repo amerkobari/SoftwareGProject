@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 class AuthController {
   final String baseUrl = "http://10.0.2.2:3000"; // Replace with your backend URL
 
@@ -41,8 +41,8 @@ Future<Map<String, dynamic>> login(String email, String password) async {
       String userId = decodedToken['id'];
 
       // Store the token in SharedPreferences
-      // final prefs = await SharedPreferences.getInstance();
-      // await prefs.setString('token', token);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', token);
 
       return {
         'success': true,
@@ -342,6 +342,51 @@ Future<Map<String, dynamic>> removeItem(String itemId) async {
     return {'success': false, 'message': 'Unable to connect to the server.'};
   }
 }
+
+
+Future<String?> fetchShopId() async {
+  final url = Uri.parse('$baseUrl/api/auth/get-shop-id');
+
+  // Retrieve the token from shared preferences or another storage
+  String token = await _getToken();
+  // Print the token for debugging purposes
+  print('Token from auth controller: $token');
+  
+  if (token.isEmpty) {
+    print("Token is empty");
+    return null; // Exit if no token is available
+  }
+
+  try {
+    // Send the request with the token included in the headers
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token', // Add token in Authorization header
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      print('Response Data: $data'); // Debugging output to verify response format
+      return data['shopId']; // Use the correct key from the API response
+    } else {
+      print('Failed to fetch shop ID: ${response.body}');
+      return null;
+    }
+  } catch (e) {
+    print('Error fetching shop ID: $e');
+    return null;
+  }
+}
+
+
+// Helper function to get the token
+Future<String> _getToken() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.getString('token') ?? '';
+}
+
 }
 
 

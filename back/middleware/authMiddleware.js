@@ -18,6 +18,7 @@ const verifyToken = (req, res, next) => {
         // Attach the user ID and username from the token to the request
         req.userId = decoded.id;  // Assuming the token has 'id' as user identifier
         req.username = decoded.username;  // Assuming the token has 'username'
+        req.email = decoded.email; // Assuming the token has 'email'
 
         next();
     });

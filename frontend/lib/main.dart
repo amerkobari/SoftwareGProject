@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(fontFamily: 'Poppins'),
-      //  home: const ShopPage(shopId: '123',),
+      //  home: const OwnerShopPage(shopId: '674c6c9c2443e4779d0f8c14',),
       home: const HomePage(username: 'Guest'), // Set HomePage as the initial screen
     );
   }

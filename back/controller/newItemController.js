@@ -44,8 +44,12 @@ exports.addItem = async (req, res) => {
 
 //add item with id
 exports.addItemId = async (req, res) => {
+
     try {
-        const { title, description, price, category, condition, location, userId } = req.body;
+        const { title, description, price, category, condition, location} = req.body;
+
+        const userId = req.userId;
+        const username = req.username;
         // Process uploaded images
         const images = req.files
             ? req.files.map(file => ({
@@ -55,16 +59,22 @@ exports.addItemId = async (req, res) => {
             : []; // Default to an empty array if no images are uploaded
 
         // Create a new item with the provided userId
-        const newItem = new Item({
+        const itemData = {
             userId,
+            username,
             title,
+            // ShopId,
             description,
             images,
             price,
             category,
             condition,
             location,
-        });
+        }
+
+        console.log({itemData});
+        
+        const newItem = new Item(itemData);
 
         // Save to the database
         const savedItem = await newItem.save();
@@ -74,7 +84,7 @@ exports.addItemId = async (req, res) => {
             item: savedItem,
         });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(500).json({"error from backend" :{error: err.message} });
     }
 };
 
