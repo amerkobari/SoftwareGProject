@@ -48,6 +48,7 @@ class _OwnerShopPageState extends State<OwnerShopPage> {
       );
     }
   }
+  
 
   // Function to add a new item
   void _addNewItem() {
@@ -56,6 +57,7 @@ class _OwnerShopPageState extends State<OwnerShopPage> {
       context,
       MaterialPageRoute(
         builder: (context) => AddItemPage2(shopId: widget.shopId),
+        
       ),
     );
   }

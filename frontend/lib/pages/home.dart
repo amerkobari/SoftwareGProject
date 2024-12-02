@@ -13,6 +13,7 @@ import 'package:untitled/pages/hard-disk.dart';
 import 'package:untitled/pages/login.dart';
 import 'package:untitled/pages/monitor.dart';
 import 'package:untitled/pages/motherboard.dart';
+import 'package:untitled/pages/myshoppage.dart';
 import 'package:untitled/pages/ram.dart';
 import 'package:untitled/pages/shoppage.dart'; // Make sure to include this import for SVG support
 
@@ -518,12 +519,24 @@ class _HomePageState extends State<HomePage> {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.store, color: Colors.black),
-            title: const Text('My Shop'),
-            onTap: () {
-              // Navigate to My Shops
-            },
-          ),
+  leading: const Icon(Icons.store, color: Colors.black),
+  title: const Text('My Shop'),
+  onTap: () async {
+    final shopId = await authController.fetchShopId();
+    print('Shop ID from home: $shopId');
+    if (shopId != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => OwnerShopPage(shopId: shopId),
+        ),
+      );
+    } else {
+      // Handle case where shop ID could not be fetched
+      print('Shop ID not found');
+    }
+  },
+),
           ListTile(
             leading: const Icon(Icons.add, color: Colors.black),
             title: const Text('Add New Item'),

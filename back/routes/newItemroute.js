@@ -10,7 +10,7 @@ const upload = multer({ storage });
 
 // Add a new item with images
 router.post('/add-item', verifyToken, upload.array('images', 5), itemController.addItem);
-router.post('/add-item-withId', itemController.addItemId);
+router.post('/add-item-withId', verifyToken ,itemController.addItemId);
 // Get all items
 router.get('/get-items', itemController.getAllItems);
 
@@ -24,7 +24,7 @@ router.get('/get-items-by-category/:category', itemController.getItemsByCategory
 // router.get('/get-items-by-price/:price', itemController.getItemsByPriceRange);
 // router.get('/get-items-by-condition/:condition', itemController.getItemsByCondition);
 // router.get('/get-items-by-date/:date', itemController.getItemsByDate);
-// router.put('/update-item/:id', verifyToken, itemController.updateItem);
-// router.delete('/delete-item/:id', verifyToken, itemController.deleteItem);
+router.put('/update-item/:id', verifyToken, itemController.updateItem);
+router.delete('/delete-item/:id', verifyToken, itemController.deleteItem);
 
 module.exports = router;
