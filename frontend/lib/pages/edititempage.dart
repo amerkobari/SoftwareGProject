@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:untitled/controllers/authController.dart';
-import 'dart:convert';
 
 class EditItemPage extends StatefulWidget {
   final String itemId; // Pass only item ID instead of the entire item data
@@ -64,7 +63,7 @@ class _EditItemPageState extends State<EditItemPage> {
     try {
       final response = await _authController.updateItem(
         widget.itemId,  // Item ID to update
-        title,
+         title as Map<String, dynamic>,
         description,
         price,
         condition!,
@@ -209,28 +208,4 @@ class _EditItemPageState extends State<EditItemPage> {
   }
 }
 
-// Future<Map<String, dynamic>> updateItem(String itemId, Map<String, dynamic> updatedItemData) async {
-//   final url = Uri.parse('$baseUrl/api/auth/update-item/$itemId'); // Adjust this URL according to your backend
 
-//   try {
-//     final response = await http.put(
-//       url,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         // You can also add an Authorization header here if needed
-//       },
-//       body: jsonEncode(updatedItemData),
-//     );
-
-//     if (response.statusCode == 200) {
-//       final responseData = jsonDecode(response.body);
-//       return {'success': true, 'message': responseData['message'] ?? 'Item updated successfully'};
-//     } else {
-//       final responseData = jsonDecode(response.body);
-//       return {'success': false, 'message': responseData['error'] ?? 'Failed to update item'};
-//     }
-//   } catch (e) {
-//     print('Error occurred while updating item: $e');
-//     return {'success': false, 'message': 'Unable to connect to the server.'};
-//   }
-// }
