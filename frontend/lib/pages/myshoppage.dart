@@ -209,27 +209,4 @@ class _OwnerShopPageState extends State<OwnerShopPage> {
 }
 
 
-// Future<Map<String, dynamic>> removeItem(String itemId) async {
-//   final url = Uri.parse('$baseUrl/api/auth/remove-item/$itemId'); // Adjust this URL according to your backend
 
-//   try {
-//     final response = await http.delete(
-//       url,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         // You can add an Authorization header here if your API requires it
-//       },
-//     );
-
-//     if (response.statusCode == 200) {
-//       final responseData = jsonDecode(response.body);
-//       return {'success': true, 'message': responseData['message'] ?? 'Item removed successfully'};
-//     } else {
-//       final responseData = jsonDecode(response.body);
-//       return {'success': false, 'message': responseData['error'] ?? 'Failed to remove item'};
-//     }
-//   } catch (e) {
-//     print('Error occurred while removing item: $e');
-//     return {'success': false, 'message': 'Unable to connect to the server.'};
-//   }
-// }

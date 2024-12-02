@@ -1,7 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 class AuthController {
   final String baseUrl = "http://10.0.2.2:3000"; // Replace with your backend URL
 
@@ -40,8 +41,8 @@ Future<Map<String, dynamic>> login(String email, String password) async {
       String userId = decodedToken['id'];
 
       // Store the token in SharedPreferences
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('token', token);
+      // final prefs = await SharedPreferences.getInstance();
+      // await prefs.setString('token', token);
 
       return {
         'success': true,
@@ -254,6 +255,57 @@ Future<Map<String, dynamic>> login(String email, String password) async {
   }
 }
 
+Future<Map<String, dynamic>> updateItem(String itemId, Map<String, dynamic> updatedItemData, String description, String price, String size, String color, List<File> images) async {
+  final url = Uri.parse('$baseUrl/api/auth/update-item/$itemId'); // Adjust this URL according to your backend
+
+  try {
+    final response = await http.put(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        // You can also add an Authorization header here if needed
+      },
+      body: jsonEncode(updatedItemData),
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      return {'success': true, 'message': responseData['message'] ?? 'Item updated successfully'};
+    } else {
+      final responseData = jsonDecode(response.body);
+      return {'success': false, 'message': responseData['error'] ?? 'Failed to update item'};
+    }
+  } catch (e) {
+    print('Error occurred while updating item: $e');
+    return {'success': false, 'message': 'Unable to connect to the server.'};
+  }
+}
+
+
+Future<Map<String, dynamic>> removeItem(String itemId) async {
+  final url = Uri.parse('$baseUrl/api/auth/delete-item/$itemId'); // Adjust this URL according to your backend
+
+  try {
+    final response = await http.delete(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        // You can add an Authorization header here if your API requires it
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      return {'success': true, 'message': responseData['message'] ?? 'Item removed successfully'};
+    } else {
+      final responseData = jsonDecode(response.body);
+      return {'success': false, 'message': responseData['error'] ?? 'Failed to remove item'};
+    }
+  } catch (e) {
+    print('Error occurred while removing item: $e');
+    return {'success': false, 'message': 'Unable to connect to the server.'};
+  }
+}
 }
 
 
