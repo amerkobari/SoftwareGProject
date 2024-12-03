@@ -140,11 +140,12 @@ class _AddItemPageState extends State<AddItemPage> {
         request.fields['shopId'] = widget.shopId!;
       }
 
+      print("the shop id isssssssssss :${widget.shopId}");
       // Add images
       for (var image in images) {
         request.files.add(await http.MultipartFile.fromPath('images', image.path));
       }
-
+    print("the request is: ${request.fields}");
       var response = await request.send();
       if (response.statusCode == 201) {
         // Success
@@ -155,6 +156,7 @@ class _AddItemPageState extends State<AddItemPage> {
         );
         Navigator.pop(context);
     } else {
+      print("the status response is: ${response.statusCode}");
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to add item.')),
       );
