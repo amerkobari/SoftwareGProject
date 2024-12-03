@@ -250,7 +250,17 @@ Future<Map<String, dynamic>> login(String email, String password) async {
     }
   }
 
+Future<List<Map<String, dynamic>>> fetchItemsShop(String shopId) async {
+    final url = Uri.parse('$baseUrl/api/auth/get-items-by-shop/$shopId');
+    final response = await http.get(url);
 
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data.map((item) => item as Map<String, dynamic>).toList();
+    } else {
+      throw Exception('Failed to load items');
+    }
+  }
    Future<Map<String, dynamic>> getItemById(String itemId) async {
     try {
       final response = await http.get(Uri.parse('$baseUrl/api/auth/get-item/$itemId'));
