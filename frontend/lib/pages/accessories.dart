@@ -46,7 +46,7 @@ class AccessoriesPage extends StatelessWidget {
                 margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                 child: ListTile(
                   leading: Image.asset(
-                    'assets/icons/monitor.png',
+                    'assets/icons/accessorise.png',
                     width: 40,
                     height: 40,
                     fit: BoxFit.contain,

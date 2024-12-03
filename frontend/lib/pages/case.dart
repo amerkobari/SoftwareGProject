@@ -46,7 +46,7 @@ class CasePage extends StatelessWidget {
                 margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                 child: ListTile(
                   leading: Image.asset(
-                    'assets/icons/cpu.png',
+                    'assets/icons/case.png',
                     width: 40,
                     height: 40,
                     fit: BoxFit.contain,
