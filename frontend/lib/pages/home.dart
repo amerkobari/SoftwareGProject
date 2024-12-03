@@ -523,7 +523,6 @@ class _HomePageState extends State<HomePage> {
   title: const Text('My Shop'),
   onTap: () async {
     final shopId = await authController.fetchShopId();
-    print('Shop ID from home: $shopId');
     if (shopId != null) {
       Navigator.push(
         context,

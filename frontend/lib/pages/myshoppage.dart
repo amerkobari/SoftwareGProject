@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:untitled/controllers/authController.dart';
 import 'package:untitled/pages/addnewitem.dart';
 import 'package:untitled/pages/edititempage.dart';
+import 'package:untitled/pages/itempage.dart';
 
 class OwnerShopPage extends StatefulWidget {
   final String shopId;
@@ -67,7 +68,7 @@ class _OwnerShopPageState extends State<OwnerShopPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EditItemPage(itemId: item['id']),
+        builder: (context) => EditItemPage(itemId: item['_id']),
       ),
     );
   }
@@ -78,7 +79,7 @@ class _OwnerShopPageState extends State<OwnerShopPage> {
     _authController.removeItem(itemId).then((response) {
       if (response['success']) {
         setState(() {
-          _shopItems.removeWhere((item) => item['id'] == itemId);
+          _shopItems.removeWhere((item) => item['_id'] == itemId);
         });
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Item removed successfully')),
@@ -190,7 +191,7 @@ class _OwnerShopPageState extends State<OwnerShopPage> {
                                 return Card(
                                   elevation: 2,
                                   child: ListTile(
-                                    title: Text(item['itemName']),
+                                    title: Text(item['title']),
                                     subtitle: Text("Price: \$${item['price']}"),
                                     trailing: Row(
                                       mainAxisSize: MainAxisSize.min,
@@ -201,15 +202,22 @@ class _OwnerShopPageState extends State<OwnerShopPage> {
                                         ),
                                         IconButton(
                                           icon: const Icon(Icons.delete),
-                                          onPressed: () =>
-                                              _removeItem(item['id']),
+                                          onPressed: () => _showDeleteConfirmationDialog(context, item['_id']),
                                         ),
                                       ],
                                     ),
-                                    onTap: () {
-                                      // Handle item click, navigate to item details page
-                                    },
-                                  ),
+                                    onTap: () async {
+                    // Navigate to ItemPage with API call
+                    final itemId = item['_id']; // Assuming each item has an 'id'
+                    //print the item id
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ItemPage(itemId: itemId),
+                      ),
+                    );
+                  },
+                ),
                                 );
                               },
                             ),
@@ -218,4 +226,36 @@ class _OwnerShopPageState extends State<OwnerShopPage> {
                 ),
     );
   }
+  void _showDeleteConfirmationDialog(BuildContext context, String itemId) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Delete Item'),
+        content: const Text('Are you sure you want to delete this item?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              // Close the dialog without doing anything
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              // Close the dialog and proceed with the deletion
+              Navigator.of(context).pop();
+              _removeItem(itemId);
+            },
+            child: const Text(
+              'Delete',
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 }

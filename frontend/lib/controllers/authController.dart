@@ -301,18 +301,46 @@ Future<List<Map<String, dynamic>>> fetchItemsShop(String shopId) async {
   }
 }
 
-Future<Map<String, dynamic>> updateItem(String itemId, Map<String, dynamic> updatedItemData, String description, String price, String size, String color, List<File> images) async {
-  final url = Uri.parse('$baseUrl/api/auth/update-item/$itemId'); // Adjust this URL according to your backend
+Future<Map<String, dynamic>> updateItem(
+  String itemId,
+  String title,
+  String description,
+  String price,
+  String condition,
+  String location,
+  List<File> images,
+) async {
+  final url = Uri.parse('$baseUrl/api/auth/update-item/$itemId'); // Adjust this URL as needed
 
   try {
-    final response = await http.put(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        // You can also add an Authorization header here if needed
-      },
-      body: jsonEncode(updatedItemData),
-    );
+    // Create a multipart request
+    var request = http.MultipartRequest('PUT', url);
+
+    // Add headers (e.g., authorization if needed)
+    request.headers.addAll({
+      'Authorization': 'Bearer YOUR_TOKEN_HERE', // Replace with actual token
+    });
+
+    // Add form fields
+    request.fields['title'] = title;
+    request.fields['description'] = description;
+    request.fields['price'] = price;
+    request.fields['condition'] = condition;
+    request.fields['location'] = location;
+
+    // Attach images
+    for (var image in images) {
+      request.files.add(await http.MultipartFile.fromPath(
+        'images',
+        image.path,
+      ));
+    }
+
+    // Send the request
+    var streamedResponse = await request.send();
+    print("from auth controller updating item fields:${request.fields} , ${request.files}");
+    // Parse the response
+    var response = await http.Response.fromStream(streamedResponse);
 
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
@@ -326,6 +354,8 @@ Future<Map<String, dynamic>> updateItem(String itemId, Map<String, dynamic> upda
     return {'success': false, 'message': 'Unable to connect to the server.'};
   }
 }
+
+
 
 
 Future<Map<String, dynamic>> removeItem(String itemId) async {
