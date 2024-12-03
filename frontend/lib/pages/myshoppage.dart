@@ -35,7 +35,7 @@ class _OwnerShopPageState extends State<OwnerShopPage> {
       });
 
       // Fetch items of the shop
-      final items = await _authController.fetchItems(widget.shopId);
+      final items = await _authController.fetchItemsShop(widget.shopId);
       setState(() {
         _shopItems = items;
         _isLoading = false;
