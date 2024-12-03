@@ -10,6 +10,7 @@ class OwnerShopPage extends StatefulWidget {
   const OwnerShopPage({super.key, required this.shopId});
 
   @override
+  // ignore: library_private_types_in_public_api
   _OwnerShopPageState createState() => _OwnerShopPageState();
 }
 
@@ -48,7 +49,6 @@ class _OwnerShopPageState extends State<OwnerShopPage> {
       );
     }
   }
-  
 
   // Function to add a new item
   void _addNewItem() {
@@ -56,8 +56,7 @@ class _OwnerShopPageState extends State<OwnerShopPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => AddItemPage2(shopId: widget.shopId),
-        
+        builder: (context) => AddItemPage(shopId: widget.shopId),
       ),
     );
   }
@@ -75,30 +74,31 @@ class _OwnerShopPageState extends State<OwnerShopPage> {
 
   // Function to remove an item
   void _removeItem(String itemId) {
-  // Call the controller method to remove the item
-  _authController.removeItem(itemId).then((response) {
-    if (response['success']) {
-      setState(() {
-        _shopItems.removeWhere((item) => item['id'] == itemId);
-      });
+    // Call the controller method to remove the item
+    _authController.removeItem(itemId).then((response) {
+      if (response['success']) {
+        setState(() {
+          _shopItems.removeWhere((item) => item['id'] == itemId);
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Item removed successfully')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text('Failed to remove item: ${response['message']}')),
+        );
+      }
+    }).catchError((e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Item removed successfully')),
+        SnackBar(content: Text('Error: $e')),
       );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to remove item: ${response['message']}')),
-      );
-    }
-  }).catchError((e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error: $e')),
-    );
-  });
-}
-
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    print(widget.shopId);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
@@ -123,10 +123,12 @@ class _OwnerShopPageState extends State<OwnerShopPage> {
                             : Builder(
                                 builder: (context) {
                                   final logoUrl = _shopData!['logoUrl'];
-                                  if (logoUrl is String && logoUrl.startsWith('data:')) {
+                                  if (logoUrl is String &&
+                                      logoUrl.startsWith('data:')) {
                                     return ClipOval(
                                       child: Image.memory(
-                                        Base64Decoder().convert(logoUrl.split(',')[1]),
+                                        Base64Decoder()
+                                            .convert(logoUrl.split(',')[1]),
                                         width: 200,
                                         height: 200,
                                         fit: BoxFit.cover,
@@ -139,12 +141,16 @@ class _OwnerShopPageState extends State<OwnerShopPage> {
                                         width: 200,
                                         height: 200,
                                         fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) =>
-                                            const Center(child: Icon(Icons.error, size: 50)),
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                const Center(
+                                                    child: Icon(Icons.error,
+                                                        size: 50)),
                                       ),
                                     );
                                   } else {
-                                    return const Center(child: Text('Invalid logo format'));
+                                    return const Center(
+                                        child: Text('Invalid logo format'));
                                   }
                                 },
                               ),
@@ -152,12 +158,14 @@ class _OwnerShopPageState extends State<OwnerShopPage> {
                       const SizedBox(height: 16),
                       Text(
                         _shopData!['shopName'],
-                        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         "Location: ${_shopData!['city']}, ${_shopData!['shopAddress']}",
-                        style: const TextStyle(fontSize: 16, color: Colors.grey),
+                        style:
+                            const TextStyle(fontSize: 16, color: Colors.grey),
                       ),
                       const SizedBox(height: 16),
                       ElevatedButton(
@@ -167,7 +175,8 @@ class _OwnerShopPageState extends State<OwnerShopPage> {
                       const SizedBox(height: 16),
                       const Text(
                         "Items:",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
                       _shopItems.isEmpty
@@ -192,7 +201,8 @@ class _OwnerShopPageState extends State<OwnerShopPage> {
                                         ),
                                         IconButton(
                                           icon: const Icon(Icons.delete),
-                                          onPressed: () => _removeItem(item['id']),
+                                          onPressed: () =>
+                                              _removeItem(item['id']),
                                         ),
                                       ],
                                     ),
@@ -209,6 +219,3 @@ class _OwnerShopPageState extends State<OwnerShopPage> {
     );
   }
 }
-
-
-
