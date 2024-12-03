@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:untitled/controllers/authController.dart';
 
 class EditItemPage extends StatefulWidget {
@@ -18,6 +19,7 @@ class _EditItemPageState extends State<EditItemPage> {
   bool _isLoading = true; // Track loading state
 
   final _formKey = GlobalKey<FormState>();
+  final ImagePicker _picker = ImagePicker();
   String title = '';
   String description = '';
   String price = '';
@@ -63,13 +65,14 @@ class _EditItemPageState extends State<EditItemPage> {
     try {
       final response = await _authController.updateItem(
         widget.itemId,  // Item ID to update
-         title as Map<String, dynamic>,
+        title ,
         description,
         price,
         condition!,
         location!,
         images,  // Handle image uploading or URL if applicable
       );
+      
       if (response['success']) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Item updated successfully!')),
@@ -169,21 +172,92 @@ class _EditItemPageState extends State<EditItemPage> {
                           validator: (value) =>
                               value!.isEmpty ? 'Please enter a location' : null,
                         ),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: () {
-                            // Handle image picking if needed
-                          },
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 30, vertical: 10),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            backgroundColor: Colors.blue,
+                        const SizedBox(height: 10),
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.92, // Make the box 90% of the screen width
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),    
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3), // Shadow position
+                      ),
+                    ],
+                    border: Border.all(color: Colors.grey.shade300),
+                  ),
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: pickImages,
+                        icon: const Icon(Icons.add_photo_alternate_outlined, color: Colors.white),
+                        label: const Text('Pick Images', style: TextStyle(color: Colors.white)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Text('Pick Images'),
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                         ),
+                      ),
+                      const SizedBox(height: 20),
+                      images.isNotEmpty
+                          ? GridView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3,
+                                crossAxisSpacing: 10,
+                                mainAxisSpacing: 10,
+                              ),
+                              itemCount: images.length,
+                              itemBuilder: (context, index) {
+                                return Stack(
+                                  clipBehavior: Clip.none,
+                                  children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(color: Colors.grey),
+                                        image: DecorationImage(
+                                          image: FileImage(images[index]),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: -8,
+                                      right: -8,
+                                      child: IconButton(
+                                        icon: const Icon(Icons.close, color: Colors.red),
+                                        onPressed: () {
+                                          setState(() {
+                                            images.removeAt(index);
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            )
+                          : const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.photo_library_outlined, size: 50, color: Colors.grey),
+                                SizedBox(height: 10),
+                                Text(
+                                  'No images selected',
+                                  style: TextStyle(color: Colors.grey, fontSize: 14),
+                                ),
+                              ],
+                            ),
+                    ],
+                  ),
+                ),
                         const SizedBox(height: 16),
                         ElevatedButton(
                           onPressed: _updateItem,
@@ -205,7 +279,15 @@ class _EditItemPageState extends State<EditItemPage> {
                   ),
                 ),
     );
+    
   }
+  // Function to pick images
+  Future<void> pickImages() async {
+    final List<XFile> pickedFiles = await _picker.pickMultiImage();
+    setState(() {
+      images = pickedFiles.map((file) => File(file.path)).toList();
+    });
+    }
 }
 
 

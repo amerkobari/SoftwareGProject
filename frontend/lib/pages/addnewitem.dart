@@ -101,7 +101,6 @@ class _AddItemPageState extends State<AddItemPage> {
     _formKey.currentState!.save();
 
     String token = await _getToken();
-    print("TOKEN FROM add new item: $token");
     if (token.isEmpty) {
       print("Token is empty");
       ScaffoldMessenger.of(context).showSnackBar(
@@ -115,8 +114,6 @@ class _AddItemPageState extends State<AddItemPage> {
       Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
       String userId = decodedToken['id'];
       String username = decodedToken['username'];
-      print("YOUR USER NAMEEEEEEEEEE $username");
-      print("YOUR IDDDDDDDDDDDDDD $userId");
       
       var request = http.MultipartRequest(
         'POST',
@@ -140,12 +137,10 @@ class _AddItemPageState extends State<AddItemPage> {
         request.fields['shopId'] = widget.shopId!;
       }
 
-      print("the shop id isssssssssss :${widget.shopId}");
       // Add images
       for (var image in images) {
         request.files.add(await http.MultipartFile.fromPath('images', image.path));
       }
-    print("the request is: ${request.fields}");
       var response = await request.send();
       if (response.statusCode == 201) {
         // Success
@@ -156,7 +151,6 @@ class _AddItemPageState extends State<AddItemPage> {
         );
         Navigator.pop(context);
     } else {
-      print("the status response is: ${response.statusCode}");
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to add item.')),
       );

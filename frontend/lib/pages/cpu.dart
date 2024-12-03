@@ -62,7 +62,6 @@ class CPUPage extends StatelessWidget {
                     // Navigate to ItemPage with API call
                     final itemId = item['_id']; // Assuming each item has an 'id'
                     //print the item id
-                    print("ITEM IDDDDDDDDDDDDDDDDDDDDDDDD $itemId");
                     Navigator.push(
                       context,
                       MaterialPageRoute(

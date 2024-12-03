@@ -141,15 +141,29 @@ exports.getItemById = async (req, res) => {
     }
 };
 
+exports.getShopItems = async (req, res) => {
+    try {
+        const items = await Item.find({ shopId: req.params.shopId });
+        res.json(items);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
 
 // Update an item by ID
 exports.updateItem = async (req, res) => {
     try {
+        console.log('Request Body:', req.body);
+        console.log('Request Files:', req.files);
+
         const { title, description, price, category, condition, location } = req.body;
         const item = await Item.findById(req.params.id);
         if (!item) {
-            return res.status(404).json({ message: 'Item not found' });
+            return res.status(404).json({ error: 'Item not found' });
         }
+
+        // Update fields
         item.title = title;
         item.description = description;
         item.price = price;
@@ -157,21 +171,22 @@ exports.updateItem = async (req, res) => {
         item.condition = condition;
         item.location = location;
 
-        // Handle uploaded files (if images are uploaded)
+        // Handle images
         if (req.files) {
-            item.images = req.files.map(file => file.path);
+            item.images = req.files.map(file => ({
+                data: file.buffer,
+                contentType: file.mimetype,
+            }));
         }
 
         const updatedItem = await item.save();
-
-        res.json({
-            message: 'Item updated successfully',
-            item: updatedItem,
-        });
+        res.json({ message: 'Item updated successfully', item: updatedItem });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Error:', err);
+        res.status(500).json({ error: 'Internal server error' });
     }
 };
+
 
 // Delete an item by ID
 exports.deleteItem = async (req, res) => {
@@ -180,12 +195,15 @@ exports.deleteItem = async (req, res) => {
         if (!item) {
             return res.status(404).json({ message: 'Item not found' });
         }
-        await item.remove();
+
+        // Use deleteOne method
+        await Item.deleteOne({ _id: req.params.id });
         res.json({ message: 'Item deleted successfully' });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
+
 
 // Get items by user ID
 exports.getItemsByUser = async (req, res) => {
