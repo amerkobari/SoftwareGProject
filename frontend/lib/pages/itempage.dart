@@ -4,6 +4,8 @@ import 'dart:convert';
 
 // Declare the global favorites list
 List<Map<String, dynamic>> favoritesList = [];
+List<Map<String, dynamic>> cartList = [];
+
 
 class ItemPage extends StatefulWidget {
   final String itemId; // Pass only item ID instead of the entire item data
@@ -169,28 +171,33 @@ class _ItemPageState extends State<ItemPage> {
                         "Location: ${_itemData!['location']}",
                         style: const TextStyle(fontSize: 16),
                       ),
-                      const SizedBox(height: 16),
                       ElevatedButton(
-                        onPressed: () {
-                          // Handle "Add to Cart"
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                                content: Text(
-                                    '${_itemData!['title']} added to cart!')),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 30, vertical: 10),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          backgroundColor: Colors.blue, // Solid blue button
-                        ),
-                        child: const Text('Add to Cart',
-                            style:
-                                TextStyle(fontSize: 20, color: Colors.white)),
-                      ),
+  onPressed: () {
+    // Add the item to the cart list if not already added
+    if (!cartList.any((item) => item['_id'] == _itemData!['_id'])) {
+      cartList.add(_itemData!); // Add item to the cart
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${_itemData!['title']} added to cart!')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${_itemData!['title']} is already in the cart!')),
+      );
+    }
+  },
+  style: ElevatedButton.styleFrom(
+    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(10),
+    ),
+    backgroundColor: Colors.blue, // Solid blue button
+  ),
+  child: const Text(
+    'Add to Cart',
+    style: TextStyle(fontSize: 20, color: Colors.white),
+  ),
+),
+
                     ],
                   ),
                 ),
