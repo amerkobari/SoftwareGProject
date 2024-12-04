@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:untitled/controllers/authController.dart';
 
 class EditItemPage extends StatefulWidget {
@@ -31,6 +32,8 @@ class _EditItemPageState extends State<EditItemPage> {
   String? location;
   List<File> images = []; // Holds selected images
   List<XFile>? _imageFiles = []; // Holds image files
+  List<dynamic> imagesFromDatabase = [];
+
   
   
   @override
@@ -39,36 +42,29 @@ class _EditItemPageState extends State<EditItemPage> {
     _fetchItemDetails();
   }
 
-   Future<void> _fetchItemDetails() async {
-    try {
-      final itemDetails = await _authController.getItemById(widget.itemId);
-      setState(() {
-        _itemData = itemDetails;
-        title = itemDetails['title'];
-        description = itemDetails['description'];
-        price = itemDetails['price'].toString();
-        condition = itemDetails['condition'];
-        location = itemDetails['location'];
-        _isLoading = false;
-        
-//         // Parse images from API response
-//         if (_itemData?['imageUrls'] != null) {
-//   images = _itemData!['imageUrls'].map((imgData) {
-//     final imageData = imgData.split(',').last; // Get base64 string
-//     return base64Decode(imageData); // Decoded Uint8List
-//   }).toList();
-// }
-        
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load item details: $e')),
-      );
-    }
+  Future<void> _fetchItemDetails() async {
+  try {
+    final itemDetails = await _authController.getItemById(widget.itemId);
+    setState(() {
+      _itemData = itemDetails;
+      title = itemDetails['title'];
+      description = itemDetails['description'];
+      price = itemDetails['price'].toString();
+      condition = itemDetails['condition'];
+      location = itemDetails['location'];
+      imagesFromDatabase = itemDetails['imageUrls'] as List<dynamic> ?? []; // Add this line to fetch image URLs
+      _isLoading = false;
+    });
+  } catch (e) {
+    setState(() {
+      _isLoading = false;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Failed to load item details: $e')),
+    );
   }
+}
+
 
   // Function to handle updating the item
  Future<void> _updateItem() async {
@@ -188,6 +184,158 @@ class _EditItemPageState extends State<EditItemPage> {
                               value!.isEmpty ? 'Please enter a location' : null,
                         ),
                                     const SizedBox(height: 10),
+                                    Column(
+  children: [
+    // New Box for Images
+    imagesFromDatabase.isNotEmpty
+        ? Container(
+            width: MediaQuery.of(context).size.width * 0.92,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.2),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: SingleChildScrollView(
+  child: Column(
+    children: [
+      // Box for Database Images
+      const SizedBox(height: 10),
+      SizedBox(
+        height: 150, // Explicit height constraint
+        child: imagesFromDatabase.isNotEmpty
+            ? Container(
+                width: MediaQuery.of(context).size.width * 0.92,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.2),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                padding: const EdgeInsets.all(16),
+                child: GridView.builder(
+                  scrollDirection: Axis.horizontal,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 1, // One row
+                    mainAxisSpacing: 10,
+                    childAspectRatio: 1,
+                  ),
+                  itemCount: imagesFromDatabase.length,
+                  itemBuilder: (context, index) {
+  final imageUrl = imagesFromDatabase[index];
+
+  // Debugging: Log image URL type
+  print("Image URL: $imageUrl");
+
+  return GestureDetector(
+    onTap: () async {
+      try {
+        if (imageUrl.startsWith('data:')) {
+          // Extract base64 data
+          final base64Image = imageUrl.split(',')[1];
+          print("Base64 Image Detected");
+
+          // Decode base64 and create a temporary file
+          final decodedBytes = base64Decode(base64Image);
+          final tempDir = await getTemporaryDirectory();
+          final tempFile = File('${tempDir.path}/temp_image_${index}.png');
+          await tempFile.writeAsBytes(decodedBytes);
+
+          // Add to images list
+          setState(() {
+            images.add(tempFile);
+          });
+        } else {
+          // Regular URL case
+          print("Network Image Detected");
+          setState(() {
+            images.add(File(imageUrl));
+          });
+        }
+      } catch (e) {
+        print("Error handling image: $e");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error handling image: $e')),
+        );
+      }
+    },
+    child: Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: imageUrl.startsWith('data:')
+          ? Image.memory(
+              base64Decode(imageUrl.split(',')[1]),
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return const Center(
+                  child: Text('Error loading image'),
+                );
+              },
+            )
+          : Image.network(
+              imageUrl,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return const Center(
+                  child: Text('Error loading image'),
+                );
+              },
+            ),
+  ),
+);
+                  },
+                ),
+              )
+            : const Center(
+                child: Text(
+                  'No images available',
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ),
+      ),
+
+      const SizedBox(height: 10),
+
+      // Existing Content
+      Container(
+        width: MediaQuery.of(context).size.width * 0.92,
+        // Existing widget configuration
+      ),
+    ],
+  ),
+),
+
+          )
+        : const Center(
+            child: Text('No images available', style: TextStyle(color: Colors.grey)),
+          ),
+
+    const SizedBox(height: 10),
+
+    // Existing Widget
+    Container(
+      width: MediaQuery.of(context).size.width * 0.92,
+      // Existing widget configuration
+    ),
+  ],
+),
+                const SizedBox(height: 10),
                 Container(
                   width: MediaQuery.of(context).size.width * 0.92, // Make the box 90% of the screen width
                   decoration: BoxDecoration(
