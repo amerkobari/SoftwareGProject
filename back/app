@@ -6,13 +6,16 @@ const loginRoute = require("./routes/login.routes.js");
 const resetRoute = require("./routes/resetcode.js");
 const addnewItem = require("./routes/newItemroute.js");
 const addShop = require("./routes/newShopRoutes.js");
+const orderRoutes = require("./routes/orderRoutes.js");
 // const ToDoRoute = require('./routes/todo.router');
 const app = express();
-app.use(bodyParser.json())
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 //app.use(cors);
 app.use('/api/auth', loginRoute);
 app.use('/api/auth', resetRoute);
 app.use('/api/auth', addnewItem);
 app.use('/api/auth', addShop);
+app.use('/api/auth', orderRoutes);
 // app.use("/",ToDoRoute);
 module.exports = app;
