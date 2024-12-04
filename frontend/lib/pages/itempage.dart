@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:untitled/controllers/authController.dart';
 import 'dart:convert';
 
+// Declare the global favorites list
+List<Map<String, dynamic>> favoritesList = [];
+
 class ItemPage extends StatefulWidget {
   final String itemId; // Pass only item ID instead of the entire item data
 
@@ -44,11 +47,44 @@ class _ItemPageState extends State<ItemPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
-        iconTheme: const IconThemeData(color: Colors.white),
-        titleTextStyle: const TextStyle(color: Colors.white, fontSize: 18),
-        title: Text(_itemData?['title'] ?? 'Loading...'),
-      ),
+  backgroundColor: Colors.blue,
+  iconTheme: const IconThemeData(color: Colors.white),
+  titleTextStyle: const TextStyle(color: Colors.white, fontSize: 18),
+  title: Text(_itemData?['title'] ?? 'Loading...'),
+  actions: [
+  IconButton(
+    icon: Icon(
+      _itemData?['isFavorite'] == true ? Icons.favorite : Icons.favorite_border,
+      color: Colors.red,
+    ),
+    onPressed: () {
+      setState(() {
+        // Toggle the favorite status
+        _itemData?['isFavorite'] = !(_itemData?['isFavorite'] ?? false);
+      });
+
+      // Add or remove from the global favorites list
+      if (_itemData?['isFavorite'] == true) {
+        favoritesList.add(_itemData!); // Add to favorites
+      } else {
+        favoritesList.removeWhere((item) => item['id'] == _itemData!['id']);
+      }
+
+      // Show feedback
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            _itemData?['isFavorite'] == true
+                ? 'Added to favorites'
+                : 'Removed from favorites',
+            ),
+          ),
+        );
+      },
+    ),
+  ],
+),
+
       body: _isLoading
           ? const Center(
               child: CircularProgressIndicator()) // Show loading indicator

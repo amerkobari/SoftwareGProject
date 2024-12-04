@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:untitled/controllers/authController.dart';
+import 'package:untitled/pages/Favorites.dart';
 import 'package:untitled/pages/accessories.dart';
 import 'package:untitled/pages/addnewitem.dart';
 import 'package:untitled/pages/addnewshop.dart';
@@ -473,10 +474,13 @@ class _HomePageState extends State<HomePage> {
         ),
         if (widget.username == 'Guest') ...[
           ListTile(
-            leading: const Icon(Icons.star, color: Colors.black),
+            leading: const Icon(Icons.favorite, color: Colors.black),
             title: const Text('Favorites'),
             onTap: () {
-              // Navigate to Favorites
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => FavoritesPage()),
+              );
             },
           ),
           ListTile(
@@ -505,10 +509,13 @@ class _HomePageState extends State<HomePage> {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.star, color: Colors.black),
+            leading: const Icon(Icons.favorite, color: Colors.black),
             title: const Text('Favorites'),
             onTap: () {
-              // Navigate to Favorites
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => FavoritesPage()),
+              );
             },
           ),
           ListTile(
