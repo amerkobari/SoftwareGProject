@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/pages/itempage.dart';
 
-class FavoritesPage extends StatelessWidget {
-  // Mock list of favorite items
-  final List<Map<String, String>> favoriteItems = [
-    {'title': 'Item 1', 'subtitle': 'Description of Item 1'},
-    {'title': 'Item 2', 'subtitle': 'Description of Item 2'},
-    {'title': 'Item 3', 'subtitle': 'Description of Item 3'},
-    {'title': 'Item 4', 'subtitle': 'Description of Item 4'},
-  ];
+class FavoritesPage extends StatefulWidget {
+  @override
+  _FavoritesPageState createState() => _FavoritesPageState();
+}
 
+class _FavoritesPageState extends State<FavoritesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +23,7 @@ class FavoritesPage extends StatelessWidget {
         elevation: 0.0,
         centerTitle: true,
       ),
-     body: favoritesList.isNotEmpty
+      body: favoritesList.isNotEmpty
           ? ListView.builder(
               itemCount: favoritesList.length,
               itemBuilder: (context, index) {
@@ -38,23 +35,25 @@ class FavoritesPage extends StatelessWidget {
                   trailing: IconButton(
                     icon: const Icon(Icons.delete, color: Colors.grey),
                     onPressed: () {
-                      favoritesList.removeAt(index); // Remove item
+                      setState(() {
+                        favoritesList.removeAt(index); // Remove item
+                      });
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('${item['title']} removed!')),
                       );
-                      (context as Element).markNeedsBuild(); // Refresh UI
                     },
                   ),
-                  onTap: () async {
-                    // Navigate to ItemPage with API call
-                    final itemId = item['_id']; // Assuming each item has an 'id'
-                    //print the item id
+                  onTap: () {
+                    final itemId = item['_id'];
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => ItemPage(itemId: itemId),
                       ),
-                    );
+                    ).then((_) {
+                      // Refresh the favorites list in case it has been modified
+                      setState(() {});
+                    });
                   },
                 );
               },

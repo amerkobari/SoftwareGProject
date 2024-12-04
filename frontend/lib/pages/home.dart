@@ -14,9 +14,11 @@ import 'package:untitled/pages/hard-disk.dart';
 import 'package:untitled/pages/login.dart';
 import 'package:untitled/pages/monitor.dart';
 import 'package:untitled/pages/motherboard.dart';
+import 'package:untitled/pages/mycart.dart';
 import 'package:untitled/pages/myshoppage.dart';
 import 'package:untitled/pages/ram.dart';
 import 'package:untitled/pages/shoppage.dart'; // Make sure to include this import for SVG support
+
 
 class HomePage extends StatefulWidget {
   final String username; // Add a username field
@@ -30,6 +32,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
     final AuthController authController = AuthController();
+    final List<Map<String, dynamic>> myRealFavoritesList = []; // Define the variable here
 
   int _selectedIndex = 0;
 
@@ -487,7 +490,10 @@ class _HomePageState extends State<HomePage> {
             leading: const Icon(Icons.shopping_cart, color: Colors.black),
             title: const Text('My Cart'),
             onTap: () {
-              // Navigate to My Cart
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CartPage()),
+              );
             },
           ),
           ListTile(
@@ -522,7 +528,10 @@ class _HomePageState extends State<HomePage> {
             leading: const Icon(Icons.shopping_cart, color: Colors.black),
             title: const Text('My Cart'),
             onTap: () {
-              // Navigate to My Cart
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CartPage()),
+              );
             },
           ),
           ListTile(

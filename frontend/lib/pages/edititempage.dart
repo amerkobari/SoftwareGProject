@@ -29,10 +29,30 @@ class _EditItemPageState extends State<EditItemPage> {
   String description = '';
   String price = '';
   String? condition;
-  String? location;
+  // String? location;
+  String? selectedCity;
   List<File> images = []; // Holds selected images
   List<XFile>? _imageFiles = []; // Holds image files
   List<dynamic> imagesFromDatabase = [];
+
+  final List<String> cities = [
+  'Jerusalem',
+  'Gaza',
+  'Ramallah',
+  'Hebron',
+  'Nablus',
+  'Bethlehem',
+  'Jenin',
+  'Tulkarm',
+  'Qalqilya',
+  'Jericho',
+  'Salfit',
+  'Tubas',
+  'Rafah',
+  'Khan Yunis',
+  'Deir al-Balah'
+];
+
 
   
   
@@ -51,7 +71,7 @@ class _EditItemPageState extends State<EditItemPage> {
       description = itemDetails['description'];
       price = itemDetails['price'].toString();
       condition = itemDetails['condition'];
-      location = itemDetails['location'];
+      selectedCity = itemDetails['location'];
       imagesFromDatabase = itemDetails['imageUrls'] as List<dynamic> ?? []; // Add this line to fetch image URLs
       _isLoading = false;
     });
@@ -79,7 +99,7 @@ class _EditItemPageState extends State<EditItemPage> {
       description,
       price,
       condition!,
-      location!,
+      selectedCity!,
       images, 
     );
     print(response);
@@ -174,15 +194,27 @@ class _EditItemPageState extends State<EditItemPage> {
                           onSaved: (value) => condition = value,
                         ),
                         const SizedBox(height: 16),
-                        TextFormField(
-                          initialValue: location,
-                          decoration: const InputDecoration(
-                            labelText: 'Location',
-                          ),
-                          onSaved: (value) => location = value ?? '',
-                          validator: (value) =>
-                              value!.isEmpty ? 'Please enter a location' : null,
-                        ),
+                        DropdownButtonFormField<String>(
+                      decoration: const InputDecoration(labelText: 'City'),
+                      value: selectedCity,
+                      items: cities.map((city) {
+                        return DropdownMenuItem(
+                          value: city,
+                          child: Text(city),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedCity = value;
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please select a city';
+                        }
+                        return null;
+                      },
+                    ),
                                     const SizedBox(height: 10),
                                     Column(
   children: [

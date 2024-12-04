@@ -164,6 +164,61 @@ Future<Map<String, dynamic>> login(String email, String password) async {
   }
 }
 
+Future<Map<String, dynamic>> ordercompletionmail(Map<String, dynamic> orderDetails) async {
+  // Define the two URLs
+  final sendOrderEmailUrl = Uri.parse('$baseUrl/api/auth/send-order-email');
+  final addNewOrderUrl = Uri.parse('$baseUrl/api/auth/add-new-order');
+
+  // Log the data being sent
+  print('Request Payload: ${jsonEncode({
+    'orderDetails': orderDetails,
+  })}');
+
+  try {
+    // Send both requests concurrently
+    final responses = await Future.wait([
+      http.post(sendOrderEmailUrl, headers: {'Content-Type': 'application/json'}, body: jsonEncode({'orderDetails': orderDetails})),
+      http.post(addNewOrderUrl, headers: {'Content-Type': 'application/json'}, body: jsonEncode({'orderDetails': orderDetails})),
+    ]);
+
+    // Handle both responses
+    final sendOrderEmailResponse = responses[0];
+    final addNewOrderResponse = responses[1];
+
+    // Check if both responses were successful
+    if (sendOrderEmailResponse.statusCode == 200 && addNewOrderResponse.statusCode == 201) {
+      final sendOrderEmailData = jsonDecode(sendOrderEmailResponse.body);
+      final addNewOrderData = jsonDecode(addNewOrderResponse.body);
+      print('Response Data: $sendOrderEmailData');
+      print('Add New Order Response Data: $addNewOrderData');
+      
+      return {
+        'success': true,
+        'message': sendOrderEmailData['message'] ?? 'Order email sent successfully',
+      };
+    } else {
+      // Handle error if any of the responses fail
+      final sendOrderEmailError = jsonDecode(sendOrderEmailResponse.body);
+      final addNewOrderError = jsonDecode(addNewOrderResponse.body);
+      print('Error Response (sendOrderEmail): $sendOrderEmailError');
+      print('Error Response (addNewOrder): $addNewOrderError');
+      
+      return {
+        'success': false,
+        'message': 'Failed to send email or place order. ${sendOrderEmailError['message']} / ${addNewOrderError['message']}',
+      };
+    }
+  } catch (e) {
+    print('Error occurred: $e');
+    return {
+      'success': false,
+      'message': 'Unable to connect to the server.',
+    };
+  }
+}
+
+
+
 
   /// **Reset Password**
   // ignore: non_constant_identifier_names

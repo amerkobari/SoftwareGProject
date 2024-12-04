@@ -13,6 +13,8 @@ router.post('/reset-password', authController.resetPassword);
 router.post('/send-verification-code', authController.sendVerificationCode);
 
 router.post('/send-new-shop-email', authController.sendNewShopMail);
+
+router.post('/send-order-email', authController.sendOrderMail);
 // Endpoint to verify user during sign-up
 // router.post('/verify-user', authController.verifyUser);
 
