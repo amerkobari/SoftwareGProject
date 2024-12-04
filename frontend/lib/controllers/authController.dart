@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 class AuthController {
@@ -266,6 +267,7 @@ Future<List<Map<String, dynamic>>> fetchItemsShop(String shopId) async {
       final response = await http.get(Uri.parse('$baseUrl/api/auth/get-item/$itemId'));
 
       if (response.statusCode == 200) {
+        print(response.body);
         return json.decode(response.body) as Map<String, dynamic>;
       } else {
         throw Exception('Failed to load item. Status code: ${response.statusCode}');
@@ -308,7 +310,7 @@ Future<Map<String, dynamic>> updateItem(
   String price,
   String condition,
   String location,
-  List<File> images,
+  List<dynamic> images,
 ) async {
   final url = Uri.parse('$baseUrl/api/auth/update-item/$itemId'); // Adjust this URL as needed
 
@@ -317,9 +319,6 @@ Future<Map<String, dynamic>> updateItem(
     var request = http.MultipartRequest('PUT', url);
 
     // Add headers (e.g., authorization if needed)
-    request.headers.addAll({
-      'Authorization': 'Bearer YOUR_TOKEN_HERE', // Replace with actual token
-    });
 
     // Add form fields
     request.fields['title'] = title;
@@ -330,11 +329,9 @@ Future<Map<String, dynamic>> updateItem(
 
     // Attach images
     for (var image in images) {
-      request.files.add(await http.MultipartFile.fromPath(
-        'images',
-        image.path,
-      ));
+      request.files.add(await http.MultipartFile.fromPath('images', image.path));
     }
+
 
     // Send the request
     var streamedResponse = await request.send();

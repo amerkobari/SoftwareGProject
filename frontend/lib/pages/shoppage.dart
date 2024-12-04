@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:untitled/controllers/authController.dart';
+import 'package:untitled/pages/itempage.dart';
 
 class ShopPage extends StatefulWidget {
   final String shopId;
@@ -32,7 +33,7 @@ class _ShopPageState extends State<ShopPage> {
       });
 
       // Fetch items of the shop
-      final items = await _authController.fetchItems(widget.shopId);
+      final items = await _authController.fetchItemsShop(widget.shopId);
       setState(() {
         _shopItems = items;
         _isLoading = false;
@@ -150,12 +151,20 @@ class _ShopPageState extends State<ShopPage> {
                                 return Card(
                                   elevation: 2,
                                   child: ListTile(
-                                    title: Text(item['itemName']),
+                                    title: Text(item['title']),
                                     subtitle: Text("Price: \$${item['price']}"),
                                     trailing: const Icon(Icons.arrow_forward),
-                                    onTap: () {
-                                      // Handle item click, navigate to item details page
-                                    },
+                                    onTap: () async {
+                    // Navigate to ItemPage with API call
+                    final itemId = item['_id']; // Assuming each item has an 'id'
+                    //print the item id
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ItemPage(itemId: itemId),
+                      ),
+                    );
+                  },
                                   ),
                                 );
                               },

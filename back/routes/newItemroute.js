@@ -25,7 +25,7 @@ router.get('/get-items-by-category/:category', itemController.getItemsByCategory
 // router.get('/get-items-by-price/:price', itemController.getItemsByPriceRange);
 // router.get('/get-items-by-condition/:condition', itemController.getItemsByCondition);
 // router.get('/get-items-by-date/:date', itemController.getItemsByDate);
-router.post('/update-item/:id', upload.array('images'),itemController.updateItem);
+router.put('/update-item/:id', upload.array('images' , 5),itemController.updateItem);
 router.delete('/delete-item/:id', itemController.deleteItem);
 
 module.exports = router;

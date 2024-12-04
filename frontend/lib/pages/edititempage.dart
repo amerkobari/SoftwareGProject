@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,9 +16,11 @@ class EditItemPage extends StatefulWidget {
 }
 
 class _EditItemPageState extends State<EditItemPage> {
+  
   final AuthController _authController = AuthController();
   Map<String, dynamic>? _itemData; // Holds item data fetched from the backend
   bool _isLoading = true; // Track loading state
+  
 
   final _formKey = GlobalKey<FormState>();
   final ImagePicker _picker = ImagePicker();
@@ -25,7 +29,9 @@ class _EditItemPageState extends State<EditItemPage> {
   String price = '';
   String? condition;
   String? location;
-  List<File> images = [];
+  List<File> images = []; // Holds selected images
+  List<XFile>? _imageFiles = []; // Holds image files
+  
   
   @override
   void initState() {
@@ -33,7 +39,7 @@ class _EditItemPageState extends State<EditItemPage> {
     _fetchItemDetails();
   }
 
-  Future<void> _fetchItemDetails() async {
+   Future<void> _fetchItemDetails() async {
     try {
       final itemDetails = await _authController.getItemById(widget.itemId);
       setState(() {
@@ -44,6 +50,15 @@ class _EditItemPageState extends State<EditItemPage> {
         condition = itemDetails['condition'];
         location = itemDetails['location'];
         _isLoading = false;
+        
+//         // Parse images from API response
+//         if (_itemData?['imageUrls'] != null) {
+//   images = _itemData!['imageUrls'].map((imgData) {
+//     final imageData = imgData.split(',').last; // Get base64 string
+//     return base64Decode(imageData); // Decoded Uint8List
+//   }).toList();
+// }
+        
       });
     } catch (e) {
       setState(() {
@@ -56,39 +71,39 @@ class _EditItemPageState extends State<EditItemPage> {
   }
 
   // Function to handle updating the item
-  Future<void> _updateItem() async {
-    if (!_formKey.currentState!.validate()) return;
-    
-    _formKey.currentState!.save();
+ Future<void> _updateItem() async {
+  if (!_formKey.currentState!.validate()) return;
 
-    // Assuming you have an update API endpoint
-    try {
-      final response = await _authController.updateItem(
-        widget.itemId,  // Item ID to update
-        title ,
-        description,
-        price,
-        condition!,
-        location!,
-        images,  // Handle image uploading or URL if applicable
-      );
-      
-      if (response['success']) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Item updated successfully!')),
-        );
-        Navigator.pop(context); // Go back after update
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update item.')),
-        );
-      }
-    } catch (e) {
+  _formKey.currentState!.save();
+
+  try {
+    final response = await _authController.updateItem(
+      widget.itemId,
+      title,
+      description,
+      price,
+      condition!,
+      location!,
+      images, 
+    );
+    print(response);
+    if (response['success']) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update item: $e')),
+        SnackBar(content: Text('Item updated successfully!')),
+      );
+      Navigator.pop(context);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update item.')),
       );
     }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Failed to update item: $e')),
+    );
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +187,7 @@ class _EditItemPageState extends State<EditItemPage> {
                           validator: (value) =>
                               value!.isEmpty ? 'Please enter a location' : null,
                         ),
-                        const SizedBox(height: 10),
+                                    const SizedBox(height: 10),
                 Container(
                   width: MediaQuery.of(context).size.width * 0.92, // Make the box 90% of the screen width
                   decoration: BoxDecoration(
@@ -288,6 +303,21 @@ class _EditItemPageState extends State<EditItemPage> {
       images = pickedFiles.map((file) => File(file.path)).toList();
     });
     }
+
+
+
+  // Method to remove an image
+  void removeImage(int index) {
+    setState(() {
+      images.removeAt(index);
+    });
+  }
+
+  File base64StringToFile(String base64Str, String fileName) {
+    final bytes = base64Decode(base64Str);
+    final file = File(fileName);
+    file.writeAsBytesSync(bytes);  // Write the bytes to the file
+    return file;
+  }
+
 }
-
-
