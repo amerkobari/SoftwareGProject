@@ -153,11 +153,15 @@ exports.getShopItems = async (req, res) => {
 
 // Update an item by ID
 exports.updateItem = async (req, res) => {
+    console.log("were inside the update item");
     try {
+        console.log("were inside the update item");
         console.log('Request Body:', req.body);
         console.log('Request Files:', req.files);
 
-        const { title, description, price, category, condition, location } = req.body;
+        
+
+        const { title, description, price, condition, location } = req.body;
         const item = await Item.findById(req.params.id);
         if (!item) {
             return res.status(404).json({ error: 'Item not found' });
@@ -167,15 +171,14 @@ exports.updateItem = async (req, res) => {
         item.title = title;
         item.description = description;
         item.price = price;
-        item.category = category;
         item.condition = condition;
         item.location = location;
 
         // Handle images
         if (req.files) {
             item.images = req.files.map(file => ({
-                data: file.buffer,
-                contentType: file.mimetype,
+            data: file.buffer,
+            contentType: file.mimetype,
             }));
         }
 
