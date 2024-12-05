@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 import 'package:untitled/controllers/authController.dart';
 
@@ -10,7 +8,7 @@ class CheckoutPage extends StatefulWidget {
   final double totalPrice;
   
 
-  CheckoutPage({required this.cartItems, required this.totalPrice});
+  const CheckoutPage({super.key, required this.cartItems, required this.totalPrice});
 
   @override
   _CheckoutPageState createState() => _CheckoutPageState();

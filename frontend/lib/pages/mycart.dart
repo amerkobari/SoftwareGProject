@@ -3,6 +3,8 @@ import 'package:untitled/pages/checkout.dart';
 import 'package:untitled/pages/itempage.dart';
 
 class CartPage extends StatefulWidget {
+  const CartPage({super.key});
+
   @override
   _CartPageState createState() => _CartPageState();
 }
