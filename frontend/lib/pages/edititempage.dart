@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -32,7 +31,7 @@ class _EditItemPageState extends State<EditItemPage> {
   // String? location;
   String? selectedCity;
   List<File> images = []; // Holds selected images
-  List<XFile>? _imageFiles = []; // Holds image files
+  final List<XFile> _imageFiles = []; // Holds image files
   List<dynamic> imagesFromDatabase = [];
 
   final List<String> cities = [
@@ -285,7 +284,7 @@ class _EditItemPageState extends State<EditItemPage> {
           // Decode base64 and create a temporary file
           final decodedBytes = base64Decode(base64Image);
           final tempDir = await getTemporaryDirectory();
-          final tempFile = File('${tempDir.path}/temp_image_${index}.png');
+          final tempFile = File('${tempDir.path}/temp_image_$index.png');
           await tempFile.writeAsBytes(decodedBytes);
 
           // Add to images list
