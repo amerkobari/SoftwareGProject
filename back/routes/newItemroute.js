@@ -21,10 +21,10 @@ router.get('/get-item/:id', itemController.getItemById);
 // Other routes remain the same
 // router.get('/get-items-by-user/:userId', itemController.getItemsByUser);
 router.get('/get-items-by-category/:category', itemController.getItemsByCategory);
-// router.get('/get-items-by-title/:title', itemController.getItemsByTitle);
-// router.get('/get-items-by-price/:price', itemController.getItemsByPriceRange);
-// router.get('/get-items-by-condition/:condition', itemController.getItemsByCondition);
-// router.get('/get-items-by-date/:date', itemController.getItemsByDate);
+router.get('/get-items-by-title/:title', itemController.getItemsByTitle);
+router.get('/get-items-by-price/:price', itemController.getItemsByPriceRange);
+router.get('/get-items-by-condition/:condition', itemController.getItemsByCondition);
+router.get('/get-items-by-date/:date', itemController.getItemsByDate);
 router.put('/update-item/:id', upload.array('images' , 5),itemController.updateItem);
 router.delete('/delete-item/:id', itemController.deleteItem);
 

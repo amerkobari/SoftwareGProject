@@ -35,6 +35,11 @@ class _HomePageState extends State<HomePage> {
     final List<Map<String, dynamic>> myRealFavoritesList = []; // Define the variable here
 
   int _selectedIndex = 0;
+  String searchTitle = '';
+  double minPrice = 0;
+  double maxPrice = 10000; // Set default range for price
+  String condition = 'new'; // Default condition
+  String date = ''; // Default: no filter on date
 
   void _onItemTapped(int index) {
     setState(() {
