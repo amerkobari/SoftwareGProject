@@ -26,6 +26,7 @@ router.get('/get-items-by-price/:price', itemController.getItemsByPriceRange);
 router.get('/get-items-by-condition/:condition', itemController.getItemsByCondition);
 router.get('/get-items-by-date/:date', itemController.getItemsByDate);
 router.put('/update-item/:id', upload.array('images' , 5),itemController.updateItem);
+router.put('/update-item-sold/:id', itemController.updatesoldItem);
 router.delete('/delete-item/:id', itemController.deleteItem);
 
 module.exports = router;

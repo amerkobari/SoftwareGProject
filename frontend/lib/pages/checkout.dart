@@ -108,8 +108,19 @@ Future<void> applyPromoCode() async {
 }
 
 
-
-
+Future<void> setitemSold() async {
+  try {
+    for (final item in widget.cartItems) {
+      final url = Uri.parse('$baseUrl/api/auth/update-item-sold/${item['_id']}');
+      final response = await http.put(url);
+    }
+    
+  } catch (error) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error setting item as sold: $error')),
+    );
+  } 
+}
 
   Future<void> sendOrderEmail() async {
   if (_formKey.currentState?.validate() ?? false) {
@@ -319,9 +330,9 @@ Future<void> applyPromoCode() async {
                     TextFormField(
                       decoration: const InputDecoration(labelText: 'Promo Code'),
                       onChanged: (value) => promoCode = value,
-                      validator: (value) => value?.isEmpty ?? true
-                          ? 'Enter a promo code or leave it blank'
-                          : null,
+                    //   validator: (value) => value?.isEmpty ?? true
+                    //       ? 'Enter a promo code or leave it blank'
+                    //       : null,
                     ),
                     ElevatedButton(
                       onPressed: applyPromoCode,
@@ -360,6 +371,7 @@ Future<void> applyPromoCode() async {
                     if (_formKey.currentState!.validate()) {
                       // Call the function to send email
                       sendOrderEmail();
+                      setitemSold();
                     } else {
                       // If validation fails, show error messages
                       ScaffoldMessenger.of(context).showSnackBar(
