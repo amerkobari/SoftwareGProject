@@ -103,7 +103,7 @@ exports.addItemId = async (req, res) => {
 // Get all items (with images as base64)
 exports.getAllItems = async (req, res) => {
     try {
-        const items = await Item.find().sort({ createdAt: -1 });
+        const items = await Item.find({ sold: false }).sort({ createdAt: -1 });
         const itemsWithImages = items.map(item => ({
             ...item.toObject(),
             images: item.images.map(image => ({
@@ -117,12 +117,13 @@ exports.getAllItems = async (req, res) => {
     }
 };
 
+
 // Get a single item by ID (with images as base64)
 exports.getItemById = async (req, res) => {
     try {
-        const item = await Item.findById(req.params.id);
+        const item = await Item.findOne({ _id: req.params.id, sold: false });
         if (!item) {
-            return res.status(404).json({ message: 'Item not found' });
+            return res.status(404).json({ message: 'Item not found or already sold' });
         }
 
         const formattedItem = {
@@ -134,21 +135,23 @@ exports.getItemById = async (req, res) => {
                 return null;
             }) || [],
         };
-        
+
         res.json(formattedItem);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
 
+
 exports.getShopItems = async (req, res) => {
     try {
-        const items = await Item.find({ shopId: req.params.shopId });
+        const items = await Item.find({ shopId: req.params.shopId, sold: false });
         res.json(items);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
+
 
 
 // Update an item by ID
@@ -211,39 +214,31 @@ exports.deleteItem = async (req, res) => {
 // Get items by user ID
 exports.getItemsByUser = async (req, res) => {
     try {
-        const items = await Item.find({ userId: req.params.userId });
+        const items = await Item.find({ userId: req.params.userId, sold: false });
         res.json(items);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
+
 
 // Get items by category
 exports.getItemsByCategory = async (req, res) => {
     try {
-        const items = await Item.find({ category: req.params.category });
+        const items = await Item.find({ category: req.params.category, sold: false });
         res.json(items);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
+
 
 // Get items by title
 exports.getItemsByTitle = async (req, res) => {
     try {
-        const items = await Item.find({ title: { $regex: req.params.title, $options: 'i' } });
-        res.json(items);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-};
-
-// Get items by price range
-exports.getItemsByPriceRange = async (req, res) => {
-    try {
-        const { minPrice, maxPrice } = req.query;
         const items = await Item.find({
-            price: { $gte: minPrice, $lte: maxPrice }
+            title: { $regex: req.params.title, $options: 'i' },
+            sold: false,
         });
         res.json(items);
     } catch (err) {
@@ -251,21 +246,56 @@ exports.getItemsByPriceRange = async (req, res) => {
     }
 };
 
-// Get items by condition
-exports.getItemsByCondition = async (req, res) => {
+
+// Get items by price range
+exports.getItemsByPriceRange = async (req, res) => {
     try {
-        const items = await Item.find({ condition: req.params.condition });
+        const { minPrice, maxPrice } = req.query;
+        const items = await Item.find({
+            price: { $gte: minPrice, $lte: maxPrice },
+            sold: false,
+        });
         res.json(items);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
 
+
+// Get items by condition
+exports.getItemsByCondition = async (req, res) => {
+    try {
+        const items = await Item.find({ condition: req.params.condition, sold: false });
+        res.json(items);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+
 // Get items by date
 exports.getItemsByDate = async (req, res) => {
     try {
-        const items = await Item.find({ createdAt: { $gte: new Date(req.params.date) } });
+        const items = await Item.find({
+            createdAt: { $gte: new Date(req.params.date) },
+            sold: false,
+        });
         res.json(items);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+exports.updatesoldItem = async (req, res) => {
+    try {
+        const item = await Item.findById(req.params.id);
+        if (!item) {
+            return res.status(404).json({ message: 'Item not found' });
+        }
+
+        item.sold = true;
+        const updatedItem = await item.save();
+        res.json({ message: 'Item updated successfully', item: updatedItem });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
