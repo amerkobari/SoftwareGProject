@@ -304,6 +304,18 @@ Future<Map<String, dynamic>> ordercompletionmail(Map<String, dynamic> orderDetai
     }
   }
 
+Future<List<Map<String, dynamic>>> fetchSearchItems(String title) async {
+    final url = Uri.parse('$baseUrl/api/auth/get-items-by-title/$title');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data.map((item) => item as Map<String, dynamic>).toList();
+    } else {
+      throw Exception('Failed to load items');
+    }
+  }
+
 Future<List<Map<String, dynamic>>> fetchItemsShop(String shopId) async {
     final url = Uri.parse('$baseUrl/api/auth/get-items-by-shop/$shopId');
     final response = await http.get(url);
