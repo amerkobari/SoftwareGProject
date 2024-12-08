@@ -83,7 +83,7 @@ exports.addItemId = async (req, res) => {
             location,
         }
 
-        // console.log({itemData});
+        console.log({itemData});
         
         const newItem = new Item(itemData);
 
@@ -153,11 +153,11 @@ exports.getShopItems = async (req, res) => {
 
 // Update an item by ID
 exports.updateItem = async (req, res) => {
-    // console.log("were inside the update item");
+    console.log("were inside the update item");
     try {
-        // console.log("were inside the update item");
-        // console.log('Request Body:', req.body);
-        // console.log('Request Files:', req.files);
+        console.log("were inside the update item");
+        console.log('Request Body:', req.body);
+        console.log('Request Files:', req.files);
 
         
 

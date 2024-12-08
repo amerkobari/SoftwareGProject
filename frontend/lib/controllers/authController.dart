@@ -112,7 +112,7 @@ Future<Map<String, dynamic>> login(String email, String password) async {
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
       //i want to print the response data
-      // print(responseData);
+      print(responseData);
       return {
         'success': true,
         'message': responseData['message'],
@@ -140,7 +140,7 @@ Future<Map<String, dynamic>> login(String email, String password) async {
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
       // Printing the response data to debug
-      // print('Response Data: $responseData');
+      print('Response Data: $responseData');
       return {
         'success': true,
         'message': responseData['message'],
@@ -168,9 +168,9 @@ Future<Map<String, dynamic>> ordercompletionmail(Map<String, dynamic> orderDetai
   final addNewOrderUrl = Uri.parse('$baseUrl/api/auth/add-new-order');
 
   // Log the data being sent
-  // print('Request Payload: ${jsonEncode({
-  //   'orderDetails': orderDetails,
-  // })}');
+  print('Request Payload: ${jsonEncode({
+    'orderDetails': orderDetails,
+  })}');
 
   try {
     // Send both requests concurrently
@@ -187,8 +187,8 @@ Future<Map<String, dynamic>> ordercompletionmail(Map<String, dynamic> orderDetai
     if (sendOrderEmailResponse.statusCode == 200 && addNewOrderResponse.statusCode == 201) {
       final sendOrderEmailData = jsonDecode(sendOrderEmailResponse.body);
       final addNewOrderData = jsonDecode(addNewOrderResponse.body);
-      // print('Response Data: $sendOrderEmailData');
-      // print('Add New Order Response Data: $addNewOrderData');
+      print('Response Data: $sendOrderEmailData');
+      print('Add New Order Response Data: $addNewOrderData');
       
       return {
         'success': true,
@@ -198,8 +198,8 @@ Future<Map<String, dynamic>> ordercompletionmail(Map<String, dynamic> orderDetai
       // Handle error if any of the responses fail
       final sendOrderEmailError = jsonDecode(sendOrderEmailResponse.body);
       final addNewOrderError = jsonDecode(addNewOrderResponse.body);
-      // print('Error Response (sendOrderEmail): $sendOrderEmailError');
-      // print('Error Response (addNewOrder): $addNewOrderError');
+      print('Error Response (sendOrderEmail): $sendOrderEmailError');
+      print('Error Response (addNewOrder): $addNewOrderError');
       
       return {
         'success': false,
@@ -256,7 +256,7 @@ Future<Map<String, dynamic>> ordercompletionmail(Map<String, dynamic> orderDetai
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         // Print response data for debugging purposes
-        // print('Response Data: $responseData');
+        print('Response Data: $responseData');
         return {
           'success': true,
           'message': responseData['message'],
@@ -332,7 +332,7 @@ Future<List<Map<String, dynamic>>> fetchItemsShop(String shopId) async {
       final response = await http.get(Uri.parse('$baseUrl/api/auth/get-item/$itemId'));
 
       if (response.statusCode == 200) {
-        // print(response.body);
+        print(response.body);
         return json.decode(response.body) as Map<String, dynamic>;
       } else {
         throw Exception('Failed to load item. Status code: ${response.statusCode}');
@@ -479,34 +479,6 @@ Future<String?> fetchShopId() async {
   } catch (e) {
     print('Error fetching shop ID: $e');
     return null;
-  }
-}
-
-
-//
-Future<Map<String, dynamic>> getDistance(String origin, String destination) async {
-  final url = Uri.parse('$baseUrl/api/auth/get-distance');
-  try {
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'location1': origin, 'location2': destination}),
-    );
-
-    if (response.statusCode == 200) {
-      final responseData = jsonDecode(response.body);
-      return {
-        'success': true,
-        'distance': responseData['distance'],
-        // 'duration': responseData['duration'],
-      };
-    } else {
-      final responseData = jsonDecode(response.body);
-      return {'success': false, 'message': responseData['error'] ?? 'Failed to get distance'};
-    }
-  } catch (e) {
-    print('Error occurred while fetching distance: $e');
-    return {'success': false, 'message': 'Unable to connect to the server.'};
   }
 }
 

@@ -4,5 +4,5 @@ const orderController = require('../controller/orderController'); // Import the 
 
 // Route to create a new order
 router.post('/add-new-order', orderController.addOrder);
-
+router.get('/check-first-order/:email', orderController.checkFirstOrder);
 module.exports = router;
