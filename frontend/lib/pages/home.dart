@@ -17,6 +17,7 @@ import 'package:untitled/pages/motherboard.dart';
 import 'package:untitled/pages/mycart.dart';
 import 'package:untitled/pages/myshoppage.dart';
 import 'package:untitled/pages/ram.dart';
+import 'package:untitled/pages/search.dart';
 import 'package:untitled/pages/shoppage.dart'; // Make sure to include this import for SVG support
 
 
@@ -48,105 +49,66 @@ class _HomePageState extends State<HomePage> {
   }
 
   // Search Bar Widget
-  Container _searchField() {
-    return Container(
-      margin: const EdgeInsets.only(top: 40, left: 20, right: 20),
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xff1D1617).withOpacity(0.18),
-            blurRadius: 45,
-            spreadRadius: 0.0,
-          )
-        ],
-      ),
-      child: TextField(
-        decoration: InputDecoration(
-          filled: true,
-          fillColor: Colors.white,
-          contentPadding: const EdgeInsets.all(15),
-          hintText: 'Search Hardware',
-          hintStyle: const TextStyle(
-            color: Color(0xffDDDADA),
-            fontSize: 14,
-          ),
-          prefixIcon: Padding(
+ Container _searchField() {
+  TextEditingController searchController = TextEditingController();
+
+  return Container(
+    margin: const EdgeInsets.only(top: 40, left: 20, right: 20),
+    decoration: BoxDecoration(
+      boxShadow: [
+        BoxShadow(
+          color: const Color(0xff1D1617).withOpacity(0.18),
+          blurRadius: 45,
+          spreadRadius: 0.0,
+        )
+      ],
+    ),
+    child: TextField(
+      controller: searchController,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: const EdgeInsets.all(15),
+        hintText: 'Search Hardware',
+        hintStyle: const TextStyle(
+          color: Color(0xffDDDADA),
+          fontSize: 14,
+        ),
+        prefixIcon: GestureDetector(
+          onTap: () {
+            if (searchController.text.isNotEmpty) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SearchResultsPage(query: searchController.text),
+                ),
+              );
+            }
+          },
+          child: Padding(
             padding: const EdgeInsets.all(12),
             child: SvgPicture.asset('assets/icons/Search.svg'),
           ),
-          suffixIcon: SizedBox(
-            width: 100,
-            child: IntrinsicHeight(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  const VerticalDivider(
-                    color: Colors.black,
-                    indent: 10,
-                    endIndent: 10,
-                    thickness: 0.1,
-                  ),
-                  GestureDetector(
-                    onTap: _showFilterDialog,
-                    child: Padding(
-                      padding: const EdgeInsets.all(11.0),
-                      child: SvgPicture.asset(
-                        'assets/icons/Filter.svg',
-                        width: 30,
-                        height: 30,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(15),
-            borderSide: BorderSide.none,
-          ),
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide.none,
         ),
       ),
-    );
-  }
-
-  // Method to show filter popup
-  void _showFilterDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Filter Options'),
-          content: const Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Select your filter criteria here.'),
-              TextField(
-                decoration: InputDecoration(hintText: 'Filter by price'),
-              ),
-              TextField(
-                decoration: InputDecoration(hintText: 'Filter by category'),
-              ),
-            ],
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Close'),
+      onSubmitted: (value) {
+        if (value.isNotEmpty) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SearchResultsPage(query: value),
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Apply'),
-            ),
-          ],
-        );
+          );
+        }
       },
-    );
-  }
+    ),
+  );
+}
+
 
   // Content for HomePage with BoxShadow on Search Bar
   Widget _homePageContent() {

@@ -62,7 +62,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
  Future<void> calculateDeliveryFees(String selectedCity, String location) async {
   double totalDeliveryFee = 0.0;
   try {
-    if (selectedCity != null && location != null) {
+    if (location != null) {
       for (var item in widget.cartItems) {
         // Fetch the distance using authController.getDistance
         final result = await authController.getDistance(
