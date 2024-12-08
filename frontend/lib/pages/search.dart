@@ -156,7 +156,7 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
     };
 
     // Return the corresponding icon or a default icon if category is not found
-    return categoryIcons[category?.toLowerCase()] ?? 'assets/icons/default.png';
+    return categoryIcons[category] ?? 'assets/icons/$categoryIcons.png';
   }
 
   @override

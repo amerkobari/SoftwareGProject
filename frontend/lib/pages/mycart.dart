@@ -37,8 +37,7 @@ class _CartPageState extends State<CartPage> {
                     itemCount: cartList.length,
                     itemBuilder: (context, index) {
                       final item = cartList[index];
-                      final categoryIcon =
-                          _getCategoryIcon(item['category']); // Get category icon
+                      final categoryIcon = _getCategoryIcon(item['category']); // Get category icon
 
                       return ListTile(
                         title: Row(
@@ -50,20 +49,11 @@ class _CartPageState extends State<CartPage> {
                             ),
                           ],
                         ),
-                        subtitle: Text(
-                          'Location: ${item['location'] ?? 'Unknown'}',
-                          style: const TextStyle(fontSize: 14),
-                        ), // Show location as subtitle
+                        subtitle: null, // No subtitle, only the price and delete icon
                         trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
+                          mainAxisSize: MainAxisSize.min, // To keep both price and delete icon tight
                           children: [
-                            Text(
-                              "₪${item['price'] ?? '0.00'}",
-                              style: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green),
-                            ),
+                            Text("₪${item['price'] ?? '0.00'}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.green),), // Display price next to the delete icon
                             IconButton(
                               icon: const Icon(Icons.delete, color: Colors.grey),
                               onPressed: () {
@@ -105,36 +95,30 @@ class _CartPageState extends State<CartPage> {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          // Navigate to CheckoutPage and pass cart items and total price
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CheckoutPage(
-                                cartItems: cartList
-                                    .map((item) => {
-                                          'title': item['title'],
-                                          'price': item['price'],
-                                          'location': item['location'], // Include location
-                                        })
-                                    .toList(),
-                                totalPrice: totalPrice,
-                              ),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 30, vertical: 10),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          backgroundColor: Colors.blue, // Solid blue button
-                        ),
-                        child: const Text(
-                          'Checkout',
-                          style: TextStyle(fontSize: 18, color: Colors.white),
-                        ),
-                      ),
+    // Navigate to CheckoutPage and pass cart items and total price
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CheckoutPage(
+          cartItems: cartList,
+          totalPrice: totalPrice,
+        ),
+      ),
+    );
+  },
+  style: ElevatedButton.styleFrom(
+    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(10),
+    ),
+    backgroundColor: Colors.blue, // Solid blue button
+  ),
+  child: const Text(
+    'Checkout',
+    style: TextStyle(fontSize: 18, color: Colors.white),
+  ),
+),
+                    
                     ],
                   ),
                 ),
@@ -169,7 +153,7 @@ class _CartPageState extends State<CartPage> {
       case 'Accessories':
         return Image.asset('assets/icons/accessorise.png', width: 40, height: 40);
       default:
-        return const Icon(Icons.category, color: Colors.grey); // Default icon
+        return Icon(Icons.category, color: Colors.grey); // Default icon
     }
   }
 }
