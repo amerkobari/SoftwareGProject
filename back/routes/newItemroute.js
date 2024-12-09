@@ -29,4 +29,10 @@ router.put('/update-item/:id', upload.array('images' , 5),itemController.updateI
 router.put('/update-item-sold/:id', itemController.updatesoldItem);
 router.delete('/delete-item/:id', itemController.deleteItem);
 
+router.get('/count-items-sold/:username', itemController.getItemsSoldCount);
+router.get('/items-sold/:username', itemController.getItemsSold);
+router.get('/user-balance/:username', itemController.getUserBalance);
+
+router.get('/get-items-by-user/:username', itemController.getItemsByUsername);
+
 module.exports = router;

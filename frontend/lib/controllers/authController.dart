@@ -290,7 +290,55 @@ Future<Map<String, dynamic>> ordercompletionmail(Map<String, dynamic> orderDetai
     }
   }
 
+  Future<List<Map<String, dynamic>>> fetchuserItems(String username) async {
+    final url = Uri.parse('$baseUrl/api/auth/get-items-by-user/$username');
+    final response = await http.get(url);
 
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data.map((item) => item as Map<String, dynamic>).toList();
+    } else {
+      throw Exception('Failed to load items');
+    }
+  }
+
+ Future<List<Map<String, dynamic>>> fetchSoldItems(String username) async {
+    final url = Uri.parse('$baseUrl/api/auth/items-sold/$username');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data.map((item) => item as Map<String, dynamic>).toList();
+    } else {
+      throw Exception('Failed to load items');
+    }
+  }
+
+  Future<Map<String, dynamic>> getDistance(String origin, String destination) async {
+  final url = Uri.parse('$baseUrl/api/auth/get-distance');
+  try {
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'location1': origin, 'location2': destination}),
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      return {
+        'success': true,
+        'distance': responseData['distance'],
+        // 'duration': responseData['duration'],
+      };
+    } else {
+      final responseData = jsonDecode(response.body);
+      return {'success': false, 'message': responseData['error'] ?? 'Failed to get distance'};
+    }
+  } catch (e) {
+    print('Error occurred while fetching distance: $e');
+    return {'success': false, 'message': 'Unable to connect to the server.'};
+  }
+}
 
     Future<List<Map<String, dynamic>>> fetchItems(String category) async {
     final url = Uri.parse('$baseUrl/api/auth/get-items-by-category/$category');
