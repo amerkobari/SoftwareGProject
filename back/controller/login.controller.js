@@ -44,7 +44,7 @@ exports.login = async (req, res) => {
 
   try {
     // Find the user by email
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: { $regex: new RegExp(`^${email}$`, 'i') } });
     if (!user) {
       return res.status(400).json({ error: 'Invalid email or password.' });
     }
@@ -77,5 +77,28 @@ exports.login = async (req, res) => {
   } catch (error) {
     console.error('Error during login:', error);
     res.status(500).json({ error: 'Server error.' });
+  }
+};
+
+exports.getUserInformation = async (req, res) => {
+  const { username } = req.params; // Extract username from route parameter
+
+  try {
+    if (!username) {
+      throw new Error('Username is required');
+    }
+
+    // Find the user by username and exclude __v
+    const user = await User.findOne({ username }, { __v: 0 });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Exclude password from the response
+    const { password, ...userInfo } = user.toObject();
+    res.status(200).json(userInfo);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };

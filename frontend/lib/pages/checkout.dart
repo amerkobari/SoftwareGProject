@@ -21,7 +21,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     final authController = AuthController(); // Define the authController
 
   final String baseUrl = "http://10.0.2.2:3000"; // Replace with your backend URL
-  double deliveryFee = 10.0; // Placeholder delivery fee
+  double deliveryFee = 0.0; // Placeholder delivery fee
   double totalAmount = 0.0;
   String? selectedCity;
   bool paymentOnDelivery = false;
@@ -80,6 +80,61 @@ Future<void> checkFirstOrder() async {
       );
     }
   }
+}
+
+Future<void> calculateDeliveryFees(String selectedCity, String location) async {
+  double totalDeliveryFee = 0.0;
+  try {
+    if (selectedCity != null && location != null) {
+      for (var item in widget.cartItems) {
+        // Fetch the distance using authController.getDistance
+        final result = await authController.getDistance(
+          '$selectedCity, Palestine',
+          '${item['location']}, Palestine',
+        );
+
+        if (result['success']) {
+          double distance = double.parse(result['distance']);
+          print('Distance between $selectedCity and ${item['location']}: $distance km');
+
+          // Calculate fee based on distance
+          double fee;
+          if (distance < 10) {
+            fee = 10.0;
+          } else if (distance >= 10 && distance < 20) {
+            fee = 15.0;
+          } else if (distance >= 20 && distance < 50) {
+            fee = 25.0;
+          } else {
+            fee = 50.0; // For distances 50km or more
+          }
+
+          totalDeliveryFee += fee;
+        } else {
+          // Handle error when fetching distance
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Error calculating delivery fees for ${item['title']}: ${result['message']}',
+              ),
+            ),
+          );
+          return; // Return the current total fees in case of an error
+        }
+      }
+    }
+  } catch (error) {
+    // Handle unexpected errors
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error: $error')),
+    );
+  }
+
+setState(() {
+    deliveryFee = totalDeliveryFee;
+    totalAmount = widget.totalPrice + deliveryFee;
+});
+  return;
 }
 
 Future<void> applyPromoCode() async {
@@ -252,26 +307,26 @@ Future<void> setitemSold() async {
                       },
                     ),
                     DropdownButtonFormField<String>(
-                      decoration: const InputDecoration(labelText: 'City'),
-                      value: selectedCity,
-                      items: cities.map((city) {
-                        return DropdownMenuItem(
-                          value: city,
-                          child: Text(city),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          selectedCity = value;
-                        });
-                      },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please select a city';
-                        }
-                        return null;
-                      },
-                    ),
+decoration: const InputDecoration(labelText: 'City'),
+  value: selectedCity,
+  items: cities.map((city) {
+    return DropdownMenuItem(
+      value: city,
+      child: Text(city),
+    );
+  }).toList(),
+  onChanged: (value) async {
+    setState(() {
+      selectedCity = value;
+      totalAmount = widget.totalPrice; 
+      calculateDeliveryFees(selectedCity!, widget.cartItems[0]['location'] ?? '');
+    });
+
+  },
+  validator: (value) =>
+      value?.isEmpty ?? true ? 'Please select a city' : null,
+),
+
                     TextFormField(
                       decoration: const InputDecoration(labelText: 'Location'),
                       onChanged: (value) => location = value,

@@ -476,15 +476,20 @@ class _HomePageState extends State<HomePage> {
           ),
         ] else ...[
           ListTile(
-            leading: const Icon(Icons.account_circle, color: Colors.black),
-            title: const Text('Profile'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => UserProfilePage(userName: widget.username,)),
-              );
-            },
-          ),
+  leading: const Icon(Icons.account_circle, color: Colors.black),
+  title: const Text('Profile'),
+  trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => UserProfilePage(
+          userName: widget.username,
+        ),
+      ),
+);
+},
+),
           ListTile(
             leading: const Icon(Icons.favorite, color: Colors.black),
             title: const Text('Favorites'),

@@ -211,10 +211,10 @@ exports.deleteItem = async (req, res) => {
 };
 
 
-// Get items by user ID
-exports.getItemsByUser = async (req, res) => {
+// Get items by username
+exports.getItemsByUsername = async (req, res) => {
     try {
-        const items = await Item.find({ userId: req.params.userId, sold: false });
+        const items = await Item.find({ username: req.params.username, sold: false });
         res.json(items);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -300,3 +300,72 @@ exports.updatesoldItem = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+// Controller: Get all sold items
+exports.getItemsSold = async (req, res) => {
+    try {
+      const items = await Item.find({ sold: true });
+      
+      // Ensure that if no items are sold, an empty array is returned
+      if (!items || items.length === 0) {
+        return res.status(200).json([]);
+      }
+  
+      res.json(items);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  };
+  
+  // Controller: Get the number of items sold for a specific user (using route parameter)
+  exports.getItemsSoldCount = async (req, res) => {
+    const { username } = req.params;
+  
+    try {
+      if (!username) {
+        return res.status(400).json({ error: 'Username is required' });
+      }
+  
+      // Count the number of sold items for the specified username
+      const soldCount = await Item.countDocuments({ username, sold: true });
+  
+      res.status(200).json({
+        username,
+        soldCount,
+      });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+  };
+  
+  // Controller: Calculate the balance (sum of sold item prices) for a specific user (using route parameter)
+  exports.getUserBalance = async (req, res) => {
+    const { username } = req.params;
+  
+    try {
+      if (!username) {
+        return res.status(400).json({ error: 'Username is required' });
+      }
+  
+      // Aggregate the balance for sold items belonging to the specified username
+      const balanceResult = await Item.aggregate([
+        { $match: { username, sold: true } }, // Filter by username and sold items
+        {
+          $group: {
+            _id: null, // We don’t need to group by any field
+            totalBalance: { $sum: '$price' }, // Sum prices of sold items
+          },
+        },
+      ]);
+  
+      const totalBalance = balanceResult.length > 0 ? balanceResult[0].totalBalance : 0;
+  
+      res.status(200).json({
+        username,
+        balance: totalBalance,
+      });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+  };
+  
