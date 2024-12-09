@@ -16,6 +16,7 @@ import 'package:untitled/pages/monitor.dart';
 import 'package:untitled/pages/motherboard.dart';
 import 'package:untitled/pages/mycart.dart';
 import 'package:untitled/pages/myshoppage.dart';
+import 'package:untitled/pages/profilepage.dart';
 import 'package:untitled/pages/ram.dart';
 import 'package:untitled/pages/search.dart';
 import 'package:untitled/pages/shoppage.dart'; // Make sure to include this import for SVG support
@@ -478,7 +479,10 @@ class _HomePageState extends State<HomePage> {
             leading: const Icon(Icons.account_circle, color: Colors.black),
             title: const Text('Profile'),
             onTap: () {
-              // Navigate to Profile
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => UserProfilePage(userName: widget.username,)),
+              );
             },
           ),
           ListTile(
