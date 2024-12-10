@@ -84,10 +84,19 @@ class _UserProfilePageState extends State<UserProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.blue,
         title: const Text('Profile'),
+        titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
+        iconTheme: const IconThemeData(color: Colors.white),
+        centerTitle: true,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.history),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0), // Add right padding
+            child: IconButton(
+              icon: const Icon(
+                Icons.history,
+                color: Colors.white, // Icon color set to white
+              ),
             onPressed: () {
               showModalBottomSheet(
                 context: context,
@@ -129,6 +138,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 },
               );
             },
+          ),
           ),
         ],
       ),

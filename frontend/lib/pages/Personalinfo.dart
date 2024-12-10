@@ -207,6 +207,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
+        iconTheme: const IconThemeData(color: Colors.white),
         title: const Text('Personal Information'),
         titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
         centerTitle: true,
