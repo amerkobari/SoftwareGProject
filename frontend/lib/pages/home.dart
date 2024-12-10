@@ -20,6 +20,7 @@ import 'package:untitled/pages/profilepage.dart';
 import 'package:untitled/pages/ram.dart';
 import 'package:untitled/pages/search.dart';
 import 'package:untitled/pages/shoppage.dart'; // Make sure to include this import for SVG support
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -47,6 +48,13 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+
+  Future<void> clearSpecificPreference() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.clear();
+  print("All preferences cleared!");
   }
 
   // Search Bar Widget
@@ -381,6 +389,14 @@ class _HomePageState extends State<HomePage> {
 
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.username == 'Guest') {
+      authController.fetchAndSetGuestToken();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -551,7 +567,8 @@ class _HomePageState extends State<HomePage> {
           ListTile(
             leading: const Icon(Icons.logout, color: Colors.black),
             title: const Text('Logout'),
-            onTap: () {
+            onTap: () async {
+              await clearSpecificPreference();
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => const HomePage(username: 'Guest')),

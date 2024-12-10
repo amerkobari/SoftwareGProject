@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:untitled/controllers/authController.dart';
+import 'package:untitled/pages/Personalinfo.dart';
+import 'package:untitled/pages/profilepage.dart';
 import 'dart:convert';
+
+import 'package:untitled/pages/userpage.dart';
 
 List<Map<String, dynamic>> favoritesList = [];
 List<Map<String, dynamic>> cartList = [];
@@ -16,6 +21,8 @@ class ItemPage extends StatefulWidget {
 
 class _ItemPageState extends State<ItemPage> {
   final AuthController _authController = AuthController();
+
+
   Map<String, dynamic>? _itemData;
   bool _isLoading = true;
 
@@ -41,6 +48,14 @@ class _ItemPageState extends State<ItemPage> {
       );
     }
   }
+
+  Future<String> getUsername() async {
+    String token = await _authController.getToken();
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+      String username = decodedToken['username'] ?? 'Guest';
+    return username;
+  }
+  // Future<String> username = getUsername();
 
   @override
   Widget build(BuildContext context) {
@@ -123,8 +138,38 @@ class _ItemPageState extends State<ItemPage> {
                         _itemData!['title'],
                         style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                       ),
-                      const SizedBox(height: 8),
-                      Text("Seller: ${_itemData!['username']}", style: const TextStyle(fontSize: 16, color: Colors.grey)),
+                    GestureDetector(
+                    onTap: () {
+    // Define your action
+                    getUsername().then((username) {
+                      if (username == _itemData!['username']) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => UserProfilePage(userName: username),
+                          ),
+                        );
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => UserPage(userName: _itemData!['username']),
+                          ),
+                        );
+                      }
+                    });
+  },
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const SizedBox(height: 8),
+      Text(
+        "Seller: ${_itemData!['username']}",
+        style: const TextStyle(fontSize: 16, color: Colors.grey),
+      ),
+    ],
+  ),
+),
                       const SizedBox(height: 16),
                       Text("Price: ₪${_itemData!['price']}", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),

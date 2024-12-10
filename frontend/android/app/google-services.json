@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "451295696723",
+    "project_id": "hardwarebazaar24",
+    "storage_bucket": "hardwarebazaar24.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:451295696723:android:d5f066e58fad0c6f9033a6",
+        "android_client_info": {
+          "package_name": "com.example.untitled"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZ504A8b4bAM5Gbk7aUxFsTkaxPA1QnJQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
