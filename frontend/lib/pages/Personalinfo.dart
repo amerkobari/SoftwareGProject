@@ -206,7 +206,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: Color.fromARGB(255, 254, 111,103),
         iconTheme: const IconThemeData(color: Colors.white),
         title: const Text('Personal Information'),
         titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
@@ -273,7 +273,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   Widget _buildResetPasswordButton() {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.white, backgroundColor: Colors.blue,
+        foregroundColor: Colors.white, backgroundColor: Color.fromARGB(255, 254, 111,103),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),

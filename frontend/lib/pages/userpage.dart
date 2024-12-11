@@ -170,7 +170,7 @@ class _UserPageState extends State<UserPage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: Color.fromARGB(255, 254, 111,103),
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0.0,
         centerTitle: true,
@@ -196,7 +196,7 @@ class _UserPageState extends State<UserPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 32),
-            const Icon(Icons.account_circle, size: 140, color: Colors.blue),
+            const Icon(Icons.account_circle, size: 140, color: Color.fromARGB(255, 254, 111,103)),
             const SizedBox(height: 8),
             Text(
               widget.userName,
@@ -223,7 +223,7 @@ class _UserPageState extends State<UserPage> {
               style: ElevatedButton.styleFrom(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                backgroundColor: Colors.blue,
+                backgroundColor: Color.fromARGB(255, 254, 111,103),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),

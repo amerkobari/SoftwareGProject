@@ -394,13 +394,14 @@ class _SignUpPageState extends State<SignUpPage> {
                 onPressed: _validateAndSignUp,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 30,
-                    vertical: 10,
+                    horizontal: 35,
+                    vertical: 15,
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  backgroundColor: Colors.blue, // Solid blue button
+                  backgroundColor:
+                      Color.fromARGB(255, 254, 111, 103), // Solid blue button
                 ),
                 child: const Text(
                   'Sign Up',
