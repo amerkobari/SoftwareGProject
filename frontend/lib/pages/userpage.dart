@@ -295,48 +295,47 @@ class _UserPageState extends State<UserPage> {
               ),
             ),
             const SizedBox(height: 16),
-            Expanded(
-              child: _userItems.isEmpty
-                  ? const Center(child: CircularProgressIndicator())
-                  : ListView.builder(
-                      itemCount: _userItems.length,
-                      itemBuilder: (context, index) {
-                        final item = _userItems[index];
-                        final category = item['category']; // Get the category
+           Expanded(
+  child: _userItems.isEmpty
+      ? const Center(child: CircularProgressIndicator())
+      : ListView.builder(
+          itemCount: _filteredItems.isEmpty
+              ? _userItems.length
+              : _filteredItems.length,
+          itemBuilder: (context, index) {
+            final item = _filteredItems.isEmpty
+                ? _userItems[index]
+                : _filteredItems[index];
+            final category = item['category']; // Get the category
 
-                        return Card(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
-                          child: ListTile(
-                            leading: Image.asset(
-                              _getCategoryIcon(
-                                  category), // Display the icon based on the category
-                              width: 40, // Icon width
-                              height: 40, // Icon height
-                            ),
-                            title: Text(item['title']),
-                            // subtitle: Text(item['description']),
-                            trailing: Text(
-                              '₪${item['price']}',
-                              style: const TextStyle(
-                                  color: Colors.green,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            onTap: () async {
-                              final itemId = item['_id']; // Get the item ID
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      ItemPage(itemId: itemId),
-                                ),
-                              );
-                            },
-                          ),
-                        );
-                      },
+            return Card(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: ListTile(
+                leading: Image.asset(
+                  _getCategoryIcon(category), // Display the icon based on the category
+                  width: 40, // Icon width
+                  height: 40, // Icon height
+                ),
+                title: Text(item['title']),
+                trailing: Text(
+                  '₪${item['price']}',
+                  style: const TextStyle(
+                      color: Colors.green, fontWeight: FontWeight.bold),
+                ),
+                onTap: () async {
+                  final itemId = item['_id']; // Get the item ID
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ItemPage(itemId: itemId),
                     ),
-            ),
+                  );
+                },
+              ),
+            );
+          },
+        ),
+)
           ],
         ),
       ),

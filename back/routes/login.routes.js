@@ -6,5 +6,5 @@ router.post('/register', authController.register);
 router.post('/login', authController.login);
 
 router.get('/get-user-information/:username', authController.getUserInformation);
-
+router.get('/get-guest-token', authController.getGuestToken);
 module.exports = router;

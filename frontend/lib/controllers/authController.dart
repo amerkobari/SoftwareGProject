@@ -493,12 +493,11 @@ Future<Map<String, dynamic>> removeItem(String itemId) async {
   }
 }
 
-
 Future<String?> fetchShopId() async {
   final url = Uri.parse('$baseUrl/api/auth/get-shop-id');
 
   // Retrieve the token from shared preferences or another storage
-  String token = await _getToken();
+  String token = await getToken();
   // Print the token for debugging purposes
   print('Token from auth controller: $token');
   
@@ -530,9 +529,34 @@ Future<String?> fetchShopId() async {
   }
 }
 
+Future<void> fetchAndSetGuestToken() async {
+  final String apiUrl = ('$baseUrl/api/auth/get-guest-token');
+  
+  try {
+    final response = await http.get(Uri.parse(apiUrl));
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      final String token = data['token'];
+
+      // Save the token to SharedPreferences
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', token);
+
+      print("Guest token set successfully: $token");
+    } else {
+      print("Failed to fetch guest token. Status code: ${response.statusCode}");
+    }
+  } catch (e) {
+    print("Error fetching guest token: $e");
+  }
+}
+
+
+
 
 // Helper function to get the token
-Future<String> _getToken() async {
+Future<String> getToken() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   return prefs.getString('token') ?? '';
 }

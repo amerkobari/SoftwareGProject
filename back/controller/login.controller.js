@@ -102,3 +102,17 @@ exports.getUserInformation = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.getGuestToken = async (req, res) => {
+  const payload = {
+    username: 'Guest', // Username
+  };
+
+  // Generate a JWT
+  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || '1h' });
+
+  res.status(200).json({
+    message: 'Guest token generated successfully.',
+    token,
+  });
+};
