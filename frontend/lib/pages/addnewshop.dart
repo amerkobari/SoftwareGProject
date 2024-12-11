@@ -26,19 +26,18 @@ Future<void> addNewShop({
   request.fields['email'] = email;
   request.fields['phoneNumber'] = phoneNumber;
 
- if (logo != null) {
+  if (logo != null) {
     print('Logo path: ${logo.path}');
     request.files.add(await http.MultipartFile.fromPath('logo', logo.path));
-} else {
+  } else {
     print('Logo is null');
-}
+  }
 
   print('Sending request with logo: ${logo?.path}');
 
   final response = await request.send();
 
-
-  //print the response 
+  //print the response
   print("THIS IS THE RESPONSE $response");
   if (response.statusCode == 201) {
     print('Shop added successfully!');
@@ -92,14 +91,16 @@ class _AddNewShopPageState extends State<AddNewShopPage> {
   ];
 
   Future<void> _pickImage() async {
-    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile =
+        await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         logo = File(pickedFile.path);
       });
     }
   }
-Future<void> _submitShop() async {
+
+  Future<void> _submitShop() async {
     if (_formKey.currentState?.validate() ?? false) {
       try {
         await addNewShop(
@@ -112,7 +113,7 @@ Future<void> _submitShop() async {
           logo: logo,
         );
 
-          ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Shop added successfully!')),
         );
 
@@ -122,8 +123,6 @@ Future<void> _submitShop() async {
         } else {
           _showSnackBar(context, result['message']);
         }
-      
-        
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error adding shop: $error')),
@@ -132,10 +131,8 @@ Future<void> _submitShop() async {
     }
   }
 
- 
-
-
-  void _showSnackBar(BuildContext context, String message, {bool isError = true}) {
+  void _showSnackBar(BuildContext context, String message,
+      {bool isError = true}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -290,7 +287,18 @@ Future<void> _submitShop() async {
                   ),
                 ),
                 const SizedBox(height: 16),
-                
+
+                // Monthly Subscription Text
+                Text(
+                  'Monthly Subscription: ₪100',
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Color.fromARGB(255, 254, 111, 103),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+
                 // Payment Method Section (Credit/Debit Card)
                 Container(
                   padding: const EdgeInsets.all(16.0),
@@ -302,7 +310,8 @@ Future<void> _submitShop() async {
                     children: [
                       Text(
                         'Payment Method',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 16),
                       // Cardholder's Name
@@ -320,7 +329,7 @@ Future<void> _submitShop() async {
                         onChanged: (value) => cardHolderName = value,
                       ),
                       const SizedBox(height: 16),
-                      
+
                       // Card Number
                       TextFormField(
                         decoration: const InputDecoration(
@@ -329,7 +338,8 @@ Future<void> _submitShop() async {
                         ),
                         keyboardType: TextInputType.number,
                         inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly, // Only allows digits (0-9)
+                          FilteringTextInputFormatter
+                              .digitsOnly, // Only allows digits (0-9)
                         ],
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -344,7 +354,7 @@ Future<void> _submitShop() async {
                         onChanged: (value) => cardNumber = value,
                       ),
                       const SizedBox(height: 16),
-                      
+
                       // Expiration Date
                       TextFormField(
                         decoration: const InputDecoration(
@@ -353,14 +363,16 @@ Future<void> _submitShop() async {
                         ),
                         keyboardType: TextInputType.datetime,
                         inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp(r'[0-9/]')) // Only allows digits and "/"
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r'[0-9/]')) // Only allows digits and "/"
                         ],
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter the expiration date';
                           }
                           // Expiration date basic validation
-                          String expPattern = r'^(0[1-9]|1[0-2])\/[0-9]{2}$';  // MM/YY format
+                          String expPattern =
+                              r'^(0[1-9]|1[0-2])\/[0-9]{2}$'; // MM/YY format
                           RegExp regExp = RegExp(expPattern);
                           if (!regExp.hasMatch(value)) {
                             return 'Enter a valid expiration date (MM/YY)';
@@ -370,7 +382,7 @@ Future<void> _submitShop() async {
                         onChanged: (value) => expirationDate = value,
                       ),
                       const SizedBox(height: 16),
-                      
+
                       // CVV
                       TextFormField(
                         decoration: const InputDecoration(
@@ -379,7 +391,8 @@ Future<void> _submitShop() async {
                         ),
                         keyboardType: TextInputType.number,
                         inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly, // Only allows digits (0-9)
+                          FilteringTextInputFormatter
+                              .digitsOnly, // Only allows digits (0-9)
                         ],
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -398,30 +411,18 @@ Future<void> _submitShop() async {
                 ),
 
                 const SizedBox(height: 16),
-                
-                // Monthly Subscription Text
-                Text(
-                  'Monthly Subscription: ₪100',
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.red,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                const SizedBox(height: 16),
                 // Submit Button
                 ElevatedButton(
                   onPressed: _submitShop,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 30,
-                      vertical: 10,
+                      horizontal: 35,
+                      vertical: 15,
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    backgroundColor: Colors.blue,
+                    backgroundColor: Color.fromARGB(255, 254, 111, 103),
                   ),
                   child: const Text(
                     'Submit Shop',

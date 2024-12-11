@@ -62,13 +62,13 @@ class _AddItemPageState extends State<AddItemPage> {
 
   double getDynamicFeePercentage(double price) {
     if (price >= 1000) {
-      return 8.0; 
+      return 8.0;
     } else if (price >= 800) {
-      return 7.0; 
+      return 7.0;
     } else if (price >= 300) {
-      return 5.0; 
+      return 5.0;
     } else {
-      return 3.0; 
+      return 3.0;
     }
   }
 
@@ -275,7 +275,7 @@ class _AddItemPageState extends State<AddItemPage> {
                   },
                   onChanged: onPriceChanged, // Update price dynamically
                 ),
-              
+
                 const SizedBox(height: 30), // Increased space before 'Category'
                 const Text(
                   'Category',
@@ -289,10 +289,11 @@ class _AddItemPageState extends State<AddItemPage> {
                     return ChoiceChip(
                       label: Text(cat),
                       selected: category == cat,
-                      selectedColor: Colors
-                          .blue, // Set background color to blue when selected
-                      backgroundColor: Colors.blue.withOpacity(
-                          0.1), // Set background color to gray when not selected
+                      selectedColor: Color.fromARGB(255, 254, 111,
+                          103), // Set background color to blue when selected
+                      backgroundColor: Color.fromARGB(255, 254, 111, 103)
+                          .withOpacity(
+                              0.1), // Set background color to gray when not selected
                       onSelected: (selected) {
                         setState(() {
                           category = selected ? cat : null;
@@ -324,10 +325,11 @@ class _AddItemPageState extends State<AddItemPage> {
                     return ChoiceChip(
                       label: Text(cond),
                       selected: condition == cond,
-                      selectedColor: Colors
-                          .blue, // Set background color to blue when selected
-                      backgroundColor: Colors.blue.withOpacity(
-                          0.1), // Set background color to gray when not selected
+                      selectedColor: Color.fromARGB(255, 254, 111,
+                          103), // Set background color to blue when selected
+                      backgroundColor: Color.fromARGB(255, 254, 111, 103)
+                          .withOpacity(
+                              0.1), // Set background color to gray when not selected
                       onSelected: (selected) {
                         setState(() {
                           condition = selected ? cond : null;
@@ -399,7 +401,7 @@ class _AddItemPageState extends State<AddItemPage> {
                         label: const Text('Pick Images',
                             style: TextStyle(color: Colors.white)),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
+                          backgroundColor: Color.fromARGB(255, 254, 111, 103),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -468,8 +470,12 @@ class _AddItemPageState extends State<AddItemPage> {
                 ),
                 const SizedBox(height: 20),
                 CheckboxListTile(
+                  controlAffinity: ListTileControlAffinity
+                      .leading, // Moves checkbox to the left of the text
                   title: Text(
-                      '$feePercentage% - ₪${feeAmount.toStringAsFixed(2)} of the sale will be charged as a fee',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
+                    '$feePercentage% - ₪${feeAmount.toStringAsFixed(2)} of the sale will be charged as a fee',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
                   value: acceptTerms,
                   onChanged: (value) {
                     setState(() {
@@ -477,6 +483,10 @@ class _AddItemPageState extends State<AddItemPage> {
                       acceptTermsError = !acceptTerms; // Reset error if checked
                     });
                   },
+                  activeColor: Color.fromARGB(
+                      255, 254, 111, 103), // Change the tick color to green
+                  checkColor: Colors
+                      .white, // Change the color of the checkmark to white
                 ),
                 if (acceptTermsError)
                   const Padding(
@@ -495,13 +505,14 @@ class _AddItemPageState extends State<AddItemPage> {
                       onPressed: submitItem,
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 30,
-                          vertical: 10,
+                          horizontal: 35,
+                          vertical: 15,
                         ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        backgroundColor: Colors.blue, // Solid blue button
+                        backgroundColor: Color.fromARGB(
+                            255, 254, 111, 103), // Solid blue button
                       ),
                       child: const Text(
                         'Submit Item',

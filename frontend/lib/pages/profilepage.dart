@@ -84,7 +84,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: Color.fromARGB(255, 254, 111,103),
         title: const Text('Profile'),
         titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
         iconTheme: const IconThemeData(color: Colors.white),
@@ -157,7 +157,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-                  const Icon(Icons.account_circle, size: 140, color: Colors.blue),
+                  const Icon(Icons.account_circle, size: 140, color: Color.fromARGB(255, 254, 111,103)),
                   const SizedBox(height: 8),
                   Text(
                     widget.userName,
@@ -171,7 +171,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         child: Container(
                           padding: const EdgeInsets.all(16.0),
                           decoration: BoxDecoration(
-                            color: Colors.blue[100],
+                            color: Color.fromARGB(255, 255, 179, 175),
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                           child: Column(

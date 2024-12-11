@@ -156,7 +156,7 @@ class _ShopPageState extends State<ShopPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: Color.fromARGB(255, 254, 111,103),
         iconTheme: const IconThemeData(color: Colors.white),
         titleTextStyle: const TextStyle(color: Colors.white, fontSize: 18),
         title: Text(_shopData?['shopName'] ?? 'Loading...'),

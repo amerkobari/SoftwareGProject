@@ -124,7 +124,7 @@ class _EditItemPageState extends State<EditItemPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: Color.fromARGB(255, 254, 111,103),
         iconTheme: const IconThemeData(color: Colors.white),
         titleTextStyle: const TextStyle(color: Colors.white, fontSize: 18),
         title: const Text('Edit Item'),
@@ -390,7 +390,7 @@ class _EditItemPageState extends State<EditItemPage> {
                         icon: const Icon(Icons.add_photo_alternate_outlined, color: Colors.white),
                         label: const Text('Pick Images', style: TextStyle(color: Colors.white)),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
+                          backgroundColor: Color.fromARGB(255, 254, 111,103),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -457,11 +457,11 @@ class _EditItemPageState extends State<EditItemPage> {
                           onPressed: _updateItem,
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 30, vertical: 10),
+                                horizontal: 35, vertical: 15),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            backgroundColor: Colors.blue,
+                            backgroundColor: Color.fromARGB(255, 254, 111,103),
                           ),
                           child: const Text(
                             'Update Item',
