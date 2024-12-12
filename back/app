@@ -8,6 +8,8 @@ const addnewItem = require("./routes/newItemroute.js");
 const addShop = require("./routes/newShopRoutes.js");
 const orderRoutes = require("./routes/orderRoutes.js");
 const distanceRoutes = require('./routes/distanceRoutes.js');
+const cart = require('./routes/cartRoutes.js')
+const fav = require('./routes/favoriteRoutes.js')
 // const ToDoRoute = require('./routes/todo.router');
 const app = express();
 app.use(bodyParser.json({ limit: '10mb' }));
@@ -19,5 +21,7 @@ app.use('/api/auth', addnewItem);
 app.use('/api/auth', addShop);
 app.use('/api/auth', orderRoutes);
 app.use('/api/auth', distanceRoutes); 
+app.use('/api/auth', cart);
+app.use('/api/auth', fav);
 // app.use("/",ToDoRoute);
 module.exports = app;

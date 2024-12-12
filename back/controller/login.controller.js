@@ -80,6 +80,49 @@ exports.login = async (req, res) => {
   }
 };
 
+
+exports.rateUser = async (req, res) => {
+  try {
+    const { sellerId, score } = req.body;
+
+    if (!sellerId || !score) {
+      return res.status(400).json({ message: 'Seller ID and score are required.' });
+    }
+
+    // Find the user being rated
+    const user = await User.findById(sellerId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'Seller not found.' });
+    }
+
+    // Add the rating to the database
+    const newRating = {
+      score,
+      ratedAt: new Date(),
+    };
+
+    user.ratings.push(newRating);
+
+    // Calculate the new average rating
+    const totalRatings = user.ratings.length;
+    const totalScore = user.ratings.reduce((acc, rating) => acc + rating.score, 0);
+    user.averageRating = totalScore / totalRatings;
+
+    await user.save();
+
+    res.status(200).json({
+      message: 'Rating submitted successfully.',
+      averageRating: user.averageRating,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'An error occurred while submitting the rating.' });
+  }
+
+};
+
+
 exports.getUserInformation = async (req, res) => {
   const { username } = req.params; // Extract username from route parameter
 
@@ -102,6 +145,9 @@ exports.getUserInformation = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+
+
 
 exports.getGuestToken = async (req, res) => {
   const payload = {

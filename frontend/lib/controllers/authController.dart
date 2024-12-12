@@ -553,6 +553,77 @@ Future<void> fetchAndSetGuestToken() async {
 }
 
 
+  // Method to rate a user
+  Future<void> rateUser({
+    required String userId,
+    required double rating,
+  }) async {
+    final url = Uri.parse('$baseUrl/rate');
+
+   try {
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'sellerId': userId,
+        'score': rating,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print('Rating submitted successfully: ${jsonDecode(response.body)}');
+    } else {
+      print('Failed to submit rating: ${response.body}');
+      throw Exception('Failed to submit rating: ${response.reasonPhrase}');
+    }
+  } catch (e) {
+    print('Error: $e');
+    throw Exception('Something went wrong while submitting the rating.');
+  }
+}
+
+  
+Future<String> addtoCart(String? itemId, Future<String> username) async {
+  if (itemId == null) {
+    print("Item ID is null");
+    return 'Item ID is null';
+  }
+
+  final url = Uri.parse('$baseUrl/api/auth/addtoCart');
+
+  try {
+    // Wait for the username
+    final user = await username;
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'username': user,  // Send username
+        'itemId': itemId,   // Send only itemId, not full item data
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      final responseBody = jsonDecode(response.body);
+      print('Item added to cart successfully: $responseBody');
+      return responseBody['message'];  // Assuming response contains 'message' field
+    } else {
+      print('Failed to add item to cart: ${response.body}');
+      return 'Failed to add item to cart: Item already in cart';
+    }
+  } catch (e) {
+    print('Error: $e');
+    return 'Something went wrong while adding item to cart.';
+  }
+}
+
+
+
 
 
 // Helper function to get the token
@@ -561,7 +632,9 @@ Future<String> getToken() async {
   return prefs.getString('token') ?? '';
 }
 
-}
+  
+      
 
+}
 
 
