@@ -18,6 +18,7 @@ class _UserPageState extends State<UserPage> {
   List<Map<String, dynamic>> _filteredItems = [];
   String _selectedSort = 'Newest to Oldest'; // Default sort option
   RangeValues _priceRange = const RangeValues(0, 10000); // Default price range
+  
 
   @override
   void initState() {
@@ -162,82 +163,21 @@ class _UserPageState extends State<UserPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.userName,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: Color.fromARGB(255, 254, 111, 103),
-        iconTheme: const IconThemeData(color: Colors.white),
-        elevation: 0.0,
-        centerTitle: true,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0), // Add right padding
-            child: IconButton(
-              icon: const Icon(
-                Icons.star_rate, // Changed to a 'Rate' icon
-                color: Colors.white, // Icon color set to white
-              ),
-              onPressed: () {
-                // Show a dialog to collect star rating
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    double rating = 0; // Initialize rating
-                    return AlertDialog(
-                      title: const Text("Rate Seller"),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Text("Please rate the Seller:"),
-                          RatingBar.builder(
-                            initialRating: 0,
-                            minRating: 1,
-                            direction: Axis.horizontal,
-                            allowHalfRating: true,
-                            itemCount: 5,
-                            itemPadding:
-                                const EdgeInsets.symmetric(horizontal: 4.0),
-                            itemBuilder: (context, _) => const Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                            ),
-                            onRatingUpdate: (value) {
-                              rating = value; // Update rating value
-                            },
-                          ),
-                        ],
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(); // Close the dialog
-                          },
-                          child: const Text("Cancel"),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            // Save the rating and close the dialog
-                            print("Rating submitted: $rating");
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text("Submit"),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-              tooltip: 'Rate',
+        appBar: AppBar(
+          title: Text(
+            widget.userName,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
             ),
           ),
-        ],
-      ),
+          backgroundColor: Color.fromARGB(255, 254, 111, 103),
+          iconTheme: const IconThemeData(color: Colors.white),
+          elevation: 0.0,
+          centerTitle: true,
+          
+        ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
