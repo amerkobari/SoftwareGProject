@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:untitled/controllers/authController.dart';
 import 'package:untitled/pages/itempage.dart';
 
@@ -170,7 +171,7 @@ class _UserPageState extends State<UserPage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Color.fromARGB(255, 254, 111,103),
+        backgroundColor: Color.fromARGB(255, 254, 111, 103),
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0.0,
         centerTitle: true,
@@ -179,13 +180,60 @@ class _UserPageState extends State<UserPage> {
             padding: const EdgeInsets.only(right: 8.0), // Add right padding
             child: IconButton(
               icon: const Icon(
-                Icons.reviews,
+                Icons.star_rate, // Changed to a 'Rate' icon
                 color: Colors.white, // Icon color set to white
               ),
               onPressed: () {
-                // Add functionality for the Review button here
+                // Show a dialog to collect star rating
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    double rating = 0; // Initialize rating
+                    return AlertDialog(
+                      title: const Text("Rate Seller"),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text("Please rate the Seller:"),
+                          RatingBar.builder(
+                            initialRating: 0,
+                            minRating: 1,
+                            direction: Axis.horizontal,
+                            allowHalfRating: true,
+                            itemCount: 5,
+                            itemPadding:
+                                const EdgeInsets.symmetric(horizontal: 4.0),
+                            itemBuilder: (context, _) => const Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                            ),
+                            onRatingUpdate: (value) {
+                              rating = value; // Update rating value
+                            },
+                          ),
+                        ],
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(); // Close the dialog
+                          },
+                          child: const Text("Cancel"),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            // Save the rating and close the dialog
+                            print("Rating submitted: $rating");
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text("Submit"),
+                        ),
+                      ],
+                    );
+                  },
+                );
               },
-              tooltip: 'Review',
+              tooltip: 'Rate',
             ),
           ),
         ],
@@ -196,20 +244,36 @@ class _UserPageState extends State<UserPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 32),
-            const Icon(Icons.account_circle, size: 140, color: Color.fromARGB(255, 254, 111,103)),
+            const Icon(Icons.account_circle,
+                size: 140, color: Color.fromARGB(255, 254, 111, 103)),
             const SizedBox(height: 8),
             Text(
               widget.userName,
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(5, (index) {
-                return const Icon(Icons.star,
-                    color: Color.fromARGB(255, 255, 191, 0), size: 28);
-              }),
+            Column(
+              children: [
+                const SizedBox(height: 16),
+                RatingBar.builder(
+                  initialRating: 5, // Example initial rating
+                  minRating: 1,
+                  direction: Axis.horizontal,
+                  allowHalfRating: true,
+                  itemCount: 5,
+                  itemPadding: const EdgeInsets.symmetric(horizontal: 2.0),
+                  itemBuilder: (context, _) => const Icon(
+                    Icons.star,
+                    color: Color.fromARGB(255, 255, 191, 0),
+                  ),
+                  onRatingUpdate: (value) {
+                    print(
+                        "Updated Rating: $value"); // Handle rating update here
+                  },
+                ),
+              ],
             ),
+
             const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: () {
@@ -223,7 +287,7 @@ class _UserPageState extends State<UserPage> {
               style: ElevatedButton.styleFrom(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                backgroundColor: Color.fromARGB(255, 254, 111,103),
+                backgroundColor: Color.fromARGB(255, 254, 111, 103),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
@@ -295,47 +359,51 @@ class _UserPageState extends State<UserPage> {
               ),
             ),
             const SizedBox(height: 16),
-           Expanded(
-  child: _userItems.isEmpty
-      ? const Center(child: CircularProgressIndicator())
-      : ListView.builder(
-          itemCount: _filteredItems.isEmpty
-              ? _userItems.length
-              : _filteredItems.length,
-          itemBuilder: (context, index) {
-            final item = _filteredItems.isEmpty
-                ? _userItems[index]
-                : _filteredItems[index];
-            final category = item['category']; // Get the category
+            Expanded(
+              child: _userItems.isEmpty
+                  ? const Center(child: CircularProgressIndicator())
+                  : ListView.builder(
+                      itemCount: _filteredItems.isEmpty
+                          ? _userItems.length
+                          : _filteredItems.length,
+                      itemBuilder: (context, index) {
+                        final item = _filteredItems.isEmpty
+                            ? _userItems[index]
+                            : _filteredItems[index];
+                        final category = item['category']; // Get the category
 
-            return Card(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: ListTile(
-                leading: Image.asset(
-                  _getCategoryIcon(category), // Display the icon based on the category
-                  width: 40, // Icon width
-                  height: 40, // Icon height
-                ),
-                title: Text(item['title']),
-                trailing: Text(
-                  '₪${item['price']}',
-                  style: const TextStyle(
-                      color: Colors.green, fontWeight: FontWeight.bold),
-                ),
-                onTap: () async {
-                  final itemId = item['_id']; // Get the item ID
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ItemPage(itemId: itemId),
+                        return Card(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          child: ListTile(
+                            leading: Image.asset(
+                              _getCategoryIcon(
+                                  category), // Display the icon based on the category
+                              width: 40, // Icon width
+                              height: 40, // Icon height
+                            ),
+                            title: Text(item['title']),
+                            trailing: Text(
+                              '₪${item['price']}',
+                              style: const TextStyle(
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            onTap: () async {
+                              final itemId = item['_id']; // Get the item ID
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      ItemPage(itemId: itemId),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
-            );
-          },
-        ),
-)
+            )
           ],
         ),
       ),
