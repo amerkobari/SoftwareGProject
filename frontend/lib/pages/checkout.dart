@@ -67,54 +67,90 @@ class _CheckoutPageState extends State<CheckoutPage> {
     totalAmount = widget.totalPrice + deliveryFee;
   }
 
-  void showRatingDialog(BuildContext context) {
-    double rating = 0; // Initialize rating
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Rate Seller"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text("Please rate the Seller:"),
-              RatingBar.builder(
-                initialRating: 0,
-                minRating: 0.5,
-                direction: Axis.horizontal,
-                allowHalfRating: true,
-                itemCount: 5,
-                itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-                itemBuilder: (context, _) => const Icon(
-                  Icons.star,
-                  color: Colors.amber,
-                ),
-                onRatingUpdate: (value) {
-                  rating = value; // Update rating value
-                },
+void showRatingDialog(BuildContext context, String username) {
+  double rating = 0; // Initialize rating
+
+  // Function to handle the API call for rating
+  Future<void> rateSeller(double rating) async {
+    final apiUrl = '$baseUrl/api/auth/updateAverageRating'; // Replace with your API URL
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'username': username,  // User's username
+          'rating': rating,      // Rating value
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        // Rating was successful
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Thank you for your rating!')),
+        );
+      } else {
+        // Handle error (e.g., failed API request)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to submit rating: ${response.body}')),
+        );
+      }
+    } catch (e) {
+      // Handle network or other errors
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error submitting rating: $e')),
+      );
+    }
+  }
+
+
+   // Show the rating dialog
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text("Rate Seller"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text("Please rate the Seller:"),
+            RatingBar.builder(
+              initialRating: 0,
+              minRating: 0.5,
+              direction: Axis.horizontal,
+              allowHalfRating: true,
+              itemCount: 5,
+              itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+              itemBuilder: (context, _) => const Icon(
+                Icons.star,
+                color: Colors.amber,
               ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+              onRatingUpdate: (value) {
+                rating = value; // Update rating value
               },
-              child: const Text("Cancel"),
-            ),
-            TextButton(
-              onPressed: () {
-                // Save the rating and close the dialog
-                print("Rating submitted: $rating");
-                Navigator.of(context).pop();
-              },
-              child: const Text("Submit"),
             ),
           ],
-        );
-      },
-    );
-  }
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () {
+              // Call the API to rate the seller when the submit button is pressed
+              rateSeller(rating); // Pass the rating value
+              Navigator.of(context).pop(); // Close the dialog
+            },
+            child: const Text("Submit"),
+          ),
+        ],
+      );
+    },
+  );
+}
 
   Future<void> checkFirstOrder() async {
     if (email != null && email!.isNotEmpty) {
@@ -140,7 +176,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
       String selectedCity, String location) async {
     double totalDeliveryFee = 0.0;
     try {
-      if (selectedCity != null && location != null) {
+      if (location != null) {
         for (var item in widget.cartItems) {
           // Fetch the distance using authController.getDistance
           final result = await authController.getDistance(
@@ -245,7 +281,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     // 'quantity': item['quantity'],
                     'price': item['price'],
                     'imageUrl': item['images'],
-                    'imageCid': 'product-${item['_id']}', // Generate unique CID
+                    'imageCid': 'product-${item['_id']}',
+                    'itemId' : item['_id'], // Generate unique CID
                   })
               .toList(),
           'total': totalAmount,
@@ -414,7 +451,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         labelText: 'Phone Number',
                         hintText:
                             '05xxxxxxxx', // Hint text for phone number format
-                        hintStyle: const TextStyle(
+                        hintStyle: TextStyle(
                           color: Color(0xffDDDADA),
                         ),
                       ),
@@ -670,7 +707,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       // Call the function to send email
                       sendOrderEmail();
                       setitemSold();
-                      showRatingDialog(context);
+                      // showRatingDialog(context);
                     } else {
                       // If validation fails, show error messages
                       ScaffoldMessenger.of(context).showSnackBar(

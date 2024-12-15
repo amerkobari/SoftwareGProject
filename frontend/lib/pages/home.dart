@@ -11,6 +11,7 @@ import 'package:untitled/pages/case.dart';
 import 'package:untitled/pages/cpu.dart';
 import 'package:untitled/pages/gpu.dart';
 import 'package:untitled/pages/hard-disk.dart';
+import 'package:untitled/pages/itempage.dart';
 import 'package:untitled/pages/login.dart';
 import 'package:untitled/pages/monitor.dart';
 import 'package:untitled/pages/motherboard.dart';
@@ -389,6 +390,8 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     if (widget.username == 'Guest') {
+      favoritesList = [];
+      cartList = [];
       authController.fetchAndSetGuestToken();
     }
   }

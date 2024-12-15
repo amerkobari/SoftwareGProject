@@ -56,3 +56,27 @@ exports.checkFirstOrder = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error', error });
   }
 };
+
+exports.getOrdersByEmail = async (req, res) => {
+  const email = req.params.email; // Get the email from the request parameter
+
+  try {
+    // Find all orders by the email
+    const orders = await Order.find({ email: email });
+
+    // Check if any orders were found
+    if (orders.length === 0) {
+      return res.status(404).json({ success: false, message: 'No orders found for this email' });
+    }
+
+    // Respond with the orders
+    res.status(200).json({
+      success: true,
+      orders: orders
+    });
+  } catch (error) {
+    // Handle any errors
+    console.error('Error fetching orders by email:', error);
+    res.status(500).json({ success: false, message: 'Error fetching orders', error });
+  }
+};

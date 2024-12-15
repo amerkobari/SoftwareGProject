@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:untitled/controllers/authController.dart';
-import 'package:untitled/pages/Personalinfo.dart';
 import 'package:untitled/pages/checkout.dart';
 import 'package:untitled/pages/itempage.dart';
 

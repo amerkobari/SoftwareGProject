@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:untitled/controllers/authController.dart';
-import 'package:untitled/pages/Personalinfo.dart';
 import 'package:untitled/pages/profilepage.dart';
 import 'dart:convert';
-
 import 'package:untitled/pages/userpage.dart';
+import 'package:http/http.dart' as http;
 
 List<Map<String, dynamic>> favoritesList = [];
 List<Map<String, dynamic>> cartList = [];
@@ -22,7 +20,7 @@ class ItemPage extends StatefulWidget {
 
 class _ItemPageState extends State<ItemPage> {
   final AuthController _authController = AuthController();
-
+  bool isFavorite = false;
   Map<String, dynamic>? _itemData;
   bool _isLoading = true;
 
@@ -56,10 +54,69 @@ class _ItemPageState extends State<ItemPage> {
     return username;
   }
 
+  Future<void> _toggleFavorite() async {
+    if (_itemData == null) return;
+
+    final username = await getUsername();
+
+    if (username == 'Guest') {
+      setState(() {
+       isFavorite = favoritesList.any((item) => item['_id'] == widget.itemId);
+        if (isFavorite) {
+          favoritesList.removeWhere((item) => item['_id'] == widget.itemId);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Removed from favorites')),
+          );
+        } else {
+          favoritesList.add(_itemData!);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Added to favorites')),
+          );
+        }
+      });
+      return;
+    }
+
+   isFavorite = favoritesList.any((item) => item['_id'] == widget.itemId);
+    final apiUrl = isFavorite
+        ? 'http://10.0.2.2:3000/api/auth/removeFavorite'
+        : 'http://10.0.2.2:3000/api/auth/addToFavorites';
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'username': username, 'itemId': widget.itemId}),
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          if (isFavorite) {
+            favoritesList.removeWhere((item) => item['_id'] == widget.itemId);
+            
+          } else {
+            favoritesList.add(_itemData!);
+          }
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(isFavorite ? 'Removed from favorites' : 'Added to favorites')),
+        );
+      } else {
+        throw Exception('Failed to update favorites: ${response.body}');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error updating favorites: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    bool isItemFavorite =
-        favoritesList.any((item) => item['_id'] == widget.itemId);
+    bool Favis = favoritesList.any((item) => item['_id'] == widget.itemId);
+    print(favoritesList);
+    print(Favis);
 
     return Scaffold(
       appBar: AppBar(
@@ -70,28 +127,13 @@ class _ItemPageState extends State<ItemPage> {
         actions: [
           IconButton(
             icon: Icon(
-              isItemFavorite ? Icons.favorite : Icons.favorite_border,
+              Favis ? Icons.favorite : Icons.favorite_border,
               color: const Color.fromARGB(255, 255, 255, 255),
             ),
-            onPressed: () {
+        onPressed: () {
               setState(() {
-                if (isItemFavorite) {
-                  favoritesList
-                      .removeWhere((item) => item['_id'] == widget.itemId);
-                } else {
-                  favoritesList.add(_itemData!);
-                }
+                _toggleFavorite();
               });
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    isItemFavorite
-                        ? 'Removed from favorites'
-                        : 'Added to favorites',
-                  ),
-                ),
-              );
             },
           ),
         ],

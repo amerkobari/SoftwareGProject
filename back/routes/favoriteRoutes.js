@@ -4,9 +4,11 @@ const verifyToken = require('../middleware/authMiddleware');
 const favController = require('../controller/favoriteController');
 
 // Add to favorites
-router.post('/add', favController.addToFavorites);
+router.post('/addToFavorites', favController.addToFavorites);
 
 // Get user's favorites
-router.get('/', favController.getFavorites);
+router.get('/getFavorites', favController.getFavorites);
+
+router.post('/removeFavorite', favController.removeFavorite)
 
 module.exports = router;

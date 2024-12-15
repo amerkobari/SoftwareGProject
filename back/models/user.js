@@ -22,11 +22,5 @@ UserSchema.pre('save', async function (next) {
   next();
 });
 
-// Calculate the average rating
-UserSchema.methods.calculateAverageRating = function () {
-  if (this.ratings.length === 0) return 0;
-  const total = this.ratings.reduce((sum, rating) => sum + rating.score, 0);
-  return total / this.ratings.length;
-};
 
 module.exports = mongoose.model('users', UserSchema);
