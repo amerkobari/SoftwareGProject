@@ -56,3 +56,62 @@ exports.checkFirstOrder = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error', error });
   }
 };
+
+exports.getOrdersByEmail = async (req, res) => {
+  const email = req.params.email; // Get the email from the request parameter
+
+  try {
+    // Find all orders by the email
+    const orders = await Order.find({ email: email });
+
+    // Check if any orders were found
+    if (orders.length === 0) {
+      return res.status(404).json({ success: false, message: 'No orders found for this email' });
+    }
+
+    // Respond with the orders
+    res.status(200).json({
+      success: true,
+      orders: orders
+    });
+  } catch (error) {
+    // Handle any errors
+    console.error('Error fetching orders by email:', error);
+    res.status(500).json({ success: false, message: 'Error fetching orders', error });
+  }
+};
+
+
+exports.getOrderDetails = async (req, res) => {
+  const { orderId } = req.params; // Retrieve the orderId from the route parameter
+
+  try {
+    // Find the order by orderId
+    const order = await Order.findById(orderId);
+
+    // If order is not found
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    // Respond with the order details
+    return res.status(200).json({
+      success: true,
+      order: {
+        _id: order._id,
+        firstName: order.firstName,
+        lastName: order.lastName,
+        email: order.email,
+        items: order.items,
+        total: order.total,
+        deliveryAddress: order.deliveryAddress,
+        city: order.city,
+        phoneNumber: order.phoneNumber,
+        createdAt: order.createdAt,
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching order details:', error);
+    return res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};

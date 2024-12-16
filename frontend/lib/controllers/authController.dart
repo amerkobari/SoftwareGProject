@@ -623,7 +623,18 @@ Future<String> addtoCart(String? itemId, Future<String> username) async {
 }
 
 
+  Future<Map<String, dynamic>> fetchUserRating(String username) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/auth/ratings/$username'),
+    );
 
+    if (response.statusCode == 200) {
+      // Parse the response JSON
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load user rating');
+    }
+  }
 
 
 // Helper function to get the token

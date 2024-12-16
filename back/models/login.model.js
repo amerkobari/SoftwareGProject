@@ -24,6 +24,13 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  ratings: [
+    {
+      score: { type: Number, required: true, min: 1, max: 5 },
+      rater: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    },
+  ],
+  averageRating: { type: Number, default: 0 },
 });
 
 // Ensure unique index on email

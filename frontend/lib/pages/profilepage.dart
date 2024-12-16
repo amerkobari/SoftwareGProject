@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:untitled/pages/Personalinfo.dart';
@@ -19,6 +20,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   final String baseUrl = "http://10.0.2.2:3000";
   List<Map<String, dynamic>> _userItems = [];
   bool _isLoadingItems = true;
+   late Future<double> userRating; // Add this to hold the rating
 
   // Function to fetch user items
   Future<void> _fetchUserItems() async {
@@ -43,6 +45,17 @@ class _UserProfilePageState extends State<UserProfilePage> {
       });
     }
   }
+Future<double> fetchUserRating(String username) async {
+  final response = await http.get(Uri.parse('$baseUrl/api/auth/ratings/$username'));
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    return data['averageRating']; // Assuming the response has the average rating
+  } else {
+    throw Exception('Failed to load user rating');
+  }
+}
+
 
   // Function to fetch user data (balance, orders)
   Future<Map<String, dynamic>> fetchData(String username) async {
@@ -77,26 +90,26 @@ class _UserProfilePageState extends State<UserProfilePage> {
   void initState() {
     super.initState();
     userInfo = fetchData(widget.userName);
+     userRating = fetchUserRating(widget.userName); // Fetch user rating
     _fetchUserItems();
+    
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 254, 111,103),
-        title: const Text('Profile'),
-        titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
-        iconTheme: const IconThemeData(color: Colors.white),
-        centerTitle: true,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0), // Add right padding
-            child: IconButton(
-              icon: const Icon(
-                Icons.history,
-                color: Colors.white, // Icon color set to white
-              ),
+  @override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      backgroundColor: Color.fromARGB(255, 254, 111, 103),
+      title: const Text('Profile'),
+      titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
+      iconTheme: const IconThemeData(color: Colors.white),
+      centerTitle: true,
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 8.0),
+          child: IconButton(
+            icon: const Icon(Icons.history, color: Colors.white),
             onPressed: () {
               showModalBottomSheet(
                 context: context,
@@ -106,9 +119,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   }
 
                   if (_userItems.isEmpty) {
-                    return const Center(
-                      child: Text('No items sold yet.'),
-                    );
+                    return const Center(child: Text('No items sold yet.'));
                   }
 
                   return ListView.builder(
@@ -116,7 +127,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     itemBuilder: (context, index) {
                       final item = _userItems[index];
                       final category = item['category'] ?? 'Other';
-
                       return ListTile(
                         leading: Image.asset(
                           _getCategoryIcon(category),
@@ -127,10 +137,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         subtitle: Text(item['description'] ?? 'No Description'),
                         trailing: Text(
                           '₪${item['price']?.toStringAsFixed(2) ?? 'N/A'}',
-                          style: const TextStyle(
-                            color: Colors.green,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
                         ),
                       );
                     },
@@ -139,121 +146,158 @@ class _UserProfilePageState extends State<UserProfilePage> {
               );
             },
           ),
-          ),
-        ],
-      ),
-      body: FutureBuilder<Map<String, dynamic>>(
-        future: userInfo,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else {
-            final balance = snapshot.data!['balance'];
-            final orders = snapshot.data!['orders'];
+        ),
+      ],
+    ),
+    body: FutureBuilder<Map<String, dynamic>>(
+      future: userInfo,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else {
+          final balance = snapshot.data!['balance'];
+          final orders = snapshot.data!['orders'];
 
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  const Icon(Icons.account_circle, size: 140, color: Color.fromARGB(255, 254, 111,103)),
-                  const SizedBox(height: 8),
-                  Text(
-                    widget.userName,
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(16.0),
-                          decoration: BoxDecoration(
-                            color: Colors.blue[100],
-                            borderRadius: BorderRadius.circular(8.0),
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                const Icon(Icons.account_circle, size: 140, color: Color.fromARGB(255, 254, 111, 103)),
+                const SizedBox(height: 8),
+                Text(
+                  widget.userName,
+                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                // Display the rating as stars below the username
+                FutureBuilder<double>(
+                  future: userRating,
+                  builder: (context, ratingSnapshot) {
+                    if (ratingSnapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    } else if (ratingSnapshot.hasError) {
+                      return Text('Error: ${ratingSnapshot.error}');
+                    } else {
+                      return Column(
+                        children: [
+                          RatingBar.builder(
+                            initialRating: ratingSnapshot.data ?? 0.0,
+                            minRating: 1,
+                            direction: Axis.horizontal,
+                            allowHalfRating: true,
+                            itemCount: 5,
+                            itemPadding: const EdgeInsets.symmetric(horizontal: 2.0),
+                            itemBuilder: (context, _) => const Icon(
+                              Icons.star,
+                              color: Color.fromARGB(255, 255, 191, 0),
+                            ),
+                            onRatingUpdate: (value) {}, // No need to handle updates
+                            ignoreGestures: true, // Make it static (uneditable)
                           ),
-                          child: Column(
-                            children: [
-                              const Text('Balance', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                              const SizedBox(height: 8),
-                              Text('\$$balance', style: const TextStyle(fontSize: 16, color: Colors.blue)),
-                            ],
-                          ),
+                          // const SizedBox(height: 16),
+                          // Text(
+                          //   'Average Rating: ${ratingSnapshot.data?.toStringAsFixed(1) ?? 'N/A'}',
+                          //   style: const TextStyle(fontSize: 16, color: Colors.black),
+                          // ),
+                        ],
+                      );
+                    }
+                  },
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.all(16.0),
+                        decoration: BoxDecoration(
+                          color: Colors.blue[100],
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: Column(
+                          children: [
+                            const Text('Balance', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 8),
+                            Text('\$$balance', style: const TextStyle(fontSize: 16, color: Colors.blue)),
+                          ],
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(16.0),
-                          decoration: BoxDecoration(
-                            color: Colors.green[100],
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          child: Column(
-                            children: [
-                              const Text('Orders', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                              const SizedBox(height: 8),
-                              Text('$orders', style: const TextStyle(fontSize: 16, color: Colors.green)),
-                            ],
-                          ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.all(16.0),
+                        decoration: BoxDecoration(
+                          color: Colors.green[100],
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: Column(
+                          children: [
+                            const Text('Orders', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 8),
+                            Text('$orders', style: const TextStyle(fontSize: 16, color: Colors.green)),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  ListView(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    children: [
-                      ListTile(
-                        leading: const Icon(Icons.person),
-                        title: const Text('Personal Information'),
-                        trailing: const Icon(Icons.arrow_forward_ios),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PersonalInfoPage(username: widget.userName),
-                            ),
-                          );
-                        },
-                      ),
-                      ListTile(
-                        leading: const Icon(Icons.shopping_cart),
-                        title: const Text('Your Items'),
-                        trailing: const Icon(Icons.arrow_forward_ios),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => UserItemsPage(userName: widget.userName),
-                            ),
-                          );
-                        },
-                      ),
-                      ListTile(
-                        leading: const Icon(Icons.logout),
-                        title: const Text('Logout'),
-                        trailing: const Icon(Icons.arrow_forward_ios),
-                        onTap: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const HomePage(username: 'Guest'),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            );
-          }
-        },
-      ),
-    );
-  }
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                ListView(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.person),
+                      title: const Text('Personal Information'),
+                      trailing: const Icon(Icons.arrow_forward_ios),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PersonalInfoPage(username: widget.userName),
+                          ),
+                        );
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.shopping_cart),
+                      title: const Text('Your Items'),
+                      trailing: const Icon(Icons.arrow_forward_ios),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => UserItemsPage(userName: widget.userName),
+                          ),
+                        );
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.logout),
+                      title: const Text('Logout'),
+                      trailing: const Icon(Icons.arrow_forward_ios),
+                      onTap: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HomePage(username: 'Guest'),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        }
+      },
+    ),
+  );
+}
+
 }

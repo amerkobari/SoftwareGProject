@@ -11,10 +11,12 @@ import 'package:untitled/pages/case.dart';
 import 'package:untitled/pages/cpu.dart';
 import 'package:untitled/pages/gpu.dart';
 import 'package:untitled/pages/hard-disk.dart';
+import 'package:untitled/pages/itempage.dart';
 import 'package:untitled/pages/login.dart';
 import 'package:untitled/pages/monitor.dart';
 import 'package:untitled/pages/motherboard.dart';
 import 'package:untitled/pages/mycart.dart';
+import 'package:untitled/pages/myorders.dart';
 import 'package:untitled/pages/myshoppage.dart';
 import 'package:untitled/pages/profilepage.dart';
 import 'package:untitled/pages/ram.dart';
@@ -389,6 +391,8 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     if (widget.username == 'Guest') {
+      favoritesList = [];
+      cartList = [];
       authController.fetchAndSetGuestToken();
     }
   }
@@ -514,6 +518,16 @@ class _HomePageState extends State<HomePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => FavoritesPage()),
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.shopping_bag, color: Colors.black),
+                  title: const Text('My Orders'),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => OrdersPage()),
                     );
                   },
                 ),
