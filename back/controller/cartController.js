@@ -87,23 +87,43 @@ exports.removeCartItem = async (req, res) => {
 
 // Get user's cart
 exports.getCart = async (req, res) => {
-    try {
+  try {
       const username = req.query.username; // Get the username from the query parameter
-  
+
       if (!username) {
-        return res.status(400).json({ message: 'Username is required.' });
+          return res.status(400).json({ message: 'Username is required.' });
       }
-  
+
       const user = await User.findOne({ username });
       if (!user) {
-        return res.status(404).json({ message: 'User not found.' });
+          return res.status(404).json({ message: 'User not found.' });
       }
-  
-      const cart = await Cart.findOne({ userId: user._id }).populate('items.itemId'); // Populate item details
-      res.status(200).json(cart || { items: [] });
-    } catch (error) {
+
+      // Fetch the user's cart
+      const cart = await Cart.findOne({ userId: user._id }).populate({
+          path: 'items.itemId',
+          select: 'title price description images category sold',
+      });
+
+      if (!cart) {
+          return res.status(200).json({ items: [] });
+      }
+
+      // Filter out items where `sold: true`
+      const filteredItems = cart.items.filter(item => item.itemId && !item.itemId.sold);
+
+      // If there are changes (sold items removed), update the database
+      if (filteredItems.length !== cart.items.length) {
+          cart.items = filteredItems;
+          await cart.save();
+      }
+
+      res.status(200).json({ items: filteredItems });
+  } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Server error.' });
-    }
-  };
+  }
+};
+
+
   

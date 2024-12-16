@@ -115,8 +115,8 @@ class _ItemPageState extends State<ItemPage> {
   @override
   Widget build(BuildContext context) {
     bool Favis = favoritesList.any((item) => item['_id'] == widget.itemId);
-    print(favoritesList);
-    print(Favis);
+    // print(favoritesList);
+    // print(Favis);
 
     return Scaffold(
       appBar: AppBar(

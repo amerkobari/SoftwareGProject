@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:http/http.dart' as http; // Add this import
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'dart:convert'; // Add this import
 
 import 'package:untitled/controllers/authController.dart';
@@ -123,7 +124,7 @@ void showRatingDialog(BuildContext context, String username) {
               itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
               itemBuilder: (context, _) => const Icon(
                 Icons.star,
-                color: Colors.amber,
+                color: Colors.orange,
               ),
               onRatingUpdate: (value) {
                 rating = value; // Update rating value
@@ -254,64 +255,99 @@ void showRatingDialog(BuildContext context, String username) {
     }
   }
 
-  Future<void> setitemSold() async {
-    try {
-      for (final item in widget.cartItems) {
-        final url =
-            Uri.parse('$baseUrl/api/auth/update-item-sold/${item['_id']}');
-        final response = await http.put(url);
-      }
-    } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error setting item as sold: $error')),
-      );
-    }
-  }
+Future<void> setitemSold() async {
+  try {
+    // Ensure username is set before making the API call
+    await setUsername();
 
-  Future<void> sendOrderEmail() async {
-    if (_formKey.currentState?.validate() ?? false) {
-      try {
-        final orderDetails = {
-          'firstName': firstName,
-          'lastName': lastName,
-          'email': email,
-          'items': widget.cartItems
-              .map((item) => {
-                    'name': item['title'],
-                    // 'quantity': item['quantity'],
-                    'price': item['price'],
-                    'imageUrl': item['images'],
-                    'imageCid': 'product-${item['_id']}',
-                    'itemId' : item['_id'], // Generate unique CID
-                  })
-              .toList(),
-          'total': totalAmount,
-          'deliveryAddress': location,
-          'city': selectedCity,
-          'phoneNumber': phoneNumber,
-        };
+    for (final item in widget.cartItems) {
+      // Check the username and select the correct item ID
+      final itemId = username == 'Guest' ? item['_id'] : item['itemId'];
+      
+      // Build the URL with the selected item ID
+      final url = Uri.parse('$baseUrl/api/auth/update-item-sold/$itemId');
 
-        final result = await authController.ordercompletionmail(orderDetails);
-        // print("ORDEER DETIAAALSSSS :$orderDetails");
-        if (result['success']) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Order placed successfully')),
-          );
-          // Navigate to home page after successful order
-          Navigator.pop(context);
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text('Error placing order: ${result['message']}')),
-          );
-        }
-      } catch (error) {
+      // Send the PUT request to mark the item as sold
+      final response = await http.put(url);
+
+      if (response.statusCode != 200) {
+        // Handle failure to set item as sold
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error adding shop: $error')),
+          SnackBar(content: Text('Failed to mark item as sold: ${response.body}')),
         );
       }
     }
+  } catch (error) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error setting item as sold: $error')),
+    );
   }
+}
+
+
+
+
+  Future<String> getUsername() async {
+    String token = await authController.getToken();
+    Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+    return decodedToken['username'] ?? 'Guest';
+  }
+String username = '';
+String diItem = '';
+Future<void> setUsername() async {
+   username = await getUsername();
+}
+ Future<void> sendOrderEmail() async {
+  await setUsername(); // Ensure that the username is set before proceeding
+
+  if (_formKey.currentState?.validate() ?? false) {
+    try {
+      final orderDetails = {
+        'firstName': firstName,
+        'lastName': lastName,
+        'email': email,
+        'items': widget.cartItems
+            .map((item) => {
+                  'name': item['title'],
+                  // 'quantity': item['quantity'],
+                  'price': item['price'],
+                  'imageUrl': item['images'],
+                  'imageCid': 'product-${item['_id']}',
+                  // Check username and set the correct 'itemId' based on that
+                  'itemId': username == 'Guest' ? item['_id'] : item['itemId'],
+                  // Generate unique CID
+                  'category': item['category'],
+                })
+            .toList(),
+        'total': totalAmount,
+        'deliveryAddress': location,
+        'city': selectedCity,
+        'phoneNumber': phoneNumber,
+      };
+
+      print(orderDetails);
+
+      final result = await authController.ordercompletionmail(orderDetails);
+
+      if (result['success']) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Order placed successfully')),
+        );
+        // Navigate to home page after successful order
+        Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error placing order: ${result['message']}')),
+        );
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error adding shop: $error')),
+      );
+    }
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {

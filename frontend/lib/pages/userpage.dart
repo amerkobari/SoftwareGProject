@@ -18,12 +18,24 @@ class _UserPageState extends State<UserPage> {
   List<Map<String, dynamic>> _filteredItems = [];
   String _selectedSort = 'Newest to Oldest'; // Default sort option
   RangeValues _priceRange = const RangeValues(0, 10000); // Default price range
-  
+   double _averageRating = 0.0;  // Store the average rating here 
 
   @override
   void initState() {
     super.initState();
     _fetchUserItems();
+    _fetchUserRating();
+  }
+
+  Future<void> _fetchUserRating() async {
+    try {
+      final data = await authController.fetchUserRating(widget.userName);
+      setState(() {
+        _averageRating = data['averageRating'] ?? 0.0;  // Get the average rating
+      });
+    } catch (e) {
+      print("Error fetching user rating: $e");
+    }
   }
 
   Future<void> _fetchUserItems() async {
@@ -191,28 +203,39 @@ class _UserPageState extends State<UserPage> {
               widget.userName,
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 16),
-            Column(
-              children: [
-                const SizedBox(height: 16),
-                RatingBar.builder(
-                  initialRating: 5, // Example initial rating
-                  minRating: 1,
-                  direction: Axis.horizontal,
-                  allowHalfRating: true,
-                  itemCount: 5,
-                  itemPadding: const EdgeInsets.symmetric(horizontal: 2.0),
-                  itemBuilder: (context, _) => const Icon(
-                    Icons.star,
-                    color: Color.fromARGB(255, 255, 191, 0),
-                  ),
-                  onRatingUpdate: (value) {
-                    print(
-                        "Updated Rating: $value"); // Handle rating update here
-                  },
-                ),
-              ],
-            ),
+//         const SizedBox(height: 16),
+// // Display the average rating
+// Text(
+//   'Average Rating: ${_averageRating.toStringAsFixed(1)}',  // Display average rating
+//   style: TextStyle(
+//     fontSize: 18,
+//     fontWeight: FontWeight.bold,
+//     color: Colors.black,
+//   ),
+// ),
+const SizedBox(height: 16),
+Column(
+  children: [
+    const SizedBox(height: 16),
+    RatingBar.builder(
+      initialRating: _averageRating, // Set the initial rating to the fetched average rating
+      minRating: 1,
+      direction: Axis.horizontal,
+      allowHalfRating: true,
+      itemCount: 5,
+      itemPadding: const EdgeInsets.symmetric(horizontal: 2.0),
+      itemBuilder: (context, _) => const Icon(
+        Icons.star,
+        color: Color.fromARGB(255, 255, 191, 0),
+      ),
+      onRatingUpdate: (value) {
+        // No functionality for updating the rating since it’s static
+      },
+      ignoreGestures: true, // Make the rating bar uneditable (static)
+    ),
+  ],
+),
+
 
             const SizedBox(height: 16),
             ElevatedButton.icon(

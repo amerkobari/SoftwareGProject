@@ -10,4 +10,5 @@ router.get('/get-user-information/:username', authController.getUserInformation)
 router.get('/get-guest-token', authController.getGuestToken);
 router.post('/rate',  authController.rateUser);
 router.put('/updateAverageRating', authController.updateAverageRating);
+router.get('/ratings/:username', authController.getUserRating);
 module.exports = router;

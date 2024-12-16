@@ -79,16 +79,24 @@ if (username == 'Guest') {
   // Fetch cart data from the backend
  Future<void> _fetchCartItems() async {
   final String baseUrl = 'http://10.0.2.2:3000/api/auth/getCart';
+  final String deleteItemUrl = 'http://10.0.2.2:3000/api/auth/removeCartItem';
   final String username = await getUsername();
 
   try {
-    // If the user is a Guest, use the existing cartList
-    if (username == 'Guest') {
-      setState(() {
-        isLoading = false;
-      });
-      return;
+if (username == 'Guest') {
+  // For guests, filter and remove sold items directly from the cartList
+  setState(() {
+    for (int i = cartList.length - 1; i >= 0; i--) {
+      print(cartList[i]);
+      if (cartList[i]['sold'] == true) {
+        cartList.removeAt(i);
+        print("Sold item removed for Guest: ${cartList[i]['title']}");
+      }
     }
+    isLoading = false;
+  });
+  return;
+}
 
     // For authenticated users, fetch cart items from the database
     final response = await http.get(
@@ -103,17 +111,38 @@ if (username == 'Guest') {
       final data = jsonDecode(response.body);
       if (data != null && data['items'] != null) {
         List<dynamic> items = data['items'];
-        List<Map<String, dynamic>> parsedCartItems = items.map((item) {
-          return {
-            'itemId': item['itemId']['_id'],
-            'title': item['itemId']['title'],
-            'price': item['itemId']['price'],
-            'description': item['itemId']['description'],
-            'images': item['itemId']['images'] ?? [],
-            'category': item['itemId']['category'],
-            'addedAt': item['addedAt'],
-          };
-        }).toList();
+        List<Map<String, dynamic>> parsedCartItems = [];
+
+        for (var item in items) {
+          if (item['itemId']['sold'] == false) {
+            parsedCartItems.add({
+              'itemId': item['itemId']['_id'],
+              'title': item['itemId']['title'],
+              'price': item['itemId']['price'],
+              'description': item['itemId']['description'],
+              'images': item['itemId']['images'] ?? [],
+              'category': item['itemId']['category'],
+              'sold': item['itemId']['sold'],
+              'addedAt': item['addedAt'],
+            });
+          } else {
+            // Remove sold items from the database
+            final deleteResponse = await http.post(
+              Uri.parse(deleteItemUrl),
+              headers: {'Content-Type': 'application/json'},
+              body: jsonEncode({
+                'username': username,
+                'itemId': item['itemId']['_id'],
+              }),
+            );
+
+            if (deleteResponse.statusCode == 200) {
+              print("Sold item removed from cart: ${item['itemId']['title']}");
+            } else {
+              print("Failed to remove sold item: ${deleteResponse.body}");
+            }
+          }
+        }
 
         setState(() {
           cartList = parsedCartItems;
@@ -226,18 +255,20 @@ if (username == 'Guest') {
                               ],
                             ),
                             onTap: () async {
-                              final itemId;
+                              final iditem;
+                              await setUsername();
+                              print("username is: $username");
                               if(username=="Guest"){
-                                itemId = item['_id'];
+                                iditem = item['_id'];
                               }
                               else{
-                              itemId = item['itemId'];
+                              iditem = item['itemId'];
                               }
                               
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => ItemPage(itemId: itemId),
+                                  builder: (context) => ItemPage(itemId: iditem),
                                 ),
                               );
                             },

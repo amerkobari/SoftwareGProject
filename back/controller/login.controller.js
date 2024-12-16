@@ -1,4 +1,5 @@
 const User = require('../models/login.model.js');
+const Items = require('../models/newItemModel.js');
 const jwt = require('jsonwebtoken');
 
 // Register new user
@@ -166,11 +167,11 @@ exports.getGuestToken = async (req, res) => {
 };
 
 exports.updateAverageRating = async (req, res) => {
-  const { username, rating } = req.body; // Accept the username and new rating in the request body
+  const { itemId, rating } = req.body; // Accept the itemId and rating in the request body
 
   // Validate the incoming data
-  if (!username || rating === undefined) {
-    return res.status(400).json({ message: 'username and rating are required' });
+  if (!itemId || rating === undefined) {
+    return res.status(400).json({ message: 'Item ID and rating are required' });
   }
 
   // Ensure the rating is within the valid range
@@ -179,21 +180,28 @@ exports.updateAverageRating = async (req, res) => {
   }
 
   try {
-    // Find the user by username
-    const user = await User.findOne({ username: username });
+    // Step 1: Find the item by itemId
+    const items = await Items.findById(itemId);
 
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+    if (!items) {
+      return res.status(404).json({ message: 'Item not found' });
     }
 
-    // Add the new rating to the user's ratings array
-    user.ratings.push({ score: rating});
+    // Step 2: Find the user associated with the item (e.g., sellerId)
+    const user = await User.findById(items.userId); // Assuming `item.sellerId` links to the user
 
-    // Recalculate the average rating
+    if (!user) {
+      return res.status(404).json({ message: 'User (seller) not found' });
+    }
+
+    // Step 3: Add the new rating to the user's ratings array
+    user.ratings.push({ score: rating });
+
+    // Step 4: Recalculate the average rating
     const totalRatings = user.ratings.reduce((sum, rating) => sum + rating.score, 0);
-    const averageRating = totalRatings / user.ratings.length; // Calculate the average
+    const averageRating = totalRatings / user.ratings.length;
 
-    // Update the user's averageRating field
+    // Step 5: Update the user's averageRating field
     user.averageRating = averageRating;
     await user.save(); // Save the updated user document
 
@@ -208,5 +216,30 @@ exports.updateAverageRating = async (req, res) => {
   } catch (error) {
     console.error('Error updating averageRating:', error);
     return res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+
+// Get user rating
+exports.getUserRating = async (req, res) => {
+  try {
+    const { username } = req.params;
+
+    // Find the user by username, selecting averageRating and ratings
+    const user = await User.findOne({ username: username })  // Fix: pass an object with username
+      .select('averageRating ratings')
+      .populate('ratings.rater', 'username');  // Populating the rater field with the username
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Return the average rating and the list of ratings with the rater's username
+    res.status(200).json({
+      averageRating: user.averageRating,
+      ratings: user.ratings,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };

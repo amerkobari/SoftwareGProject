@@ -13,6 +13,7 @@ const CartSchema = new mongoose.Schema({
       price: { type: Number }, // Optional field to store the price
       images: [{ data: Buffer, contentType: String }], // Optional field to store images of the item
       description: { type: String }, // Optional field to store the description
+      sold: { type: Boolean, default: false }, // New field to track sold status
     }
   ]
 });
