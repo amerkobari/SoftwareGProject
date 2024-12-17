@@ -215,16 +215,29 @@ class _ShopPageState extends State<ShopPage> {
                       //   "Location: ${_shopData!['city']}, ${_shopData!['shopAddress']}",
                       //   style: const TextStyle(fontSize: 16, color: Colors.grey),
                       // ),
-                      const SizedBox(height: 16),
-                      Text(
-                        "Email: ${_shopData!['email']}",
-                        style: const TextStyle(fontSize: 16),
-                      ),
+                      // const SizedBox(height: 16),
+                      // Text(
+                      //   "Email: ${_shopData!['email']}",
+                      //   style: const TextStyle(fontSize: 16),
+                      // ),
                       // const SizedBox(height: 8),
                       // Text(
                       //   "Phone: ${_shopData!['phoneNumber']}",
                       //   style: const TextStyle(fontSize: 16),
                       // ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          const Icon(Icons.mail,
+                              color: Color.fromARGB(255, 254, 111, 103),
+                              size: 20),
+                          const SizedBox(width: 4),
+                          Text(
+                            _shopData!['email'],
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ],
+                      ),
                       const SizedBox(height: 16),
                       Row(
                         children: [
@@ -251,16 +264,16 @@ class _ShopPageState extends State<ShopPage> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        "Description:",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        _shopData!['description'] ?? 'No description provided',
-                        style: const TextStyle(fontSize: 16),
-                      ),
+                      // const SizedBox(height: 16),
+                      // const Text(
+                      //   "Description:",
+                      //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      // ),
+                      // const SizedBox(height: 8),
+                      // Text(
+                      //   _shopData!['description'] ?? 'No description provided',
+                      //   style: const TextStyle(fontSize: 16),
+                      // ),
                       const SizedBox(height: 16),
                       Text(
                         "Items:",

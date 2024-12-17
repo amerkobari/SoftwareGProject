@@ -48,18 +48,23 @@ class _UserProfilePageState extends State<UserProfilePage> {
     }
   }
 
-  Future<double> fetchUserRating(String username) async {
-    final response =
-        await http.get(Uri.parse('$baseUrl/api/auth/ratings/$username'));
+Future<double> fetchUserRating(String username) async {
+  final response =
+      await http.get(Uri.parse('$baseUrl/api/auth/ratings/$username'));
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data[
-          'averageRating']; // Assuming the response has the average rating
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    if (data['averageRating'] != null) {
+      // Convert averageRating to double explicitly
+      return (data['averageRating'] as num).toDouble();
     } else {
-      throw Exception('Failed to load user rating');
+      throw Exception('averageRating is null in the response');
     }
+  } else {
+    throw Exception('Failed to load user rating');
   }
+}
+
 
   // Function to fetch user data (balance, orders)
   Future<Map<String, dynamic>> fetchData(String username) async {

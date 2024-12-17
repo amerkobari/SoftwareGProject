@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:untitled/controllers/authController.dart';
@@ -8,6 +9,7 @@ import 'package:untitled/pages/accessories.dart';
 import 'package:untitled/pages/addnewitem.dart';
 import 'package:untitled/pages/addnewshop.dart';
 import 'package:untitled/pages/case.dart';
+import 'package:untitled/pages/chatrooms.dart';
 import 'package:untitled/pages/cpu.dart';
 import 'package:untitled/pages/gpu.dart';
 import 'package:untitled/pages/hard-disk.dart';
@@ -45,6 +47,7 @@ class _HomePageState extends State<HomePage> {
   double maxPrice = 10000; // Set default range for price
   String condition = 'new'; // Default condition
   String date = ''; // Default: no filter on date
+  bool hasUnreadMessages = false;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -387,6 +390,41 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void listenForUnreadMessages() async {
+  final String currentUserName = widget.username;
+
+  FirebaseFirestore.instance
+      .collection('Chatrooms')
+      .where('userNames', arrayContains: currentUserName)
+      .snapshots()
+      .listen((chatSnapshot) async {
+    bool hasUnread = false;
+
+    for (var chat in chatSnapshot.docs) {
+      QuerySnapshot unreadMessages = await FirebaseFirestore.instance
+          .collection('Chatrooms')
+          .doc(chat.id)
+          .collection('messages')
+          .where('receiver', isEqualTo: currentUserName)
+          .where('isRead', isEqualTo: false)
+          .get();
+
+      if (unreadMessages.docs.isNotEmpty) {
+        hasUnread = true; // If there are unread messages, set to true
+        break;
+      }
+    }
+
+    if (mounted) {
+      setState(() {
+        hasUnreadMessages = hasUnread;
+      });
+    }
+  });
+}
+
+
+
   @override
   void initState() {
     super.initState();
@@ -395,6 +433,7 @@ class _HomePageState extends State<HomePage> {
       cartList = [];
       authController.fetchAndSetGuestToken();
     }
+    listenForUnreadMessages();
   }
 
   @override
@@ -412,24 +451,58 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.white,
         elevation: 0.0,
         centerTitle: true,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 20),
-            child: IconButton(
-              icon: const Icon(Icons.notifications, color: Colors.black),
-              onPressed: () {
-                // Handle notification tap
-              },
-            ),
-          ),
-        ],
+actions: [
+  Stack(
+    children: [
+      IconButton(
+        icon: const Icon(Icons.notifications, color: Colors.black),
+        onPressed: () {
+          setState(() {
+            // hasUnreadMessages = false; // Clear red dot when opened
+          });
+        },
       ),
-      backgroundColor: Colors.white,
-      body: _selectedIndex == 0
-          ? _homePageContent()
-          : _selectedIndex == 1
-              ? const Center(child: Text('Messages Page Content'))
-              : const Center(child: Text('Community Page Content')),
+      // if (hasUnreadMessages)
+      //   Positioned(
+      //     right: 11,
+      //     top: 11,
+      //     child: Container(
+      //       padding: const EdgeInsets.all(2),
+      //       decoration: BoxDecoration(
+      //         color: Colors.red,
+      //         borderRadius: BorderRadius.circular(8),
+      //       ),
+      //       constraints: const BoxConstraints(
+      //         minWidth: 12,
+      //         minHeight: 12,
+      //       ),
+      //     ),
+      //   ),
+    ],
+  ),
+],
+
+
+      ),
+     backgroundColor: Colors.white,
+body: _selectedIndex == 0
+    ? _homePageContent()
+    : _selectedIndex == 1
+        ? Builder(
+            builder: (context) {
+              // Clear unread messages flag when MessagesPage is opened
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (hasUnreadMessages) {
+                  setState(() {
+                    hasUnreadMessages = false;
+                  });
+                }
+              });
+              return MessagesPage(currentUserName: widget.username);
+            },
+          )
+        : const Center(child: Text('Community Page Content')),
+
       drawer: Drawer(
         child: Container(
           color: Colors.white,
@@ -599,25 +672,43 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.message),
-            label: 'Messages',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group),
-            label: 'Community',
-          ),
+bottomNavigationBar: BottomNavigationBar(
+  items: <BottomNavigationBarItem>[
+    const BottomNavigationBarItem(
+      icon: Icon(Icons.home),
+      label: 'Home',
+    ),
+    BottomNavigationBarItem(
+      icon: Stack(
+        children: [
+          const Icon(Icons.message),
+          if (hasUnreadMessages)
+            Positioned(
+              right: 0,
+              top: 0,
+              child: Container(
+                width: 12,
+                height: 12,
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+              ),
+            ),
         ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Color.fromARGB(255, 254, 111, 103),
-        onTap: _onItemTapped,
       ),
+      label: 'Messages',
+    ),
+    const BottomNavigationBarItem(
+      icon: Icon(Icons.group),
+      label: 'Community',
+    ),
+  ],
+  currentIndex: _selectedIndex,
+  selectedItemColor: const Color.fromARGB(255, 254, 111, 103),
+  onTap: _onItemTapped,
+),
+
     );
   }
 }

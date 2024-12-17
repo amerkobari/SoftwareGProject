@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:untitled/controllers/authController.dart';
+import 'package:untitled/pages/chatscreen.dart';
 import 'package:untitled/pages/itempage.dart';
 
 class UserPage extends StatefulWidget {
@@ -26,6 +29,52 @@ class _UserPageState extends State<UserPage> {
     _fetchUserItems();
     _fetchUserRating();
   }
+
+  Future<String> getsenderUser() async {
+    String token = await authController.getToken();
+    Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+    return decodedToken['username'] ?? 'Guest';
+  }
+String senderuser = '';
+
+Future<void> setsenderUser() async {
+   senderuser = await getsenderUser();
+   print("this is from the function setsenderuser : $senderuser");
+}
+
+
+
+Future<String> getOrCreateChatRoom(String currentUserName, String otherUserName) async {
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  // Query for existing chatroom containing both usernames
+  QuerySnapshot query = await firestore
+      .collection('Chatrooms')
+      .where('userNames', arrayContains: currentUserName)
+      .get();
+
+  for (var doc in query.docs) {
+    List<dynamic> userNames = doc['userNames'];
+    if (userNames.contains(otherUserName)) {
+      print("Chatroom already exists: ${doc.id}");
+      return doc.id;
+    }
+  }
+
+  // Create a new chatroom if it doesn't exist
+  DocumentReference newChatRoom = await firestore.collection('Chatrooms').add({
+    'userNames': [currentUserName, otherUserName],
+    'lastMessage': "",
+    'timestamp': FieldValue.serverTimestamp(),
+    'notifications': {
+      currentUserName: 0, // Track unread message count for current user
+      otherUserName: 0,   // Track unread message count for the other user
+    }
+  });
+
+  print("New chatroom created: ${newChatRoom.id}");
+  return newChatRoom.id;
+}
 
   Future<void> _fetchUserRating() async {
     try {
@@ -239,9 +288,32 @@ Column(
 
             const SizedBox(height: 16),
             ElevatedButton.icon(
-              onPressed: () {
-                // Add functionality for the Message button here
-              },
+onPressed: () async {
+  // Ensure setsenderUser is completed
+  await setsenderUser();
+
+  final String currentUserName = senderuser; // Now senderuser will have the correct value
+  print("this is from the button $currentUserName");
+  
+  final String otherUserName = widget.userName; // Username of the displayed user
+  
+  // Fetch or create a chat room
+  String chatRoomId = await getOrCreateChatRoom(currentUserName, otherUserName);
+  
+  // Navigate to the ChatScreen
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => ChatScreen(
+        chatRoomId: chatRoomId,
+        currentUserName: currentUserName,
+        otherUserName: otherUserName,
+      ),
+    ),
+  );
+},
+
+
               icon: const Icon(Icons.message, color: Colors.white),
               label: const Text(
                 'Message',
