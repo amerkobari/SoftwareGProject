@@ -339,33 +339,80 @@ exports.getItemsSold = async (req, res) => {
   };
   
   // Controller: Calculate the balance (sum of sold item prices) for a specific user (using route parameter)
-  exports.getUserBalance = async (req, res) => {
+//   exports.getUserBalance = async (req, res) => {
+//     const { username } = req.params;
+  
+//     try {
+//       if (!username) {
+//         return res.status(400).json({ error: 'Username is required' });
+//       }
+  
+//       // Aggregate the balance for sold items belonging to the specified username
+//       const balanceResult = await Item.aggregate([
+//         { $match: { username, sold: true } }, // Filter by username and sold items
+//         {
+//           $group: {
+//             _id: null, // We don’t need to group by any field
+//             totalBalance: { $sum: '$price' }, // Sum prices of sold items
+//           },
+//         },
+//       ]);
+  
+//       const totalBalance = balanceResult.length > 0 ? balanceResult[0].totalBalance : 0;
+  
+//       res.status(200).json({
+//         username,
+//         balance: totalBalance,
+//       });
+//     } catch (err) {
+//       res.status(400).json({ error: err.message });
+//     }
+//   };
+  
+exports.getUserBalance = async (req, res) => {
     const { username } = req.params;
-  
+
     try {
-      if (!username) {
-        return res.status(400).json({ error: 'Username is required' });
-      }
-  
-      // Aggregate the balance for sold items belonging to the specified username
-      const balanceResult = await Item.aggregate([
-        { $match: { username, sold: true } }, // Filter by username and sold items
-        {
-          $group: {
-            _id: null, // We don’t need to group by any field
-            totalBalance: { $sum: '$price' }, // Sum prices of sold items
-          },
-        },
-      ]);
-  
-      const totalBalance = balanceResult.length > 0 ? balanceResult[0].totalBalance : 0;
-  
-      res.status(200).json({
-        username,
-        balance: totalBalance,
-      });
+        if (!username) {
+            return res.status(400).json({ error: 'Username is required' });
+        }
+
+        // Aggregate the balance for sold items belonging to the specified username
+        const balanceResult = await Item.aggregate([
+            { $match: { username, sold: true } }, // Filter by username and sold items
+            {
+                $addFields: {
+                    fee: {
+                        $switch: {
+                            branches: [
+                                { case: { $gte: ['$price', 1000] }, then: { $multiply: ['$price', 0.08] } },
+                                { case: { $gte: ['$price', 800] }, then: { $multiply: ['$price', 0.07] } },
+                                { case: { $gte: ['$price', 300] }, then: { $multiply: ['$price', 0.05] } }
+                            ],
+                            default: { $multiply: ['$price', 0.03] } // Default fee for prices below 300
+                        }
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: null, // No grouping field needed
+                    totalBalance: {
+                        $sum: {
+                            $subtract: ['$price', '$fee'] // Subtract fee from each price
+                        }
+                    }
+                }
+            }
+        ]);
+
+        const totalBalance = balanceResult.length > 0 ? balanceResult[0].totalBalance : 0;
+
+        res.status(200).json({
+            username,
+            balance: totalBalance,
+        });
     } catch (err) {
-      res.status(400).json({ error: err.message });
+        res.status(400).json({ error: err.message });
     }
-  };
-  
+};
