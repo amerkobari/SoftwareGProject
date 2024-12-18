@@ -1,8 +1,7 @@
 {
   "project_info": {
     "project_number": "451295696723",
-    "project_id": "hardwarebazaar24",
-    "storage_bucket": "hardwarebazaar24.firebasestorage.app"
+    "project_id": "hardwarebazaar24"
   },
   "client": [
     {

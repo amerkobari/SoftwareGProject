@@ -5,6 +5,7 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:untitled/controllers/authController.dart';
 import 'package:untitled/pages/chatscreen.dart';
 import 'package:untitled/pages/itempage.dart';
+import 'package:untitled/pages/login.dart';
 
 class UserPage extends StatefulWidget {
   final String userName;
@@ -75,6 +76,42 @@ Future<String> getOrCreateChatRoom(String currentUserName, String otherUserName)
   print("New chatroom created: ${newChatRoom.id}");
   return newChatRoom.id;
 }
+
+  void _showLoginAlert(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent dismissal by tapping outside
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Login Required"),
+          content: const Text("You need to log in to start messaging."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+              },
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LoginPage(),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.redAccent,
+              ),
+              child: const Text("Login", style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 
   Future<void> _fetchUserRating() async {
     try {
@@ -289,9 +326,16 @@ Column(
             const SizedBox(height: 16),
             ElevatedButton.icon(
 onPressed: () async {
+
+  
   // Ensure setsenderUser is completed
   await setsenderUser();
-
+  
+                if (senderuser == 'Guest') {
+                  print("User is a guest");
+                  _showLoginAlert(context);
+                  return;
+                }
   final String currentUserName = senderuser; // Now senderuser will have the correct value
   print("this is from the button $currentUserName");
   
