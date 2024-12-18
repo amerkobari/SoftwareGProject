@@ -10,6 +10,7 @@ import 'package:untitled/pages/addnewitem.dart';
 import 'package:untitled/pages/addnewshop.dart';
 import 'package:untitled/pages/case.dart';
 import 'package:untitled/pages/chatrooms.dart';
+import 'package:untitled/pages/communitypage.dart';
 import 'package:untitled/pages/cpu.dart';
 import 'package:untitled/pages/gpu.dart';
 import 'package:untitled/pages/hard-disk.dart';
@@ -501,7 +502,7 @@ body: _selectedIndex == 0
               return MessagesPage(currentUserName: widget.username);
             },
           )
-        : const Center(child: Text('Community Page Content')),
+        : CommunityPage(currentUsername: widget.username),
 
       drawer: Drawer(
         child: Container(
