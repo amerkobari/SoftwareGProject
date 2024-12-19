@@ -14,26 +14,32 @@ const CartSchema = new mongoose.Schema({
       images: [{ data: Buffer, contentType: String }], // Optional field to store images of the item
       description: { type: String }, // Optional field to store the description
       sold: { type: Boolean, default: false }, // New field to track sold status
+      location: { type: String , required: true},
     }
   ]
 });
 
-CartSchema.pre('save', async function(next) {
-  // Pre-save hook to populate the item details for each cart item
+CartSchema.pre('save', async function (next) {
   const cart = this;
-  
+
   // Loop through each item in the cart
   for (const item of cart.items) {
-    const itemDetails = await Item.findById(item.itemId).select('title price images description');
+    const itemDetails = await Item.findById(item.itemId).select('title price images description location');
     
-    // Add the item details to the cart item
-    item.title = itemDetails.title;
-    item.price = itemDetails.price;
-    item.images = itemDetails.images;
-    item.description = itemDetails.description;
+    if (itemDetails) {
+      // Add the item details to the cart item
+      item.title = itemDetails.title;
+      item.price = itemDetails.price;
+      item.images = itemDetails.images;
+      item.description = itemDetails.description;
+      item.location = itemDetails.location; // Populate the location field
+    } else {
+      throw new Error(`Item with ID ${item.itemId} not found`);
+    }
   }
 
   next(); // Proceed with the save operation
 });
+
 
 module.exports = mongoose.model('Cart', CartSchema);

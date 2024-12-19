@@ -124,6 +124,7 @@ if (username == 'Guest') {
               'category': item['itemId']['category'],
               'sold': item['itemId']['sold'],
               'addedAt': item['addedAt'],
+              'location': item['itemId']['location'],
             });
           } else {
             // Remove sold items from the database
@@ -206,26 +207,36 @@ if (username == 'Guest') {
 
                           return ListTile(
                             title: Row(
-                              children: [
-                                categoryIcon,
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: Text(
-                                    item['title'] ?? 'Untitled',
-                                    style: const TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  "₪${item['price'] ?? '0.00'}",
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.green,
+  children: [
+    categoryIcon,
+    const SizedBox(width: 10),
+    Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            item['title'] ?? 'Untitled',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 4), // Add some spacing between title and location
+          Text(
+            item['location'] ?? 'Unknown location',
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
+          ),
+        ],
+      ),
+    ),
+  ],
+),
+trailing: Row(
+  mainAxisSize: MainAxisSize.min,
+  children: [
+    Text(
+      "₪${item['price'] ?? '0.00'}",
+      style: const TextStyle(
+        fontSize: 15,
+        fontWeight: FontWeight.bold,
+        color: Colors.green,
                                   ),
                                 ),
                                 IconButton(

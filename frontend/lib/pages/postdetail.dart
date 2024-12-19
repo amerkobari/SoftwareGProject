@@ -6,10 +6,10 @@ class PostDetailPage extends StatefulWidget {
   final String currentUsername;
 
   const PostDetailPage({
-    Key? key,
+    super.key,
     required this.postId,
     required this.currentUsername,
-  }) : super(key: key);
+  });
 
   @override
   _PostDetailPageState createState() => _PostDetailPageState();

@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:untitled/pages/Personalinfo.dart';
 import 'package:untitled/pages/home.dart';
 import 'package:untitled/pages/profileitems.dart';
+import 'package:untitled/pages/profileposts';
 
 class UserProfilePage extends StatefulWidget {
   final String userName;
@@ -320,6 +321,20 @@ Future<double> fetchUserRating(String username) async {
                             MaterialPageRoute(
                               builder: (context) =>
                                   UserItemsPage(userName: widget.userName),
+                            ),
+                          );
+                        },
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.newspaper),
+                        title: const Text('Your Posts'),
+                        trailing: const Icon(Icons.arrow_forward_ios),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  UserPostsPage(userName: widget.userName),
                             ),
                           );
                         },

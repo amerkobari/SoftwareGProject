@@ -1,0 +1,109 @@
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
+
+
+class UserPostsPage extends StatelessWidget {
+  final String userName;
+
+  const UserPostsPage({super.key, required this.userName});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Your Posts',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0.0,
+        centerTitle: true,
+      ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('posts')
+            .where('username', isEqualTo: userName)
+            .orderBy('timestamp', descending: true)
+            .snapshots(),
+            
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(child: Text('No posts found.'));
+          }
+
+          final posts = snapshot.data!.docs;
+
+          return ListView.builder(
+            itemCount: posts.length,
+            itemBuilder: (context, index) {
+              final post = posts[index].data() as Map<String, dynamic>;
+              final timestamp = post['timestamp'] as Timestamp?;
+              final images = post['images'] as List<dynamic>?;
+              String formattedDate = timestamp != null
+                  ? DateFormat.yMMMd().format(timestamp.toDate())
+                  : 'Unknown Date';
+
+              return Card(
+                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Post Content
+                      if (post['content'] != null && post['content'].isNotEmpty)
+                        Text(
+                          post['content'],
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      const SizedBox(height: 8),
+
+                      // Images
+                      if (images != null && images.isNotEmpty)
+                        SizedBox(
+                          height: 150,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: images.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 8),
+                                child: Image.network(
+                                  images[index],
+                                  width: 150,
+                                  height: 150,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Icon(Icons.error),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      const SizedBox(height: 8),
+
+                      // Date
+                      Text(
+                        'Posted on $formattedDate',
+                        style: const TextStyle(
+                            fontSize: 12, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
