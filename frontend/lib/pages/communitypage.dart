@@ -10,7 +10,7 @@ import 'package:untitled/pages/postdetail.dart';
 class CommunityPage extends StatefulWidget {
   final String currentUsername;
 
-  CommunityPage({required this.currentUsername});
+  const CommunityPage({super.key, required this.currentUsername});
 
   @override
   _CommunityPageState createState() => _CommunityPageState();
@@ -24,12 +24,10 @@ class _CommunityPageState extends State<CommunityPage> {
   void _pickImages() async {
     final pickedFiles = await ImagePicker().pickMultiImage();
 
-    if (pickedFiles != null) {
-      setState(() {
-        _selectedImages = pickedFiles.map((file) => File(file.path)).toList();
-      });
+    setState(() {
+      _selectedImages = pickedFiles.map((file) => File(file.path)).toList();
+    });
     }
-  }
 
   // Upload Multiple Images to Firebase Storage
 Future<List<String>> _uploadImagesToStorage(List<File> images) async {

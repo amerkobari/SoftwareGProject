@@ -177,46 +177,44 @@ void showRatingDialog(BuildContext context, String username) {
       String selectedCity, String location) async {
     double totalDeliveryFee = 0.0;
     try {
-      if (location != null) {
-        for (var item in widget.cartItems) {
-          // Fetch the distance using authController.getDistance
-          final result = await authController.getDistance(
-            '$selectedCity, Palestine',
-            '${item['location']}, Palestine',
-          );
+      for (var item in widget.cartItems) {
+        // Fetch the distance using authController.getDistance
+        final result = await authController.getDistance(
+          '$selectedCity, Palestine',
+          '${item['location']}, Palestine',
+        );
 
-          if (result['success']) {
-            double distance = double.parse(result['distance']);
-            print(
-                'Distance between $selectedCity and ${item['location']}: $distance km');
+        if (result['success']) {
+          double distance = double.parse(result['distance']);
+          print(
+              'Distance between $selectedCity and ${item['location']}: $distance km');
 
-            // Calculate fee based on distance
-            double fee;
-            if (distance < 10) {
-              fee = 10.0;
-            } else if (distance >= 10 && distance < 20) {
-              fee = 15.0;
-            } else if (distance >= 20 && distance < 50) {
-              fee = 25.0;
-            } else {
-              fee = 50.0; // For distances 50km or more
-            }
-
-            totalDeliveryFee += fee;
+          // Calculate fee based on distance
+          double fee;
+          if (distance < 10) {
+            fee = 10.0;
+          } else if (distance >= 10 && distance < 20) {
+            fee = 15.0;
+          } else if (distance >= 20 && distance < 50) {
+            fee = 25.0;
           } else {
-            // Handle error when fetching distance
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'Error calculating delivery fees for ${item['title']}: ${result['message']}',
-                ),
-              ),
-            );
-            return; // Return the current total fees in case of an error
+            fee = 50.0; // For distances 50km or more
           }
+
+          totalDeliveryFee += fee;
+        } else {
+          // Handle error when fetching distance
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Error calculating delivery fees for ${item['title']}: ${result['message']}',
+              ),
+            ),
+          );
+          return; // Return the current total fees in case of an error
         }
       }
-    } catch (error) {
+        } catch (error) {
       // Handle unexpected errors
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $error')),
@@ -230,30 +228,35 @@ void showRatingDialog(BuildContext context, String username) {
     return;
   }
 
-  Future<void> applyPromoCode() async {
-    if (promoCode == 'FIRSTORDER' && !promoApplied) {
-      // Check first order status before applying promo code
-      await checkFirstOrder();
+ Future<void> applyPromoCode() async {
+  if (promoCode == 'FIRSTORDER' && !promoApplied) {
+    // Check first order status before applying promo code
+    await checkFirstOrder();
 
-      if (isFirstOrder) {
-        setState(() {
-          totalAmount *= 0.8; // Apply 20% discount
-          promoApplied = true;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Promo code applied!')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Not eligible for the promo code.')),
-        );
-      }
+    if (isFirstOrder) {
+      double originalAmount = totalAmount; // Save the original total amount
+      setState(() {
+        totalAmount *= 0.8; // Apply 20% discount
+        promoApplied = true;
+      });
+      double savings = originalAmount - totalAmount; // Calculate the savings
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Promo code applied! You saved \$${savings.toStringAsFixed(2)}'),
+        ),
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Invalid promo code or already applied.')),
+        const SnackBar(content: Text('Not eligible for the promo code.')),
       );
     }
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Invalid promo code or already applied.')),
+    );
   }
+}
+
 
 Future<void> setitemSold() async {
   try {
@@ -662,50 +665,64 @@ Future<void> setUsername() async {
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: widget.cartItems.length,
-                      itemBuilder: (context, index) {
-                        final item = widget.cartItems[index];
-                        return ListTile(
-                          title: Text(item['title'] ?? 'Untitled'),
-                          trailing: Text(
-                            "₪${item['price'] ?? '0.00'}",
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      'Subtotal: ₪${widget.totalPrice}',
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                    Text(
-                      'Delivery Fee: ₪$deliveryFee',
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                    const Divider(),
-                    Text(
-                      'Total: ₪$totalAmount',
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      decoration:
-                          const InputDecoration(labelText: 'Promo Code'),
-                      onChanged: (value) => promoCode = value,
-                      //   validator: (value) => value?.isEmpty ?? true
-                      //       ? 'Enter a promo code or leave it blank'
-                      //       : null,
-                    ),
-                    ElevatedButton(
-                      onPressed: applyPromoCode,
-                      child: const Text('Apply Promo Code'),
-                    ),
+                  ListView.builder(
+  shrinkWrap: true,
+  physics: const NeverScrollableScrollPhysics(),
+  itemCount: widget.cartItems.length,
+  itemBuilder: (context, index) {
+    final item = widget.cartItems[index];
+    return ListTile(
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(item['title'] ?? 'Untitled'),
+          Text(
+            item['location'] ?? 'Unknown location',
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
+          ),
+        ],
+      ),
+      trailing: Text(
+        "₪${item['price'] ?? '0.00'}",
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      ),
+    );
+  },
+),
+
+                   const SizedBox(height: 10),
+Text(
+  'Subtotal: ₪${widget.totalPrice}',
+  style: const TextStyle(fontSize: 16),
+),
+Text(
+  'Delivery Fee: ₪$deliveryFee',
+  style: const TextStyle(fontSize: 16),
+),
+const Divider(),
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    Text(
+      'Total: ₪$totalAmount',
+      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    ),
+    if (promoApplied) // Show savings only if promo is applied
+      Text(
+        'You saved: ₪${(widget.totalPrice + deliveryFee - totalAmount).toStringAsFixed(2)}',
+        style: const TextStyle(fontSize: 14, color: Colors.green),
+      ),
+  ],
+),
+const SizedBox(height: 16),
+TextFormField(
+  decoration: const InputDecoration(labelText: 'Promo Code'),
+  onChanged: (value) => promoCode = value,
+),
+ElevatedButton(
+  onPressed: applyPromoCode,
+  child: const Text('Apply Promo Code'),
+),
                   ],
                 ),
               ),

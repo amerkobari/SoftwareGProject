@@ -11,6 +11,10 @@ exports.addToCart = async (req, res) => {
           return res.status(400).json({ message: 'Username and itemId are required.' });
         }
     
+        const itemDetails = await Item.findById(itemId);
+    if (!itemDetails) {
+      return res.status(404).json({ message: 'Item not found' });
+    }
         // Find the user by username
         const user = await User.findOne({ username });
     
@@ -40,7 +44,12 @@ exports.addToCart = async (req, res) => {
         // Add the item to the cart if it's not already there
         cart.items.push({
             itemId: itemId, // Only store itemId
-            quantity: 1, // Assuming default quantity is 1, can be modified if needed
+            quantity: 1,
+            title: itemDetails.title,
+            price: itemDetails.price,
+            location: itemDetails.location, // Populate location here
+            description: itemDetails.description,
+            images: itemDetails.images, // Assuming default quantity is 1, can be modified if needed
         });
     
         await cart.save();
@@ -102,7 +111,7 @@ exports.getCart = async (req, res) => {
       // Fetch the user's cart
       const cart = await Cart.findOne({ userId: user._id }).populate({
           path: 'items.itemId',
-          select: 'title price description images category sold',
+          select: 'title price location description images category sold',
       });
 
       if (!cart) {
