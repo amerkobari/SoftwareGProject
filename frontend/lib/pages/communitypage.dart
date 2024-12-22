@@ -277,29 +277,48 @@ void _addPost(BuildContext context) async {
                             children: [
                               // Like Button
                               IconButton(
-                                icon: Icon(
-                                  likes.contains(widget.currentUsername)
-                                      ? Icons.favorite
-                                      : Icons.favorite_border,
-                                  color: Colors.red,
-                                ),
-                                onPressed: () {
-                                  if (widget.currentUsername == 'Guest') {
-                                    _showLoginPrompt(context);
-                                    return;
-                                  }
-                                  FirebaseFirestore.instance
-                                      .collection('posts')
-                                      .doc(postId)
-                                      .update({
-                                    'likes': likes.contains(widget.currentUsername)
-                                        ? FieldValue.arrayRemove(
-                                            [widget.currentUsername])
-                                        : FieldValue.arrayUnion(
-                                            [widget.currentUsername]),
-                                  });
-                                },
-                              ),
+  icon: Icon(
+    likes.contains(widget.currentUsername)
+        ? Icons.favorite
+        : Icons.favorite_border,
+    color: Colors.red,
+  ),
+ onPressed: () async {
+  if (widget.currentUsername == 'Guest') {
+    _showLoginPrompt(context);
+    return;
+  }
+
+  final isLiked = likes.contains(widget.currentUsername);
+
+  // Update the likes in Firestore
+  await FirebaseFirestore.instance.collection('posts').doc(postId).update({
+    'likes': isLiked
+        ? FieldValue.arrayRemove([widget.currentUsername])
+        : FieldValue.arrayUnion([widget.currentUsername]),
+  });
+
+  if (!isLiked) {
+    // Retrieve the post document to ensure we have the correct postId
+    final postDoc = await FirebaseFirestore.instance.collection('posts').doc(postId).get();
+    if (postDoc.exists) {
+      final postOwner = postDoc['username'];
+      if (postOwner != widget.currentUsername) {
+        await FirebaseFirestore.instance.collection('notifications').add({
+          'type': 'like',
+          'message': '${widget.currentUsername} liked your post.',
+          'time': FieldValue.serverTimestamp(),
+          'postOwner': postOwner,
+          'actionBy': widget.currentUsername,
+          'isRead': false, // Add this field
+          'postId': postId,
+        });
+      }
+    }
+  }
+},
+
+),
                               Text(
                                 likes.length.toString(),
                                 style: const TextStyle(

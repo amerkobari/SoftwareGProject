@@ -21,6 +21,7 @@ import 'package:untitled/pages/motherboard.dart';
 import 'package:untitled/pages/mycart.dart';
 import 'package:untitled/pages/myorders.dart';
 import 'package:untitled/pages/myshoppage.dart';
+import 'package:untitled/pages/notification.dart';
 import 'package:untitled/pages/profilepage.dart';
 import 'package:untitled/pages/ram.dart';
 import 'package:untitled/pages/search.dart';
@@ -48,6 +49,7 @@ class _HomePageState extends State<HomePage> {
   double maxPrice = 10000; // Set default range for price
   String condition = 'new'; // Default condition
   String date = ''; // Default: no filter on date
+   int _unreadCount = 0;
   bool hasUnreadMessages = false;
 
   void _onItemTapped(int index) {
@@ -432,9 +434,38 @@ class _HomePageState extends State<HomePage> {
     if (widget.username == 'Guest') {
       favoritesList = [];
       cartList = [];
+      
       authController.fetchAndSetGuestToken();
     }
     listenForUnreadMessages();
+    FirebaseFirestore.instance
+        .collection('notifications')
+        .where('isRead', isEqualTo: false)
+        .where('postOwner', isEqualTo: widget.username) // Filter by recipient
+        .snapshots()
+        .listen((snapshot) {
+      setState(() {
+        _unreadCount = snapshot.docs.length;
+      });
+    });
+  }
+
+   void _markNotificationsAsRead() async {
+    final unreadNotifications = await FirebaseFirestore.instance
+        .collection('notifications')
+        .where('isRead', isEqualTo: false)
+        .get();
+
+    for (var doc in unreadNotifications.docs) {
+      await FirebaseFirestore.instance
+          .collection('notifications')
+          .doc(doc.id)
+          .update({'isRead': true});
+    }
+
+    setState(() {
+      _unreadCount = 0;
+    });
   }
 
   @override
@@ -455,36 +486,47 @@ class _HomePageState extends State<HomePage> {
 actions: [
   Stack(
     children: [
-      IconButton(
-        icon: const Icon(Icons.notifications, color: Colors.black),
-        onPressed: () {
-          setState(() {
-            // hasUnreadMessages = false; // Clear red dot when opened
-          });
-        },
-      ),
-      // if (hasUnreadMessages)
-      //   Positioned(
-      //     right: 11,
-      //     top: 11,
-      //     child: Container(
-      //       padding: const EdgeInsets.all(2),
-      //       decoration: BoxDecoration(
-      //         color: Colors.red,
-      //         borderRadius: BorderRadius.circular(8),
-      //       ),
-      //       constraints: const BoxConstraints(
-      //         minWidth: 12,
-      //         minHeight: 12,
-      //       ),
-      //     ),
-      //   ),
-    ],
-  ),
-],
-
-
-      ),
+        IconButton(
+                  icon: const Icon(Icons.notifications, color: Colors.black),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        _markNotificationsAsRead(); // Mark notifications as read
+                        return NotificationsPopup();
+                      },
+                    );
+                  },
+                ),
+                if (_unreadCount > 0)
+                  Positioned(
+                    right: 11,
+                    top: 11,
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 16,
+                        minHeight: 16,
+                      ),
+                      child: Text(
+                        '$_unreadCount',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ),
      backgroundColor: Colors.white,
 body: _selectedIndex == 0
     ? _homePageContent()
