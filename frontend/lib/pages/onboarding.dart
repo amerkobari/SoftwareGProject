@@ -12,99 +12,101 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentIndex = 0;
 
+  final List<String> _images = [
+    'assets/icons/page_1.jpg',
+    'assets/icons/page_2.jpg',
+    'assets/icons/page_3.jpg',
+    'assets/icons/page_4.jpg',
+    'assets/icons/page_5.jpg',
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
+      body: Stack(
         children: [
-          Expanded(
-            child: PageView(
-              controller: _pageController,
-              onPageChanged: (index) {
-                setState(() {
-                  _currentIndex = index;
-                });
-              },
+          PageView.builder(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+            itemCount: _images.length,
+            itemBuilder: (context, index) {
+              return _buildPage(imagePath: _images[index]);
+            },
+          ),
+          Positioned(
+            bottom: 20,
+            left: 0,
+            right: 0,
+            child: Column(
               children: [
-                _buildPage(
-                  title: "Welcome to HardwareBazzar",
-                  description: "Find and buy hardware products easily.",
-                  image: Icons.explore,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(_images.length, (index) {
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                      height: 8.0,
+                      width: _currentIndex == index ? 16.0 : 8.0,
+                      decoration: BoxDecoration(
+                        color: _currentIndex == index
+                            ? const Color.fromARGB(255, 254, 111, 103)
+                            : Colors.grey,
+                        borderRadius: BorderRadius.circular(4.0),
+                      ),
+                    );
+                  }),
                 ),
-                _buildPage(
-                  title: "Search & Shop",
-                  description: "Browse various categories of hardware items.",
-                  image: Icons.search,
-                ),
-                _buildPage(
-                  title: "Get Started!",
-                  description: "Sign up and start your hardware journey.",
-                  image: Icons.add_shopping_cart,
-                ),
+                const SizedBox(height: 20),
+                if (_currentIndex == _images.length - 1)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(
+                            255, 254, 111, 103), // Red color
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(8.0), // Border radius 8
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 16.0,
+                            horizontal: 40), // Optional: Adjust button height
+                      ),
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HomePage(username: 'Guest'),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        "Get Started",
+                        style: TextStyle(
+                          fontSize: 16.0, // Adjust font size if needed
+                          color: Colors.white, // Ensure the text is readable
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(3, (index) {
-              return AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                height: 8.0,
-                width: _currentIndex == index ? 16.0 : 8.0,
-                decoration: BoxDecoration(
-                  color: _currentIndex == index ? Colors.blue : Colors.grey,
-                  borderRadius: BorderRadius.circular(4.0),
-                ),
-              );
-            }),
-          ),
-          const SizedBox(height: 20),
-          if (_currentIndex == 2)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  // Navigate to the login page after onboarding is complete
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HomePage(username: '')),
-                  );
-                },
-                child: const Text("Get Started"),
-              ),
-            ),
-          const SizedBox(height: 20),
         ],
       ),
     );
   }
 
-  Widget _buildPage({
-    required String title,
-    required String description,
-    required IconData image,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(image, size: 150, color: Colors.blue),
-          const SizedBox(height: 20),
-          Text(
-            title,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 10),
-          Text(
-            description,
-            style: const TextStyle(fontSize: 16),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+  Widget _buildPage({required String imagePath}) {
+    return Image.asset(
+      imagePath,
+      fit: BoxFit.cover,
+      width: double.infinity,
+      height: double.infinity,
     );
   }
 }

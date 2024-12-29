@@ -78,6 +78,12 @@ flutter:
     - assets/icons/case.png
     - assets/icons/monitor.png
     - assets/icons/accessorise.png
+    - assets/icons/page_1.jpg
+    - assets/icons/page_2.jpg
+    - assets/icons/page_3.jpg
+    - assets/icons/page_4.jpg
+    - assets/icons/page_5.jpg
+
     
 
 
