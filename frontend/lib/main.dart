@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:untitled/pages/home.dart';
+import 'package:untitled/pages/onboarding.dart';
 
 Future<void> main() async {
   // Ensure Widgets are bound before asynchronous calls
@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(fontFamily: 'Poppins'),
-      home: const HomePage(username: 'Guest'), // Set HomePage as the initial screen
+      home: const OnboardingScreen(), // Set HomePage as the initial screen
     );
   }
 }

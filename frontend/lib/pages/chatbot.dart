@@ -15,10 +15,12 @@ class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _controller = TextEditingController();
   final List<Map<String, String>> _messages = [];
   bool _isLoading = false;
+  final FocusNode _focusNode = FocusNode();
+
 
   // OpenAI API Call
   Future<String> _callOpenAI(String message) async {
-    const String apiKey = ''; // Replace with your OpenAI API key.
+    const String apiKey = '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'; // Replace with your OpenAI API key.
     const String apiUrl = 'https://api.openai.com/v1/chat/completions';
 
     try {
@@ -49,31 +51,33 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   // Database Search API Call
-  Future<String> _callDatabaseAPI(String query) async {
-    const String searchApiUrl = 'http://10.0.2.2:3000/api/auth/search'; // Replace with your API URL
+ Future<String> _callDatabaseAPI(String query) async {
+  const String searchApiUrl = 'http://10.0.2.2:3000/api/auth/search'; // Replace with your API URL
 
-    try {
-      final response = await http.get(
-        Uri.parse('$searchApiUrl?title=${Uri.encodeComponent(query)}'),
-        headers: {'Content-Type': 'application/json'},
-      );
+  try {
+    // Pass the full query as a parameter
+    final response = await http.get(
+      Uri.parse('$searchApiUrl?keyword=${Uri.encodeComponent(query)}'),
+      headers: {'Content-Type': 'application/json'},
+    );
 
-      if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
 
-        if (data.isEmpty) {
-          return 'No items found for your query.';
-        }
-
-        // Format results as a list
-        return jsonEncode(data);
-      } else {
-        return 'Error: ${response.statusCode} ${response.reasonPhrase}';
+      if (data.isEmpty) {
+        return 'No items found for your query.';
       }
-    } catch (e) {
-      return 'Error: Unable to fetch data from the database.';
+
+      // Format results as a list
+      return jsonEncode(data);
+    } else {
+      return 'Error: ${response.statusCode} ${response.reasonPhrase}';
     }
+  } catch (e) {
+    return 'Error: Unable to fetch data from the database.';
   }
+}
+
 
   // Determine which API to call
   Future<String> _getResponse(String message) async {
@@ -87,23 +91,27 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  void _sendMessage() async {
-    if (_controller.text.isEmpty) return;
+void _sendMessage() async {
+  if (_controller.text.isEmpty) return;
 
-    setState(() {
-      _messages.add({'role': 'user', 'content': _controller.text});
-      _isLoading = true;
-    });
+  setState(() {
+    _messages.add({'role': 'user', 'content': _controller.text});
+    _isLoading = true;
+  });
 
-    final response = await _getResponse(_controller.text);
+  // Unfocus the TextField
+  _focusNode.unfocus();
 
-    setState(() {
-      _messages.add({'role': 'bot', 'content': response});
-      _isLoading = false;
-    });
+  final response = await _getResponse(_controller.text);
 
-    _controller.clear();
-  }
+  setState(() {
+    _messages.add({'role': 'bot', 'content': response});
+    _isLoading = false;
+  });
+
+  _controller.clear();
+}
+
 
   void _onItemTap(Map<String, dynamic> item) {
     Navigator.push(
@@ -264,18 +272,19 @@ class _ChatScreenState extends State<ChatScreen> {
               children: [
                 Expanded(
                   child: TextField(
-                    controller: _controller,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.grey[200],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(24.0),
-                        borderSide: BorderSide.none,
-                      ),
-                      hintText: '(Use "search" to query the database)',
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    ),
-                  ),
+  controller: _controller,
+  focusNode: _focusNode, // Attach the FocusNode here
+  decoration: InputDecoration(
+    filled: true,
+    fillColor: Colors.grey[200],
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(24.0),
+      borderSide: BorderSide.none,
+    ),
+    hintText: '(Use "search" to query the database)',
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+  ),
+),
                 ),
                 const SizedBox(width: 8.0),
                 GestureDetector(

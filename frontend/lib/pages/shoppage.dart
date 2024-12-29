@@ -348,7 +348,7 @@ class _ShopPageState extends State<ShopPage> {
                                   elevation: 2,
                                   child: ListTile(
                                     title: Text(item['title']),
-                                    subtitle: Text("Price: \$${item['price']}"),
+                                    subtitle: Text("Price: ₪${item['price']}"),
                                     trailing: const Icon(Icons.arrow_forward),
                                     onTap: () async {
                     // Navigate to ItemPage with API call

@@ -83,6 +83,12 @@ flutter:
     - assets/icons/chatbot.png
     - assets/icons/chatbotwhite.png
     - assets/icons/chatbotBG.jpg
+    - assets/icons/page_1.jpg
+    - assets/icons/page_2.jpg
+    - assets/icons/page_3.jpg
+    - assets/icons/page_4.jpg
+    - assets/icons/page_5.jpg
+
     
 
 

@@ -192,7 +192,7 @@ class _OwnerShopPageState extends State<OwnerShopPage> {
                                   elevation: 2,
                                   child: ListTile(
                                     title: Text(item['title']),
-                                    subtitle: Text("Price: \$${item['price']}"),
+                                    subtitle: Text("Price: ₪${item['price']}"),
                                     trailing: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [

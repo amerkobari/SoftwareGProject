@@ -222,16 +222,10 @@ Widget _homePageContent() {
             ),
             const SizedBox(height: 20),
             Container(
-              height: 600,
+              height: 60,
               width: double.infinity,
               decoration: const BoxDecoration(
                 color: Colors.white,
-              ),
-              child: const Center(
-                child: Text(
-                  'Home Page Content',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
               ),
             ),
           ],
@@ -239,7 +233,7 @@ Widget _homePageContent() {
       ),
       // Floating Action Button for Chatbot
       Positioned(
-        bottom: 20,
+        bottom: 10,
         right: 20,
         child: FloatingActionButton(
           onPressed: () {
