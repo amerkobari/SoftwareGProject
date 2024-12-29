@@ -9,6 +9,7 @@ import 'package:untitled/pages/accessories.dart';
 import 'package:untitled/pages/addnewitem.dart';
 import 'package:untitled/pages/addnewshop.dart';
 import 'package:untitled/pages/case.dart';
+import 'package:untitled/pages/chatbot.dart';
 import 'package:untitled/pages/chatrooms.dart';
 import 'package:untitled/pages/communitypage.dart';
 import 'package:untitled/pages/cpu.dart';
@@ -127,122 +128,130 @@ class _HomePageState extends State<HomePage> {
   }
 
   // Content for HomePage with BoxShadow on Search Bar
-  Widget _homePageContent() {
-    return Stack(
-      children: [
-        SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _searchField(),
-              const SizedBox(height: 20),
-              // Categories Section
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Text(
-                  'Categories',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
+Widget _homePageContent() {
+  return Stack(
+    children: [
+      SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _searchField(),
+            const SizedBox(height: 20),
+            // Categories Section
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'Categories',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
               ),
-              const SizedBox(height: 10),
-              // Horizontal Swipable Categories
-              SizedBox(
-                height: 100,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    _categoryCard('CPU', 'assets/icons/cpu.png'),
-                    _categoryCard('GPU', 'assets/icons/gpu.png'),
-                    _categoryCard('RAM', 'assets/icons/ram.png'),
-                    _categoryCard('Hard Disk', 'assets/icons/hard-disk.png'),
-                    _categoryCard(
-                        'Motherboards', 'assets/icons/motherboard.png'),
-                    _categoryCard('Case', 'assets/icons/case.png'),
-                    _categoryCard('Monitors', 'assets/icons/monitor.png'),
-                    _categoryCard(
-                        'Accessories', 'assets/icons/accessorise.png'),
-                  ],
+            ),
+            const SizedBox(height: 10),
+            // Horizontal Swipable Categories
+            SizedBox(
+              height: 100,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  _categoryCard('CPU', 'assets/icons/cpu.png'),
+                  _categoryCard('GPU', 'assets/icons/gpu.png'),
+                  _categoryCard('RAM', 'assets/icons/ram.png'),
+                  _categoryCard('Hard Disk', 'assets/icons/hard-disk.png'),
+                  _categoryCard('Motherboards', 'assets/icons/motherboard.png'),
+                  _categoryCard('Case', 'assets/icons/case.png'),
+                  _categoryCard('Monitors', 'assets/icons/monitor.png'),
+                  _categoryCard('Accessories', 'assets/icons/accessorise.png'),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            // Shops Section
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'Shops',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
               ),
-              const SizedBox(height: 20),
-              // Shops Section
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Text(
-                  'Shops',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
+            ),
+            const SizedBox(height: 10),
+            // Horizontal Swipable Shops
+            FutureBuilder<List<Map<String, dynamic>>>(
+              future: authController.fetchShops(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No shops available'));
+                } else {
+                  final shops = snapshot.data!;
+                  return SizedBox(
+                    height: 200,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: shops.length,
+                      itemBuilder: (context, index) {
+                        final shop = shops[index];
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ShopPage(shopId: shop['_id']),
+                              ),
+                            );
+                          },
+                          child: _shopCard(
+                            shop['shopName'] ?? 'Unknown Shop',
+                            shop['logoUrl'], // Pass logo data (base64 or URL)
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                }
+              },
+            ),
+            const SizedBox(height: 20),
+            Container(
+              height: 60,
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                color: Colors.white,
               ),
-              const SizedBox(height: 10),
-              // Horizontal Swipable Shops
-              FutureBuilder<List<Map<String, dynamic>>>(
-                future: authController.fetchShops(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text('No shops available'));
-                  } else {
-                    final shops = snapshot.data!;
-                    return SizedBox(
-                      height: 200,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: shops.length,
-                        itemBuilder: (context, index) {
-                          final shop = shops[index];
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      ShopPage(shopId: shop['_id']),
-                                ),
-                              );
-                            },
-                            child: _shopCard(
-                              shop['shopName'] ?? 'Unknown Shop',
-                              shop['logoUrl'], // Pass logo data (base64 or URL)
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  }
-                },
-              ),
-
-              const SizedBox(height: 20),
-              Container(
-                height: 600,
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                ),
-                child: const Center(
-                  child: Text(
-                    'Home Page Content',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ],
-    );
-  }
+      ),
+      // Floating Action Button for Chatbot
+      Positioned(
+        bottom: 10,
+        right: 20,
+        child: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ChatScreen(), // Navigate to the chatbot
+              ),
+            );
+          },
+          backgroundColor: Colors.deepPurple,
+          child: Image.asset('assets/icons/chatbotwhite.png'),
+        ),
+      ),
+    ],
+  );
+}
+
 
   // Helper Function for Category Cards with Random Colors
   Widget _categoryCard(String categoryName, String imagePath) {
