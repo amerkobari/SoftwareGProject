@@ -34,5 +34,7 @@ router.get('/items-sold/:username', itemController.getItemsSold);
 router.get('/user-balance/:username', itemController.getUserBalance);
 
 router.get('/get-items-by-user/:username', itemController.getItemsByUsername);
+router.get('/search', itemController.searchItemsByTitle);
+
 
 module.exports = router;

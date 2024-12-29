@@ -5,6 +5,8 @@ import 'package:untitled/controllers/authController.dart';
 import 'package:untitled/pages/postdetail.dart';
 
 class NotificationsPopup extends StatefulWidget {
+  const NotificationsPopup({super.key});
+
   @override
   _NotificationsPopupState createState() => _NotificationsPopupState();
 }

@@ -3,8 +3,12 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/pages/home.dart';
 
-void main() async {
+Future<void> main() async {
+  // Ensure Widgets are bound before asynchronous calls
   WidgetsFlutterBinding.ensureInitialized();
+  // await dotenv.load(fileName: "D:/SoftwareGradProject/SoftwareGProject/frontend/.env");
+
+  // Initialize Firebase
   try {
     await Firebase.initializeApp();
     FirebaseStorage.instance.useStorageEmulator('127.0.0.1', 9199);
@@ -12,9 +16,10 @@ void main() async {
   } catch (e) {
     print("Error initializing Firebase: $e");
   }
+
+  // Run the application
   runApp(const MyApp());
 }
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -24,7 +29,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(fontFamily: 'Poppins'),
-      //  home: const OwnerShopPage(shopId: '674c6c9c2443e4779d0f8c14',),
       home: const HomePage(username: 'Guest'), // Set HomePage as the initial screen
     );
   }
