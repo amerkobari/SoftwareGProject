@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Item - HardwareBazaar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header .logo {
+            font-size: 24px;
+            font-weight: bold;
+            padding-left: 10px;
+            text-decoration: none;
+            color: white;
+        }
+        header .logo:hover {
+            color: #ff5a5f;
+        }
+        header .nav-buttons {
+            margin-right: 10px;
+        }
+        header .nav-button {
+            background-color: #ff5a5f;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 10px;
+        }
+        header .nav-button:hover {
+            background-color: #e04343;
+        }
+        .form-card {
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+        .form-card h1 {
+            font-size: 24px;
+            color: #333;
+        }
+        .form-card label {
+            display: block;
+            margin-top: 15px;
+            font-size: 18px;
+        }
+        .form-card input, .form-card select, .form-card textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .submit-btn {
+            background-color: #ff5a5f;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 20px;
+            width: 100%;
+        }
+        .submit-btn:hover {
+            background-color: #e04343;
+        }
+        .image-preview {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .image-preview div {
+            position: relative; /* For positioning the delete button */
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .image-preview img {
+            width: 100px; /* Set the size of the images */
+            height: auto;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .delete-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            padding: 5px;
+            font-size: 12px;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 40px 20px;
+            font-family: Arial, sans-serif;
+            text-align: left;
+        }
+
+        footer a {
+            color: #ff5a5f;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            footer table {
+                display: block;
+                width: 100%;
+                text-align: center;
+            }
+            footer td {
+                display: block;
+                margin: 10px 0;
+            }
+            }
+
+    </style>
+</head>
+<body>
+
+<!-- Header Section -->
+<header>
+    <a href="Home.html" class="logo">HardwareBazaar</a>
+
+</header>
+
+<!-- Main Content -->
+<div class="container">
+    <!-- Form Card for Adding New Item -->
+    <div class="form-card">
+        <h1>Add New Item</h1>
+        <form>
+            <label for="item-name">Item Name:</label>
+            <input style="width: 98%;" type="text" id="item-name" required>
+
+            <label for="category">Category:</label>
+            <select id="category" required>
+                <option value="" disabled selected>Select a category</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Furniture">Furniture</option>
+                <option value="Vehicles">Vehicles</option>
+                <option value="Tools">Tools</option>
+            </select>
+
+            <label for="description">Description:</label>
+            <textarea style="width: 98%;" id="description" rows="4" required></textarea>
+
+            <label for="price">Price per Day:</label>
+            <input style="width: 98%;" type="number" id="price" required>
+
+            <label for="image-url">Image Upload:</label>
+            <input style="width: 98%;" type="file" id="image-url" accept="image/*" multiple required onchange="previewImages()">
+
+            <div class="image-preview" id="image-preview"></div>
+
+            <button type="submit" class="submit-btn">Submit Item</button>
+        </form>
+    </div>
+</div>
+
+<!-- Footer Section -->
+<footer class="home-container8" style="background-color: #333; color: white; padding: 40px 20px;">
+    <div id="contact" style="width: 100%; max-width: 1200px; margin: 0 auto;">
+        <table width="100%" style="padding: 20px;">
+            <tbody>
+            <tr>
+                <td style="font-size: x-large; font-weight: bold; padding: 10px 0;">
+                    HardwareBazaar
+                </td>
+                <td class="Copyrightclass" style="padding: 10px 20px;">
+                    <div>
+                        <strong>Amer Kobari</strong><br>
+                        Email: <a href="mailto:amerkobari22@gmail.com" style="color: #ff5a5f;">amerkobari22@gmail.com</a><br>
+                        Phone: <a href="tel:+970599799230" style="color: #ff5a5f;">+970 599 799 230</a>
+                    </div>
+                    <br>
+                    <div>
+                        <strong>Tariq Marmash</strong><br>
+                        Email: <a href="mailto:tariqmarmash17@gmail.com" style="color: #ff5a5f;">tariqmarmash17@gmail.com</a><br>
+                        Phone: <a href="tel:+970592757780" style="color: #ff5a5f;">+970 592 757 780</a>
+                    </div>
+                    <br>
+                   
+                </td>
+                <td align="center" width="25%" class="Copyrightclass" style="padding: 10px;">
+                    ©Copyright 2024.<br>
+                    All rights reserved. Amer, Tariq.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</footer>
+
+<script>
+    const selectedFiles = []; // Array to hold selected files
+
+    function previewImages() {
+        const fileInput = document.getElementById('image-url');
+        const previewContainer = document.getElementById('image-preview');
+        previewContainer.innerHTML = ''; // Clear previous previews
+        selectedFiles.length = 0; // Clear previous files in the array
+
+        // Loop through all selected files
+        for (const file of fileInput.files) {
+            const reader = new FileReader();
+
+            // Define what happens when file is loaded
+            reader.onload = function(event) {
+                const div = document.createElement('div'); // Create a new div for each image
+                const img = document.createElement('img'); // Create new image element
+                img.src = event.target.result; // Set the src to the loaded file
+
+                // Create a delete button
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'X'; // Set button text
+                deleteBtn.classList.add('delete-btn'); // Add class for styling
+
+                // Add click event to delete button
+                deleteBtn.onclick = function() {
+                    const index = selectedFiles.indexOf(file); // Find the index of the file
+                    if (index > -1) {
+                        selectedFiles.splice(index, 1); // Remove the file from the array
+                        div.remove(); // Remove the image div from the preview
+                    }
+                };
+
+                div.appendChild(img); // Append the new image to the div
+                div.appendChild(deleteBtn); // Append the delete button to the div
+                previewContainer.appendChild(div); // Append the div to the preview container
+
+                selectedFiles.push(file); // Add file to the selected files array
+            };
+
+            // Read the file as a Data URL
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
+
+</body>
+</html>

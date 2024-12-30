@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Electronics Rental</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+            text-align: left;
+        }
+        header .logo {
+            font-size: 24px;
+            font-weight: bold;
+            padding-left: 10px;
+            text-decoration: none;
+            color: white;
+        }
+        header .logo:hover {
+            color: #ff5a5f;
+        }
+        .admin-container {
+            margin-top: 20px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .refresh-btn {
+            background-color: #ff5a5f;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .refresh-btn:hover {
+            background-color: #e04343;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .delete-btn, .edit-btn {
+            background-color: #ff5a5f;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .delete-btn:hover, .edit-btn:hover {
+            background-color: #e04343;
+        }
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 8px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .modal input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .save-btn {
+            background-color: #ff5a5f;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .save-btn:hover {
+            background-color: #e04343;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="Home.html" class="logo">HardwareBazaar</a>
+</header>
+
+<main>
+    <div class="admin-container">
+        <h1>Admin Dashboard</h1>
+        <button class="refresh-btn" onclick="fetchProducts()">Refresh Products</button>
+
+        <h2>Product List</h2>
+        <table id="productsTable">
+            <thead>
+            <tr>
+                <th>Product ID</th>
+                <th>Product Name</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Dynamic content will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<!-- Edit Product Modal -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Edit Product</h2>
+        <input type="text" id="editProductName" placeholder="Product Name">
+        <input type="text" id="editProductCategory" placeholder="Category">
+        <input type="text" id="editProductStatus" placeholder="Status">
+        <button class="save-btn" onclick="saveProduct()">Save Changes</button>
+    </div>
+</div>
+
+<script>
+    // Sample product data
+    const sampleProducts = [
+        { id: 1, name: 'Laptop', category: 'Computers', status: 'Available' },
+        { id: 2, name: 'Camera', category: 'Photography', status: 'Rented' },
+        { id: 3, name: 'Projector', category: 'Presentation', status: 'Available' }
+    ];
+
+    let currentEditId = null;
+
+    function fetchProducts() {
+        const tableBody = document.querySelector('#productsTable tbody');
+        tableBody.innerHTML = ''; // Clear existing data
+
+        // Simulate fetching data (in a real app, you'd fetch from a database)
+        sampleProducts.forEach(product => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${product.id}</td>
+                <td>${product.name}</td>
+                <td>${product.category}</td>
+                <td>${product.status}</td>
+                <td>
+                    <button class="edit-btn" onclick="openEditModal(${product.id})">Edit</button>
+                    <button class="delete-btn" onclick="deleteProduct(${product.id})">Delete</button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    function openEditModal(id) {
+        const product = sampleProducts.find(p => p.id === id);
+        if (product) {
+            currentEditId = id;
+            document.getElementById('editProductName').value = product.name;
+            document.getElementById('editProductCategory').value = product.category;
+            document.getElementById('editProductStatus').value = product.status;
+            document.getElementById('editModal').style.display = "block";
+        }
+    }
+
+    function closeModal() {
+        document.getElementById('editModal').style.display = "none";
+    }
+
+    function saveProduct() {
+        const updatedName = document.getElementById('editProductName').value;
+        const updatedCategory = document.getElementById('editProductCategory').value;
+        const updatedStatus = document.getElementById('editProductStatus').value;
+
+        const productIndex = sampleProducts.findIndex(p => p.id === currentEditId);
+        if (productIndex !== -1) {
+            sampleProducts[productIndex] = {
+                id: currentEditId,
+                name: updatedName,
+                category: updatedCategory,
+                status: updatedStatus
+            };
+            alert(`Product ID: ${currentEditId} has been updated.`);
+            closeModal();
+            fetchProducts(); // Refresh the product list
+        }
+    }
+
+    function deleteProduct(id) {
+        const productIndex = sampleProducts.findIndex(product => product.id === id);
+        if (productIndex !== -1) {
+            // Remove the product from the array
+            sampleProducts.splice(productIndex, 1);
+            alert(`Product with ID: ${id} has been deleted.`);
+            fetchProducts(); // Refresh the product list
+        }
+    }
+
+    // Fetch products on page load
+    document.addEventListener('DOMContentLoaded', fetchProducts);
+</script>
+
+
+</body>
+</html>

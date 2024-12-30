@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Electronics Rental</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Header */
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+            text-align: left;
+        }
+
+        header .logo {
+            font-size: 24px;
+            font-weight: bold;
+            padding-left: 10px;
+            text-decoration: none;
+            color: white;
+        }
+
+        header .logo:hover {
+            color: #ff5a5f;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .checkout-container {
+            width: 80%;
+            margin: 30px auto;
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        /* Forms Section */
+        .form-section {
+            flex: 1;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-section h2 {
+            color: #232f3e;
+            margin-bottom: 20px;
+        }
+
+        .form-section label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .form-section input[type="text"],
+        .form-section input[type="email"],
+        .form-section input[type="tel"],
+        .form-section input[type="number"],
+        .form-section select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        /* Order Summary Section */
+        .order-summary {
+            flex: 0 0 30%;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .order-summary h2 {
+            color: #232f3e;
+            margin-bottom: 20px;
+        }
+
+        .summary-detail {
+            font-size: 16px;
+        }
+
+        .summary-detail p {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+
+        .summary-total {
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .checkout-btn {
+            background-color: #ff5a5f;
+            color: white;
+            padding: 15px;
+            width: 100%;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .checkout-btn:hover {
+            background-color: #e04343;
+        }
+
+        /* Success Message */
+        .success-message {
+            display: none;
+            background-color: #dff0d8;
+            color: #3c763d;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .checkout-container {
+                flex-direction: column;
+            }
+
+            .form-section, .order-summary {
+                width: 100%;
+            }
+        }
+    </style>
+    <script>
+        function validateForm(event) {
+            event.preventDefault(); // Prevent form submission
+            const fullName = document.getElementById('full-name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const city = document.getElementById('city').value.trim();
+            const state = document.getElementById('state').value;
+            const zip = document.getElementById('zip').value.trim();
+            const cardNumber = document.getElementById('card-number').value.trim();
+            const expiry = document.getElementById('expiry').value.trim();
+            const cvv = document.getElementById('cvv').value.trim();
+
+            // Check if all fields are filled
+            if (!fullName || !email || !phone || !address || !city || !state || !zip || !cardNumber || !expiry || !cvv) {
+                alert('Please fill in all fields.');
+                return;
+            }
+
+            // If all fields are filled, display success message
+            const successMessage = document.querySelector('.success-message');
+            successMessage.style.display = 'block';
+            successMessage.textContent = 'Order placed successfully!';
+        }
+    </script>
+</head>
+<body>
+<header>
+    <a href="Home.html" class="logo">HardwareBazaar</a>
+</header>
+
+<main>
+    <h1>Checkout</h1>
+    <section class="checkout-container">
+        <!-- Billing Information Section -->
+        <div class="form-section">
+            <h2>Billing Information</h2>
+            <label for="full-name">Full Name</label>
+            <input type="text" id="full-name" placeholder="Your Name" required>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="example.doe@example.com" required>
+
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" placeholder="+1 (555) 555-5555" required>
+
+            <label for="address">Address</label>
+            <input type="text" id="address" placeholder="123 Main St" required>
+
+            <label for="city">City</label>
+            <input type="text" id="city" placeholder="City" required>
+
+            <label for="state">State</label>
+            <select id="state" required>
+                <option value="">Select State</option>
+                <option value="CA">jerusalem</option>
+                <option value="TX">ramallah</option>
+                <option value="NY">nablus</option>
+                <option value="FL">bethlehem</option>
+                <option value="FL">jenin</option>
+                <!-- Add more states as needed -->
+            </select>
+
+            <label for="zip">ZIP Code</label>
+            <input type="number" id="zip" placeholder="ZIP Code" required>
+
+            <h2>Payment Information</h2>
+            <label for="card-number">Card Number</label>
+            <input type="number" id="card-number" placeholder="Card Number" required>
+
+            <label for="expiry">Expiry Date (MM/YY)</label>
+            <input type="text" id="expiry" placeholder="MM/YY" required>
+
+            <label for="cvv">CVV</label>
+            <input type="number" id="cvv" placeholder="CVV" required>
+
+            <button class="checkout-btn" onclick="validateForm(event)">Place Order</button>
+
+            <!-- Success Message -->
+            <div class="success-message"></div>
+        </div>
+
+        <!-- Order Summary Section -->
+        <div class="order-summary">
+            <h2>Order Summary</h2>
+            <div class="summary-detail">
+                <p>Subtotal: <span>$100</span></p>
+                <p>Tax (10%): <span>$10</span></p>
+                <p><strong class="summary-total">Total: <span>$110</span></strong></p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="home-container8" style="background-color: #333; color: white; padding: 40px 20px;">
+    <div id="contact" style="width: 100%; max-width: 1200px; margin: 0 auto;">
+        <table width="100%" style="padding: 20px;">
+            <tbody>
+            <tr>
+                <td style="font-size: x-large; font-weight: bold; padding: 10px 0;">
+                    HardwareBazaar
+                </td>
+                <td class="Copyrightclass" style="padding: 10px 20px;">
+                    <div>
+                        <strong>Amer Kobari</strong><br>
+                        Email: <a href="mailto:amerkobari22@gmail.com" style="color: #ff5a5f;">amerkobari22@gmail.com</a><br>
+                        Phone: <a href="tel:+970599799230" style="color: #ff5a5f;">+970 599 799 230</a>
+                    </div>
+                    <br>
+                    <div>
+                        <strong>Tariq Marmash</strong><br>
+                        Email: <a href="mailto:tariqmarmash17@gmail.com" style="color: #ff5a5f;">tariqmarmash17@gmail.com</a><br>
+                        Phone: <a href="tel:+970592757780" style="color: #ff5a5f;">+970 592 757 780</a>
+                    </div>
+                    <br>
+                    
+                </td>
+                <td align="center" width="25%" class="Copyrightclass" style="padding: 10px;">
+                    ©Copyright 2024.<br>
+                    All rights reserved. Amer, Tariq.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</footer>
+
+<style>
+    footer {
+        background-color: #333;
+        color: white;
+        padding: 40px 20px;
+        font-family: Arial, sans-serif;
+        text-align: left;
+    }
+
+    footer a {
+        color: #ff5a5f;
+        text-decoration: none;
+    }
+
+    footer a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+        footer table {
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+        footer td {
+            display: block;
+            margin: 10px 0;
+        }
+    }
+</style>
+
+</body>
+</html>

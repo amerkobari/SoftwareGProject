@@ -232,6 +232,30 @@ exports.getItemsByCategory = async (req, res) => {
     }
 };
 
+exports.getItemsByCategoryW = async (req, res) => {
+        try {
+            const items = await Item.find({ category: req.params.category, sold: false });
+    
+            // Format each item's images
+            const formattedItems = items.map(item => ({
+                ...item.toObject(),
+                images: item.images?.map(image => {
+                    if (image?.data) {
+                        return {
+                            contentType: image.contentType,
+                            data: image.data.toString('base64') // Convert Buffer to Base64 string
+                        };
+                    }
+                    return null;
+                }) || []
+            }));
+    
+            res.json(formattedItems);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    };
+    
 
 // Get items by title
 exports.getItemsByTitle = async (req, res) => {

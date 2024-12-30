@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Home</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #333;
+            color: white;
+            text-align: left;
+        }
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        nav ul {
+            list-style: none;
+            display: flex;
+        }
+        nav ul li {
+            margin-left: 20px;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+        .search-bar {
+            text-align: center;
+            margin: 40px 0;
+        }
+        .search-bar input[type="text"] {
+            padding: 10px;
+            width: 50%;
+            font-size: 1.2em;
+        }
+        .search-bar button {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .hero {
+            background: url('Imgs/bg.jpg') no-repeat center center/cover;
+            color: white;
+            text-align: center;
+            padding: 100px 20px;
+            }
+            .hero h1 {
+            font-size: 3em;
+        }
+        .hero p {
+            font-size: 1.2em;
+        }
+        .hero button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            background-color: #ff5a5f;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Filter Buttons Section */
+        .filters {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+
+        .categories {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers the content horizontally */
+    justify-content: center; /* Centers the content vertically */
+    text-align: center;
+    padding: 50px 20px;
+}
+
+#category-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Centers buttons in the row */
+    gap: 10px; /* Adds spacing between buttons */
+    margin-top: 20px;
+}
+
+.category-button {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    background-color: #f4f4f4;
+    cursor: pointer;
+    font-size: 1em;
+    border-radius: 25px;
+    transition: background-color 0.3s ease;
+}
+
+.category-button:hover {
+    background-color: #ff5a5f;
+    color: #fff;
+}
+            .items h2 {
+            font-size: 2em;
+            margin-bottom: 30px;
+            text-align: center;
+            padding-top: 15px;
+        }
+        .categories h2 {
+            font-size: 2em;
+            margin-bottom: 30px;
+        }
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        .category {
+            padding: 20px;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        .category img {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+        }
+
+        .how-it-works {
+            background-color: #333;
+            color: white;
+            padding: 50px 20px;
+            text-align: center;
+            margin-top: 15px;
+        }
+        .how-it-works h2 {
+            font-size: 2em;
+            margin-bottom: 30px;
+        }
+        .steps {
+            display: flex;
+            justify-content: space-around;
+        }
+        .steps div {
+            width: 30%;
+            padding: 20px;
+        }
+        .cta-banner {
+            background-color: #ff5a5f;
+            text-align: center;
+            padding: 50px 20px;
+            color: white;
+        }
+        .cta-banner h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        .cta-banner button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            background-color: #333;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        footer a {
+            color: white;
+            text-decoration: none;
+        }
+        header .logo:hover {
+            color: #ff5a5f;
+        }
+
+        #items-container {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* 3 items per row */
+            gap: 20px;
+        }
+        .item {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 1px solid #ddd;
+        }
+        .item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+        .item-content {
+            padding: 20px;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        .item-details {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centers content vertically */
+    align-items: center; /* Centers content horizontally */
+    text-align: center;
+    /* padding: 20px; */
+    opacity: 0;
+    transform: translateY(100%);
+    transition: opacity 0.3s, transform 0.3s;
+    border-radius: 10px;
+}
+
+        .item:hover .item-details {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .item-details h3 {
+            margin: 10px 0;
+        }
+        .item-details p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+    #category, label[for="category"] {
+            display: none; /* Hide the search bar and its label */
+        }
+
+        
+    </style>
+    
+</head>
+<body>
+
+<!-- Header -->
+<header>
+    <a href="Home.html" class="logo">HardwareBazaar</a>
+    <nav>
+        <ul>
+            <li><a href="Home.html">Home</a></li>
+            <li><a href="#">Categories</a></li>
+            <li><a href="#howitworks" id="howItWorksLink">How It Works</a></li> <!-- Updated this line -->
+            <li><a href="#footer" id="contactLink">Contact Us</a></li>
+            <li><a href="SignIn.html">Sign In</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- Search Bar -->
+<div class="search-bar">
+    <input type="text" placeholder="Search for items to rent...">
+    <button>Search</button>
+</div>
+
+<!-- Hero Section -->
+<section class="hero">
+    <h1 style="text-shadow: 1px 1px 3px black">Sell Anything, Anytime, Anywhere</h1>
+    <p style="text-shadow: 1px 1px 3px black">Explore the world of HardwareBazaar</p>
+    <button style="border-radius: 5px">Get Started</button>
+</section>
+
+<!-- Filter Buttons Section -->
+
+<!-- Items Section -->
+<section class="items">
+    <h2>Categories</h2>
+    <div class="items-grid">
+        <!-- Items will be populated here dynamically -->
+    </div>
+    <div class="pagination-controls" style="text-align: center; margin-top: 20px;">
+        <!-- Pagination buttons will be dynamically generated here -->
+    </div>
+    <div id="category-buttons">
+        <button class="category-button" data-category="CPU">CPU</button>
+        <button class="category-button" data-category="GPU">GPU</button>
+        <button class="category-button" data-category="RAM">RAM</button>
+        <button class="category-button" data-category="Motherboard">Motherboards</button>
+        <button class="category-button" data-category="Hard Disk">Hard Disk</button>
+        <button class="category-button" data-category="Case">Case</button>
+        <button class="category-button" data-category="Monitors">Monitors</button>
+        <button class="category-button" data-category="Accessories">Accessories</button>
+    </div>
+
+    <label for="category">Enter Category:</label>
+    <input type="text" id="category" placeholder="Enter category" />
+    <button id="fetchItemsButton" style="display: none;">Fetch Items</button>
+
+    <div id="items-container"></div>
+</section>
+
+
+
+<!-- How It Works Section -->
+<section id="howitworks" class="how-it-works">
+    <h2>How It Works</h2>
+    <div class="steps">
+        <div>
+            <h3>1. Search for Items</h3>
+            <p>Browse thousands of items in the Bazaar.</p>
+        </div>
+        <div>
+            <h3>2. Make a Request</h3>
+            <p>Choose the item you want to get and put it in your cart.</p>
+        </div>
+        <div>
+            <h3>3. Make the deal</h3>
+            <p>A third party delivery service will deliver your item based on the checkout information you fill in.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Call-to-Action Banner -->
+<section class="cta-banner">
+    <h2>Have something to sell?</h2>
+    <button onclick="window.location.href='NewItem.html'" style="border-radius: 5px">List Your Item</button>
+</section>
+
+<!-- Footer -->
+<footer id="footer" class="home-container8" style="background-color: #333; color: white; padding: 40px 20px;">
+    <div id="contact" style="width: 100%; max-width: 1200px; margin: 0 auto;">
+        <table width="100%" style="padding: 20px;">
+            <tbody>
+            <tr>
+                <td style="font-size: x-large; font-weight: bold; padding: 10px 0;">
+                    HardwareBazaar
+                </td>
+                <td class="Copyrightclass" style="padding: 10px 20px;">
+                    <div>
+                        <strong>Amer Kobari</strong><br>
+                        Email: <a href="mailto:amerkobari22@gmail.com" style="color: #ff5a5f;">amerkobari22@gmail.com</a><br>
+                        Phone: <a href="tel:+970599799230" style="color: #ff5a5f;">+970 599 799 230</a>
+                    </div>
+                    <br>
+                    <div>
+                        <strong>Tariq Marmash</strong><br>
+                        Email: <a href="mailto:tariqmarmash17@gmail.com" style="color: #ff5a5f;">tariqmarmash17@gmail.com</a><br>
+                        Phone: <a href="tel:+970592757780" style="color: #ff5a5f;">+970 592 757 780</a>
+                    </div>
+                    <br>
+               
+                </td>
+                <td align="center" width="25%" class="Copyrightclass" style="padding: 10px;">
+                    ©Copyright 2024.<br>
+                    All rights reserved. Amer, Tariq.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</footer>
+
+<style>
+    footer {
+        background-color: #333;
+        color: white;
+        padding: 40px 20px;
+        font-family: Arial, sans-serif;
+        text-align: left;
+    }
+
+    footer a {
+        color: #ff5a5f;
+        text-decoration: none;
+    }
+
+    footer a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+        footer table {
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+        footer td {
+            display: block;
+            margin: 10px 0;
+        }
+    }
+    header .logo {
+        font-size: 24px;
+        font-weight: bold;
+        padding-left: 10px;
+        text-decoration: none;
+        color: white;
+    }
+</style>
+<script>
+  
+        // Smooth scroll to footer when "Contact Us" is clicked
+        document.getElementById('contactLink').addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent default anchor behavior
+            document.getElementById('footer').scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+
+        // Smooth scroll to How It Works when clicked
+        document.getElementById('howItWorksLink').addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent default anchor behavior
+            document.getElementById('howitworks').scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+
+
+
+        document.querySelectorAll('.category-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const category = button.getAttribute('data-category');
+                fetchItemsByCategory(category);
+            });
+        });
+
+        async function fetchItemsByCategory(category) {
+            const itemsContainer = document.getElementById('items-container');
+            itemsContainer.innerHTML = ''; // Clear previous content
+
+            try {
+                const response = await fetch(`http://127.0.0.1:3000/api/auth/get-items-by-categoryw/${category}`);
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status} - ${response.statusText}`);
+                }
+
+                const items = await response.json();
+
+                if (items.length === 0) {
+                    itemsContainer.innerHTML = '<p>No items found for this category.</p>';
+                    return;
+                }
+
+                items.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.classList.add('item');
+
+                    const imageUrl = item.images && item.images.length > 0
+                        ? `data:${item.images[0].contentType};base64,${item.images[0].data}`
+                        : 'Imgs/default.png';
+
+                    itemDiv.innerHTML = `
+                        <img src="${imageUrl}" alt="${item.title}" />
+                        <div class="item-content">
+                            <h3>${item.title}</h3>
+                        </div>
+                        <div class="item-details">
+                            <h3>${item.title}</h3>
+                            <p><strong>Price:</strong> ${item.price} USD</p>
+                            <p><strong>Condition:</strong> ${item.condition || 'Not specified'}</p>
+                            <p><strong>Location:</strong> ${item.location || 'Not specified'}</p>
+                            <p><strong>Description:</strong> ${item.description || 'No description provided'}</p>
+                        </div>
+                    `;
+                    itemsContainer.appendChild(itemDiv);
+                });
+            } catch (error) {
+                console.error('Error fetching items:', error);
+                itemsContainer.innerHTML = `<p class="error">Error fetching items: ${error.message}</p>`;
+            }
+        }
+//     document.addEventListener('DOMContentLoaded', function () {
+//     const filterButtons = document.querySelectorAll('.filter-btn');
+//     const itemsGrid = document.querySelector('.items-grid');
+
+//     async function fetchItemsByCategory(category, page = 1) {
+//     try {
+//         console.log(`Fetching items for category: ${category}, Page: ${page}`);
+        
+//         // Fetch data from the API with pagination
+//         const response = await fetch(`http://127.0.0.1:3000/api/auth/get-items-by-category/${category}?page=${page}&limit=10`);
+//         if (!response.ok) {
+//             throw new Error(`API Error: ${response.status} - ${response.statusText}`);
+//         }
+        
+//         const { items, totalItems, totalPages, currentPage: fetchedPage } = await response.json();
+
+//         // Clear the items grid
+//         const itemsGrid = document.querySelector('.items-grid');
+//         itemsGrid.innerHTML = '';
+
+//         // Check if items exist
+//         if (!items || items.length === 0) {
+//             itemsGrid.innerHTML = '<p>No items found for this category.</p>';
+//             return;
+//         }
+
+//         items.forEach(item => {
+//             const itemDiv = document.createElement('div');
+//             itemDiv.classList.add('item');
+
+//             // Safely extract the first image from the images array
+//             const image = item.images && Array.isArray(item.images) && item.images.length > 0
+//                 ? `data:${item.images[0].contentType};base64,${item.images[0].data}`
+//                 : 'Imgs/default.png'; // Default image if no images are available
+
+//             // Populate item content
+//             itemDiv.innerHTML = `
+//                 <img src="${image}" alt="${item.title}" style="width: 150px; height: 150px; object-fit: cover; border-radius: 10px; margin-bottom: 10px;" />
+//                 <h3>${item.title}</h3>
+//                 <p class="item-price">Price: ${item.price} USD</p>
+//                 <p>${item.condition || 'Condition: Not specified'}</p>
+//                 <p>${item.location || 'Location: Not specified'}</p>
+//                 <button class="add-to-cart" data-id="${item._id}">Add to Cart</button>
+//             `;
+//             itemsGrid.appendChild(itemDiv);
+//         });
+
+//         // Add click event listeners to "Add to Cart" buttons
+//         const cartButtons = document.querySelectorAll('.add-to-cart');
+//         cartButtons.forEach(button => {
+//             button.addEventListener('click', async () => {
+//                 const itemId = button.getAttribute('data-id');
+//                 await addToCart(itemId);
+//             });
+//         });
+
+//         // Handle pagination controls
+//         renderPaginationControls(totalPages, category);
+
+//     } catch (error) {
+//         console.error('Error fetching items:', error);
+//         document.querySelector('.items-grid').innerHTML = '<p>Error fetching items. Please try again later.</p>';
+//     }
+// }
+
+
+// async function addToCart(itemId) {
+//     try {
+//         const response = await fetch('http://127.0.0.1:3000/api/auth/addToCart', {
+//             method: 'POST',
+//             headers: { 'Content-Type': 'application/json' },
+//             body: JSON.stringify({ itemId })
+//         });
+//         if (response.ok) {
+//             alert('Item added to cart!');
+//         } else {
+//             throw new Error(`Failed to add item to cart: ${response.statusText}`);
+//         }
+//     } catch (error) {
+//         console.error('Error adding item to cart:', error);
+//         alert('Failed to add item to cart. Please try again later.');
+//     }
+// }
+
+// function renderPaginationControls(totalPages, category) {
+//     const paginationControls = document.querySelector('.pagination-controls');
+//     paginationControls.innerHTML = ''; // Clear previous controls
+
+//     if (totalPages > 1) {
+//         for (let i = 1; i <= totalPages; i++) {
+//             const pageButton = document.createElement('button');
+//             pageButton.textContent = i;
+//             pageButton.classList.add('pagination-button');
+//             if (i === currentPage) {
+//                 pageButton.classList.add('active');
+//             }
+//             pageButton.addEventListener('click', () => {
+//                 fetchItemsByCategory(category, i);
+//             });
+//             paginationControls.appendChild(pageButton);
+//         }
+//     }
+// }
+
+// // Add click event listeners to filter buttons
+// document.addEventListener('DOMContentLoaded', function () {
+//     const filterButtons = document.querySelectorAll('.ca');
+//     filterButtons.forEach(button => {
+//         button.addEventListener('click', function () {
+//             const category = this.getAttribute('data-category');
+
+//             // Highlight the active category button
+//             filterButtons.forEach(btn => btn.classList.remove('active'));
+//             this.classList.add('active');
+
+//             // Fetch items for the selected category
+//             fetchItemsByCategory(category);
+//         });
+//     });
+// });
+
+
+
+
+//     // Add click event listeners to filter buttons
+//     filterButtons.forEach(button => {
+//         button.addEventListener('click', function () {
+//             const category = this.getAttribute('data-category');
+
+//             // Highlight the active category button
+//             filterButtons.forEach(btn => btn.classList.remove('active'));
+//             this.classList.add('active');
+
+//             // Fetch and display items for the selected category
+//             fetchItemsByCategory(category);
+//         });
+//     });
+// });
+
+
+// document.getElementById('fetchItemsButton').addEventListener('click', async () => {
+//             const category = document.getElementById('category').value.trim();
+//             const itemsContainer = document.getElementById('items-container');
+//             itemsContainer.innerHTML = ''; // Clear previous content
+
+//             if (!category) {
+//                 itemsContainer.innerHTML = '<p class="error">Please enter a valid category.</p>';
+//                 return;
+//             }
+
+//             try {
+//                 const response = await fetch(`http://127.0.0.1:3000/api/auth/get-items-by-categoryw/${category}`);
+//                 if (!response.ok) {
+//                     throw new Error(`Error: ${response.status} - ${response.statusText}`);
+//                 }
+
+//                 const items = await response.json();
+
+//                 if (items.length === 0) {
+//                     itemsContainer.innerHTML = '<p>No items found for this category.</p>';
+//                     return;
+//                 }
+
+//                 items.forEach(item => {
+//                     const itemDiv = document.createElement('div');
+//                     itemDiv.classList.add('item');
+
+//                     // Handle Base64 image rendering
+//                     const imageUrl = item.images && item.images.length > 0
+//                         ? `data:${item.images[0].contentType};base64,${item.images[0].data}`
+//                         : 'Imgs/default.png'; // Default image if no images are available
+
+//                     // Populate item content
+//                     itemDiv.innerHTML = `
+//                         <img src="${imageUrl}" alt="${item.title}" style="width: 150px; height: 150px; object-fit: cover; border-radius: 10px; margin-bottom: 10px;" />
+//                         <h3>${item.title}</h3>
+//                         <p><strong>Price:</strong> ${item.price} USD</p>
+//                         <p><strong>Condition:</strong> ${item.condition || 'Not specified'}</p>
+//                         <p><strong>Location:</strong> ${item.location || 'Not specified'}</p>
+//                         <p><strong>Description:</strong> ${item.description || 'No description provided'}</p>
+//                     `;
+//                     itemsContainer.appendChild(itemDiv);
+//                 });
+//             } catch (error) {
+//                 console.error('Error fetching items:', error);
+//                 itemsContainer.innerHTML = `<p class="error">Error fetching items: ${error.message}</p>`;
+//             }
+//         });
+
+//         document.querySelectorAll('.category-button').forEach(button => {
+//             button.addEventListener('click', () => {
+//                 const category = button.getAttribute('data-category');
+//                 document.getElementById('category').value = category; // Fill the input field
+//                 document.getElementById('fetchItemsButton').click(); // Trigger fetch button click
+//                 console.log('fetching items for category:', category);
+//             });
+//         });
+</script>
+
+</body>
+
+</html>
