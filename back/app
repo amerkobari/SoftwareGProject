@@ -1,27 +1,39 @@
 const express = require("express");
 require('dotenv').config();
-const secretKey = process.env.JWT_SECRET;
-const bodyParser = require("body-parser")
+const cors = require("cors"); // Import CORS middleware
+const bodyParser = require("body-parser");
+
+// Import routes
 const loginRoute = require("./routes/login.routes.js");
 const resetRoute = require("./routes/resetcode.js");
 const addnewItem = require("./routes/newItemroute.js");
 const addShop = require("./routes/newShopRoutes.js");
 const orderRoutes = require("./routes/orderRoutes.js");
 const distanceRoutes = require('./routes/distanceRoutes.js');
-const cart = require('./routes/cartRoutes.js')
-const fav = require('./routes/favoriteRoutes.js')
-// const ToDoRoute = require('./routes/todo.router');
+const cart = require('./routes/cartRoutes.js');
+const fav = require('./routes/favoriteRoutes.js');
+
 const app = express();
+
+// CORS setup
+app.use(cors({
+    origin: 'http://127.0.0.1:5500', // Allow requests from your frontend's base URL
+    methods: 'GET,POST,PUT,DELETE',
+    allowedHeaders: 'Content-Type,Authorization'
+}));
+
+// Body parser setup
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
-//app.use(cors);
+
+// Route configuration
 app.use('/api/auth', loginRoute);
 app.use('/api/auth', resetRoute);
 app.use('/api/auth', addnewItem);
 app.use('/api/auth', addShop);
 app.use('/api/auth', orderRoutes);
-app.use('/api/auth', distanceRoutes); 
+app.use('/api/auth', distanceRoutes);
 app.use('/api/auth', cart);
 app.use('/api/auth', fav);
-// app.use("/",ToDoRoute);
+
 module.exports = app;

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fetch Items by Category</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #items-container {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* 3 items per row */
+            gap: 20px;
+        }
+        .item {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 1px solid #ddd;
+        }
+        .item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+        .item-content {
+            padding: 20px;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        .item-details {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centers content vertically */
+    align-items: center; /* Centers content horizontally */
+    text-align: center;
+    /* padding: 20px; */
+    opacity: 0;
+    transform: translateY(100%);
+    transition: opacity 0.3s, transform 0.3s;
+    border-radius: 10px;
+}
+
+        .item:hover .item-details {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .item-details h3 {
+            margin: 10px 0;
+        }
+        .item-details p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .category-button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007BFF;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .category-button:hover {
+            background-color: #0056b3;
+        }
+        #category-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .error {
+            color: red;
+            text-align: center;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Fetch Items by Category</h1>
+    <div id="category-buttons">
+        <button class="category-button" data-category="CPU">CPU</button>
+        <button class="category-button" data-category="GPU">GPU</button>
+        <button class="category-button" data-category="RAM">RAM</button>
+        <button class="category-button" data-category="Storage">Storage</button>
+    </div>
+
+    <div id="items-container"></div>
+
+    <script>
+        document.querySelectorAll('.category-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const category = button.getAttribute('data-category');
+                fetchItemsByCategory(category);
+            });
+        });
+
+        async function fetchItemsByCategory(category) {
+            const itemsContainer = document.getElementById('items-container');
+            itemsContainer.innerHTML = ''; // Clear previous content
+
+            try {
+                const response = await fetch(`http://127.0.0.1:3000/api/auth/get-items-by-categoryw/${category}`);
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status} - ${response.statusText}`);
+                }
+
+                const items = await response.json();
+
+                if (items.length === 0) {
+                    itemsContainer.innerHTML = '<p>No items found for this category.</p>';
+                    return;
+                }
+
+                items.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.classList.add('item');
+
+                    const imageUrl = item.images && item.images.length > 0
+                        ? `data:${item.images[0].contentType};base64,${item.images[0].data}`
+                        : 'Imgs/default.png';
+
+                    itemDiv.innerHTML = `
+                        <img src="${imageUrl}" alt="${item.title}" />
+                        <div class="item-content">
+                            <h3>${item.title}</h3>
+                        </div>
+                        <div class="item-details">
+                            <h3>${item.title}</h3>
+                            <p><strong>Price:</strong> ${item.price} USD</p>
+                            <p><strong>Condition:</strong> ${item.condition || 'Not specified'}</p>
+                            <p><strong>Location:</strong> ${item.location || 'Not specified'}</p>
+                            <p><strong>Description:</strong> ${item.description || 'No description provided'}</p>
+                        </div>
+                    `;
+                    itemsContainer.appendChild(itemDiv);
+                });
+            } catch (error) {
+                console.error('Error fetching items:', error);
+                itemsContainer.innerHTML = `<p class="error">Error fetching items: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

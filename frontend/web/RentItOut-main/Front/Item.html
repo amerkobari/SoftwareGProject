@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rental Product Page - Portable Speaker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+            text-align: left;
+            display: flex;
+            justify-content: space-between; /* Added to position items */
+            align-items: center; /* Center items vertically */
+        }
+        header .logo {
+            font-size: 24px;
+            font-weight: bold;
+            padding-left: 10px;
+            text-decoration: none;
+            color: white;
+        }
+        header .logo:hover {
+            color: #ff5a5f;
+        }
+        header .nav-buttons {
+            margin-right: 10px; /* Add some spacing */
+        }
+        header .nav-button {
+            background-color: #ff5a5f;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 10px; /* Space between buttons */
+        }
+        header .nav-button:hover {
+            background-color: #e04343;
+        }
+        .hero-image img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .image-gallery {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .image-gallery img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .product-info {
+            margin-top: 30px;
+        }
+        .product-info h1 {
+            font-size: 32px;
+            color: #333;
+        }
+        .product-info .category {
+            font-size: 18px;
+            color: #666;
+        }
+        .product-info .post-date {
+            margin-top: 10px; /* Spacing for the post date */
+            font-size: 16px;
+            color: #777;
+        }
+        .reviews {
+            margin-top: 15px;
+            font-size: 18px;
+        }
+        .reviews span {
+            font-weight: bold;
+            color: #333;
+        }
+        .description {
+            margin-top: 25px;
+            font-size: 16px;
+            color: #444;
+        }
+        .price {
+            margin-top: 25px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+        }
+        /* Card Style for Reservation Section */
+        .reservation-card {
+            width: 50%;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            background-color: #fff; /* White background for the card */
+        }
+        .reserve-btn {
+            background-color: #ff5a5f;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            width: 100%; /* Make button full-width */
+        }
+        .reserve-btn:hover {
+            background-color: #e04343;
+        }
+        .host-info {
+            margin-top: 30px;
+            font-size: 16px;
+            color: #555;
+        }
+        .host-info span {
+            font-weight: bold;
+        }
+
+        /* Additional styles for date input and late fee note */
+        .date-section {
+            margin-top: 30px;
+        }
+        .date-section label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            font-size: 20px;
+            font-weight: bolder;
+        }
+        .date-section input {
+            width: 96%;
+            padding: 10px;
+            font-size: 16px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .late-fee-note {
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #ff5a5f;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 40px 20px;
+            font-family: Arial, sans-serif;
+            text-align: left;
+        }
+
+        footer a {
+            color: #ff5a5f;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            footer table {
+                display: block;
+                width: 100%;
+                text-align: center;
+            }
+            footer td {
+                display: block;
+                margin: 10px 0;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- Header Section -->
+<header>
+    <a href="Home.html" class="logo">HardwareBazaar</a>
+    <div class="nav-buttons">
+        <button class="nav-button" onclick="window.location.href='SignIn.html'">Login</button>
+        <button class="nav-button" onclick="window.location.href='Cart.html'">Cart</button>
+    </div>
+</header>
+
+<!-- Main Content -->
+<div class="container">
+    <!-- Hero Image -->
+    <div class="hero-image">
+        <img src="speaker-main.jpg" alt="Main Image of Speaker">
+    </div>
+
+    <!-- Image Gallery -->
+    <div class="image-gallery">
+        <img src="speaker1.jpg" alt="Image 1">
+        <img src="speaker2.jpg" alt="Image 2">
+        <img src="speaker3.jpg" alt="Image 3">
+        <img src="speaker4.jpg" alt="Image 4">
+        <img src="speaker5.jpg" alt="Image 5">
+    </div>
+
+    <!-- Product Information -->
+    <div class="product-info">
+        <h1>High-Quality Bluetooth Speaker</h1>
+        <p class="category">Category: Electronics</p>
+        <p class="post-date">Posted on: October 20, 2024</p> <!-- Added Post Date -->
+    </div>
+
+    <!-- Reviews -->
+    <div class="reviews">
+        <span>4.8/5</span> (54 reviews)
+    </div>
+
+    <!-- Description -->
+    <div class="description">
+        <p>Rent this portable Bluetooth speaker for crystal-clear audio anywhere you go. Perfect for parties, outdoor gatherings, or simply enjoying music at home. It offers up to 20 hours of battery life and is compatible with all major devices.</p>
+    </div>
+
+    <!-- Price -->
+    <div class="price">
+        $30/day
+    </div>
+
+    <!-- Reservation Section (Card) -->
+    <div class="reservation-card">
+        <!-- Date Input Section -->
+        <div class="date-section">
+            <label for="start-date">Start Date:</label>
+            <input type="date" id="start-date">
+            <label for="due-date">Due Date:</label>
+            <input type="date" id="due-date">
+        </div>
+
+        <!-- Late Fee Note -->
+        <div class="late-fee-note">
+            Note: Every day late will incur a $10 tax.
+        </div>
+
+        <!-- Reserve Button -->
+        <button class="reserve-btn">Reserve Now</button>
+    </div>
+
+    <!-- Host Information -->
+    <div class="host-info">
+        <p>Hosted by: <span>Alex & ElectronicsHub</span></p>
+    </div>
+</div>
+
+<!-- Footer Section -->
+<footer class="home-container8" style="background-color: #333; color: white; padding: 40px 20px;">
+    <div id="contact" style="width: 100%; max-width: 1200px; margin: 0 auto;">
+        <table width="100%" style="padding: 20px;">
+            <tbody>
+            <tr>
+                <td style="font-size: x-large; font-weight: bold; padding: 10px 0;">
+                    HardwareBazaar
+                </td>
+                <td class="Copyrightclass" style="padding: 10px 20px;">
+                    <div>
+                        <strong>Amer Kobari</strong><br>
+                        Email: <a href="mailto:amerkobari22@gmail.com" style="color: #ff5a5f;">amerkobari22@gmail.com</a><br>
+                        Phone: <a href="tel:+970599799230" style="color: #ff5a5f;">+970 599 799 230</a>
+                    </div>
+                    <br>
+                    <div>
+                        <strong>Tariq Marmash</strong><br>
+                        Email: <a href="mailto:tariqmarmash17@gmail.com" style="color: #ff5a5f;">tariqmarmash17@gmail.com</a><br>
+                        Phone: <a href="tel:+970592757780" style="color: #ff5a5f;">+970 592 757 780</a>
+                    </div>
+                    <br>
+                    
+                </td>
+                <td align="center" width="25%" class="Copyrightclass" style="padding: 10px;">
+                    ©Copyright 2024.<br>
+                    All rights reserved. Amer, Tariq.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</footer>
+
+</body>
+</html>
