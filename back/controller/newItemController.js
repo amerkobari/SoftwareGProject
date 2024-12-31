@@ -232,6 +232,32 @@ exports.getItemsByCategory = async (req, res) => {
     }
 };
 
+exports.getItemsByShopw = async (req, res) => {
+    try {
+        // Fetch items that belong to the shop and are not sold
+        const items = await Item.find({ shopId: req.params.shopId, sold: false });
+
+        // Format each item's images
+        const formattedItems = items.map(item => ({
+            ...item.toObject(),
+            images: item.images?.map(image => {
+                if (image?.data) {
+                    return {
+                        contentType: image.contentType,
+                        data: image.data.toString('base64') // Convert Buffer to Base64 string
+                    };
+                }
+                return null;
+            }) || []
+        }));
+
+        res.json(formattedItems);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+
 exports.getItemsByCategoryW = async (req, res) => {
         try {
             const items = await Item.find({ category: req.params.category, sold: false });
@@ -472,4 +498,50 @@ exports.searchItemsByKeyword = async (req, res) => {
       res.status(500).json({ error: 'An error occurred while searching for items.' });
     }
   };
+
+  exports.searchItemsByKeywordW = async (req, res) => {
+    const { keyword } = req.query;
+
+    if (!keyword) {
+        return res.status(400).json({ error: 'Keyword query parameter is required.' });
+    }
+
+    try {
+        // Create a regex query to search for the keyword in both title and description
+        const regexQuery = {
+            $or: [
+                { title: { $regex: keyword, $options: 'i' } },       // Case-insensitive search in title
+                { description: { $regex: keyword, $options: 'i' } } // Case-insensitive search in description
+            ]
+        };
+
+        // Search the database
+        const items = await Item.find(regexQuery);
+
+        // Format each item's images
+        const formattedItems = items.map(item => ({
+            ...item.toObject(),
+            images: item.images?.map(image => {
+                if (image?.data) {
+                    return {
+                        contentType: image.contentType,
+                        data: image.data.toString('base64') // Convert Buffer to Base64 string
+                    };
+                }
+                return null;
+            }) || []
+        }));
+
+        // If no items found, return an empty array with a 200 status
+        if (formattedItems.length === 0) {
+            return res.status(200).json([]);
+        }
+
+        res.status(200).json(formattedItems);
+    } catch (error) {
+        console.error('Error searching items:', error);
+        res.status(500).json({ error: 'An error occurred while searching for items.' });
+    }
+};
+
   

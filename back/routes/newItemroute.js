@@ -22,6 +22,7 @@ router.get('/get-item/:id', itemController.getItemById);
 // router.get('/get-items-by-user/:userId', itemController.getItemsByUser);
 router.get('/get-items-by-category/:category', itemController.getItemsByCategory);
 router.get('/get-items-by-categoryw/:category', itemController.getItemsByCategoryW);
+router.get('/get-items-by-shopw/:shopId', itemController.getItemsByShopw);
 router.get('/get-items-by-title/:title', itemController.getItemsByTitle);
 router.get('/get-items-by-price/:price', itemController.getItemsByPriceRange);
 router.get('/get-items-by-condition/:condition', itemController.getItemsByCondition);
@@ -36,6 +37,7 @@ router.get('/user-balance/:username', itemController.getUserBalance);
 
 router.get('/get-items-by-user/:username', itemController.getItemsByUsername);
 router.get('/search', itemController.searchItemsByKeyword);
+router.get('/searchw', itemController.searchItemsByKeywordW);
 
 
 module.exports = router;

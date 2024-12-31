@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Page</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        /* Shop Header */
+        .shop-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px;
+            background-color: #fe6f67;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .shop-header img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            border: 3px solid white;
+        }
+        .shop-header h1 {
+            margin: 10px 0;
+            font-size: 2em;
+        }
+        .shop-details {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .shop-details div {
+            font-size: 1em;
+            color: #fff;
+        }
+        .shop-details div i {
+            margin-right: 5px;
+            color: #fff;
+        }
+
+        /* Search Bar */
+        .search-bar-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px auto;
+            width: 90%;
+            max-width: 800px;
+        }
+        .search-bar {
+            flex: 1;
+            padding: 10px 15px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            outline: none;
+            transition: all 0.3s;
+        }
+        .search-bar:focus {
+            border-color: #fe6f67;
+            box-shadow: 0 4px 8px rgba(254, 111, 103, 0.2);
+        }
+        .search-button {
+            margin-left: 10px;
+            padding: 10px 20px;
+            background-color: #fe6f67;
+            border: none;
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .search-button:hover {
+            background-color: #e35b55;
+        }
+
+        /* Items Grid */
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Item Card */
+        .item-card {
+            position: relative;
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-align: center;
+        }
+        .item-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+        .item-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 1px solid #ddd;
+        }
+        .item-title {
+            font-weight: bold;
+            font-size: 1em;
+            margin: 10px 0;
+            color: #333;
+        }
+        .item-details {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(100%);
+            transition: opacity 0.3s, transform 0.3s;
+            border-radius: 10px;
+        }
+        .item-card:hover .item-details {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .item-details h3 {
+            margin: 10px 0;
+            font-size: 1.2em;
+        }
+        .item-details p {
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+        .shop-header .logo {
+        font-size: 24px;
+        font-weight: bold;
+        padding-left: 10px;
+        text-decoration: none;
+        color: white;
+        margin-right: 1500px;
+    }
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        font-size: 1em;
+        font-weight: bold;
+        text-decoration: none;
+        color: #ffffff;
+        margin: 20px;
+        transition: color 0.3s ease;
+        margin-top: 0px;
+    margin-right: 1300px;
+    }
+
+    .back-link i {
+        margin-right: 8px; /* Add space between the icon and the text */
+    }
+
+    .back-link:hover {
+        color: #000000; /* Change color on hover */
+    }
+    </style>
+</head>
+<body>
+
+<div class="shop-header">
+    <a href="Home.html" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to Home
+    </a>
+    <img id="shop-logo" src="default-shop-logo.png" alt="Shop Logo">
+    <h1 id="shop-name">Shop Name</h1>
+    <div class="shop-details">
+        <div><i class="fas fa-envelope"></i> <span id="shop-email">example@example.com</span></div>
+        <div><i class="fas fa-phone"></i> <span id="shop-phone">+1234567890</span></div>
+        <div><i class="fas fa-map-marker-alt"></i> <span id="shop-location">City, Address</span></div>
+    </div>
+</div>
+
+<div class="search-bar-container">
+    <input id="search-bar" class="search-bar" type="text" placeholder="Search for items...">
+    <button class="search-button" onclick="searchItems()">Search</button>
+</div>
+
+<div id="items-grid" class="items-grid">
+    <!-- Items will be dynamically added here -->
+</div>
+
+<script>
+    const shopId = 'YOUR_SHOP_ID'; // Replace with the actual shop ID
+
+    function searchItems() {
+        const searchQuery = document.getElementById('search-bar').value.toLowerCase();
+        const items = document.querySelectorAll('.item-card');
+        items.forEach(item => {
+            const title = item.querySelector('.item-title').textContent.toLowerCase();
+            if (title.includes(searchQuery)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    function getShopIdFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('shopId');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const shopId = getShopIdFromURL();
+        if (!shopId) {
+            console.error('Shop ID not found in URL');
+            document.body.innerHTML = '<p>Invalid Shop ID.</p>';
+            return;
+        }
+
+        fetchShopDetails(shopId);
+        fetchShopItems(shopId);
+    });
+
+// Update fetch functions to accept shopId as a parameter
+async function fetchShopDetails(shopId) {
+    try {
+        const response = await fetch(`http://127.0.0.1:3000/api/auth/get-shop/${shopId}`);
+        if (!response.ok) throw new Error('Failed to fetch shop details');
+        const shop = await response.json();
+
+        document.getElementById('shop-logo').src = shop.logoUrl || 'default-shop-logo.png';
+        document.getElementById('shop-name').textContent = shop.shopName;
+        document.getElementById('shop-email').textContent = shop.email;
+        document.getElementById('shop-phone').textContent = shop.phoneNumber;
+        document.getElementById('shop-location').textContent = `${shop.city}, ${shop.shopAddress}`;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+async function fetchShopItems(shopId) {
+    const itemsGrid = document.getElementById('items-grid');
+    itemsGrid.innerHTML = ''; // Clear previous content
+
+    try {
+        const response = await fetch(`http://127.0.0.1:3000/api/auth/get-items-by-shopw/${shopId}`);
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        }
+
+        const items = await response.json();
+
+        if (items.length === 0) {
+            itemsGrid.innerHTML = '<p>No items available for this shop.</p>';
+            return;
+        }
+
+        items.forEach(item => {
+            const itemDiv = document.createElement('div');
+            itemDiv.classList.add('item-card'); // Use same styling as your example
+
+            // Process item image
+            const imageUrl = item.images && item.images.length > 0
+                ? `data:${item.images[0].contentType};base64,${item.images[0].data}`
+                : 'Imgs/default.png'; // Fallback to a default image
+
+            // Populate item content
+            itemDiv.innerHTML = `
+                <img src="${imageUrl}" alt="${item.title}" />
+                <div class="item-title">${item.title}</div>
+                <div class="item-details">
+                    <h3>${item.title}</h3>
+                    <p><strong>Price:</strong> ${item.price} ₪</p>
+                    <p><strong>Condition:</strong> ${item.condition || 'Not specified'}</p>
+                    <p><strong>Location:</strong> ${item.location || 'Not specified'}</p>
+                    <p><strong>Description:</strong> ${item.description || 'No description provided'}</p>
+                </div>
+            `;
+
+            // Append item to the grid
+            itemsGrid.appendChild(itemDiv);
+        });
+    } catch (error) {
+        console.error('Error fetching shop items:', error);
+        itemsGrid.innerHTML = `<p class="error">Error fetching items: ${error.message}</p>`;
+    }
+}
+function searchItems() {
+        const searchQuery = document.getElementById('search-bar').value.toLowerCase();
+        const items = document.querySelectorAll('.item-card');
+        items.forEach(item => {
+            const title = item.querySelector('.item-title').textContent.toLowerCase();
+            if (title.includes(searchQuery)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+</script>
+
+</body>
+</html>
