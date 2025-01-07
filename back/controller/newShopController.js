@@ -48,8 +48,10 @@ exports.addNewShop = async (req, res) => {
 // Get all shops
 exports.getAllShops = async (req, res) => {
     try {
-        const shops = await NewShop.find().sort({ createdAt: -1 });
+        // Fetch only confirmed shops
+        const shops = await NewShop.find({ isConfirmed: true }).sort({ createdAt: -1 });
 
+        // Format the shops with logo URLs
         const formattedShops = shops.map(shop => {
             const logo = shop.logo;
             const formattedLogo = logo?.data
@@ -64,7 +66,7 @@ exports.getAllShops = async (req, res) => {
 
         res.json(formattedShops);
     } catch (err) {
-        console.error("Error fetching all shops:", err.message);
+        console.error("Error fetching confirmed shops:", err.message);
         res.status(500).json({ error: err.message });
     }
 };
@@ -127,5 +129,75 @@ exports.getShopByName = async (req, res) => {
     } catch (err) {
         console.error(`Error fetching shop by name (${req.params.shopName}):`, err.message);
         res.status(500).json({ error: err.message });
+    }
+};
+exports.confirmShop = async (req, res) => {
+    const { shopId } = req.params;
+
+    try {
+        // Find and update the shop
+        const updatedShop = await NewShop.findByIdAndUpdate(
+            shopId,
+            { isConfirmed: true },
+            { new: true }
+        );
+
+        if (!updatedShop) {
+            return res.status(404).json({ success: false, message: 'Shop not found' });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Shop confirmed successfully',
+            shop: updatedShop
+        });
+    } catch (error) {
+        console.error('Error confirming shop:', error);
+        res.status(500).json({ success: false, message: 'Server error', error });
+    }
+};
+
+// Get all unconfirmed shops
+exports.getUnconfirmedShops = async (req, res) => {
+    try {
+        const unconfirmedShops = await NewShop.find({ isConfirmed: false }).sort({ createdAt: -1 });
+
+        const formattedShops = unconfirmedShops.map(shop => {
+            const logo = shop.logo;
+            const formattedLogo = logo?.data
+                ? `data:${logo.contentType};base64,${logo.data.toString('base64')}`
+                : null;
+
+            return {
+                ...shop.toObject(),
+                logoUrl: formattedLogo, // Add the processed logo as a new property
+            };
+        });
+
+        res.json(formattedShops);
+    } catch (err) {
+        console.error("Error fetching unconfirmed shops:", err.message);
+        res.status(500).json({ error: err.message });
+    }
+};
+exports.deleteShopById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Find and delete the shop by ID
+        const deletedShop = await NewShop.findByIdAndDelete(id);
+
+        if (!deletedShop) {
+            return res.status(404).json({ success: false, message: 'Shop not found' });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Shop deleted successfully',
+            shop: deletedShop
+        });
+    } catch (error) {
+        console.error('Error deleting shop:', error.message);
+        res.status(500).json({ success: false, message: 'Failed to delete shop', error: error.message });
     }
 };

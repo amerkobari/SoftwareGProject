@@ -1,15 +1,17 @@
 const Order = require('../models/orderModel'); // Import the Order model
 
+const { sendOrderStatusUpdateMail } = require('./resetcode'); // Adjust path as needed
+
+// Add a new order
 exports.addOrder = async (req, res) => {
   const { orderDetails } = req.body;
   const { firstName, lastName, email, items, total, deliveryAddress, city, phoneNumber } = orderDetails;
-  // const { firstName, lastName, email, items, total, deliveryAddress, city, phoneNumber } = req.body;
 
   if (!firstName || !lastName || !email || !items || !total || !deliveryAddress || !city || !phoneNumber) {
     return res.status(400).json({ success: false, message: 'All fields are required' });
   }
 
-  // Create a new order object
+  // Create a new order object with default status as 'Pending'
   const newOrder = new Order({
     firstName,
     lastName,
@@ -18,7 +20,8 @@ exports.addOrder = async (req, res) => {
     total,
     deliveryAddress,
     city,
-    phoneNumber
+    phoneNumber,
+    status: 'Pending', // Default status
   });
 
   try {
@@ -37,65 +40,51 @@ exports.addOrder = async (req, res) => {
   }
 };
 
+// Check if this is the user's first order
 exports.checkFirstOrder = async (req, res) => {
   const email = req.params.email; // Retrieve the email from the route parameter
-  console.log('Checking first order for:', email);
   try {
-    // Query the database using the email field
     const userOrders = await Order.find({ email: email });
 
-    // Determine if this is the first order
     const isFirstOrder = userOrders.length === 0;
-    console.log('Is first order:', isFirstOrder);
     
-    // Respond with the result
     res.json({ success: true, isFirstOrder });
   } catch (error) {
-    // Handle any errors
     console.log('Error checking first order:', error);
     res.status(500).json({ success: false, message: 'Server error', error });
   }
 };
 
+// Get all orders by email
 exports.getOrdersByEmail = async (req, res) => {
-  const email = req.params.email; // Get the email from the request parameter
+  const email = req.params.email;
 
   try {
-    // Find all orders by the email
     const orders = await Order.find({ email: email });
 
-    // Check if any orders were found
     if (orders.length === 0) {
       return res.status(404).json({ success: false, message: 'No orders found for this email' });
     }
 
-    // Respond with the orders
-    res.status(200).json({
-      success: true,
-      orders: orders
-    });
+    res.status(200).json({ success: true, orders });
   } catch (error) {
-    // Handle any errors
     console.error('Error fetching orders by email:', error);
     res.status(500).json({ success: false, message: 'Error fetching orders', error });
   }
 };
 
-
+// Get details of a specific order
 exports.getOrderDetails = async (req, res) => {
-  const { orderId } = req.params; // Retrieve the orderId from the route parameter
+  const { orderId } = req.params;
 
   try {
-    // Find the order by orderId
     const order = await Order.findById(orderId);
 
-    // If order is not found
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
     }
 
-    // Respond with the order details
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       order: {
         _id: order._id,
@@ -108,10 +97,64 @@ exports.getOrderDetails = async (req, res) => {
         city: order.city,
         phoneNumber: order.phoneNumber,
         createdAt: order.createdAt,
+        status: order.status, // Include status in the response
       },
     });
   } catch (error) {
     console.error('Error fetching order details:', error);
-    return res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
+// Update the status of an order (Admin action)
+exports.updateOrderStatus = async (req, res) => {
+  const { orderId } = req.params;
+  const { status } = req.body;
+.
+  if (!['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].includes(status)) {
+    return res.status(400).json({ success: false, message: 'Invalid status value' });
+  }
+
+  try {
+    // Find and update the order status
+    const updatedOrder = await Order.findByIdAndUpdate(
+      orderId,
+      { status },
+      { new: true }
+    );
+
+    if (!updatedOrder) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+
+    // Use the imported function to send email
+    const emailSent = await sendOrderStatusUpdateMail(
+      updatedOrder.email,
+      updatedOrder._id,
+      status
+    );
+
+    res.status(200).json({
+      success: true,
+      message: `Order status updated to ${status} successfully. Email sent: ${emailSent ? 'Yes' : 'No'}`,
+      order: updatedOrder,
+    });
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    res.status(500).json({ success: false, message: 'Error updating order status', error });
+  }
+};
+
+
+
+exports.getAllOrders = async (req, res) => {
+  try {
+      // Fetch all orders
+      const orders = await Order.find().sort({ createdAt: -1 });
+
+      res.status(200).json(orders);
+  } catch (error) {
+      console.error('Error fetching orders:', error);
+      res.status(500).json({ error: 'An error occurred while fetching orders.' });
+  }
+}

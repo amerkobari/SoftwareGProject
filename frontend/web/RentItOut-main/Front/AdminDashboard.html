@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - HardwareBazaar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #333;
+            color: white;
+            color: #333;
+        }
+        header .logo {
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+        }
+        header .logo:hover {
+            color: #ff5a5f;
+        }
+        .tabs {
+            display: flex;
+            margin: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            margin-right: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+        .tab.active {
+            background-color: #ff5a5f;
+            color: #fff;
+        }
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .confirm-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .confirm-btn:hover {
+            background-color: #45a049;
+        }
+        .delete-btn {
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+}
+
+.delete-btn:hover {
+    background-color: #b21f2d;
+}
+
+/* General styles for action buttons */
+.action-btn {
+    background-color: #007BFF;
+    color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+}
+
+/* Hover effect for action buttons */
+.action-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Cancel button style */
+.cancel-btn {
+    background-color: #ff0000;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-right: 5px;
+    font-size: 14px;
+
+    color: #ffffff;
+}
+
+/* Hover effect for cancel button */
+.cancel-btn:hover {
+    background-color: #ff0019;
+}
+
+/* Delivered button style */
+.delivered-btn {
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-right: 5px;
+    font-size: 14px;
+
+    color: #ffffff;
+    background-color: #28a745;
+}
+
+/* Hover effect for delivered button */
+.delivered-btn:hover {
+    background-color: #218838;
+}
+
+/* Processing button style */
+.processing-btn {
+    
+   
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-right: 5px;
+    font-size: 14px;
+    background-color: #ffc107;
+    color: #ffffff;
+}
+
+/* Hover effect for processing button */
+.processing-btn:hover {
+    background-color: #e0a800;
+}
+
+/* Shipped button style */
+.shipped-btn {
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-right: 5px;
+    font-size: 14px;
+    background-color: #ee7f2f;
+    color: #ffffff;
+
+}
+
+/* Hover effect for shipped button */
+.shipped-btn:hover {
+    background-color: #ca6218;
+}
+
+
+    </style>
+</head>
+<body>
+    <header>
+        <a href="Home.html" class="logo">HardwareBazaar</a>
+        <nav>
+            <ul>
+                <li><a class="logo" href="Home.html" style="font-size: 20px;">Sign Out</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('requests')">Requests</div>
+        <div class="tab" onclick="switchTab('orders')">Orders</div>
+    </div>
+    <div id="requests" class="tab-content active">
+        <h2>Unconfirmed Shops</h2>
+        <table id="shopsTable">
+            <thead>
+                <tr>
+                    <th>Shop Name</th>
+                    <th>City</th>
+                    <th>Email</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <h2>Unconfirmed Items</h2>
+        <table id="itemsTable">
+            <thead>
+                <tr>
+                    <th>Item Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <div id="orders" class="tab-content">
+        <h2>Orders</h2>
+        <table id="ordersTable">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer Name</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    
+    <script>
+        function switchTab(tabId) {
+    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+    // Add the active class to the clicked tab and its corresponding content
+    document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+}
+
+
+
+        async function fetchData() {
+            try {
+                // Fetch unconfirmed shops
+                const shopsResponse = await fetch('http://127.0.0.1:3000/api/auth/unconfirmed-shops');
+        const shops = await shopsResponse.json();
+        const shopsTable = document.querySelector('#shopsTable tbody');
+        shopsTable.innerHTML = shops.map(shop => `
+            <tr>
+                <td>${shop.shopName}</td>
+                <td>${shop.city}</td>
+                <td>${shop.email}</td>
+                <td>
+                    <button class="confirm-btn" onclick="confirmShop('${shop._id}')">Confirm</button>
+                    <button class="delete-btn" onclick="deleteShop('${shop._id}')">Delete</button>
+                </td>
+            </tr>
+                `).join('');
+
+                // Fetch unconfirmed items
+                const itemsResponse = await fetch('http://127.0.0.1:3000/api/auth/unconfirmed-items');
+        const items = await itemsResponse.json();
+        const itemsTable = document.querySelector('#itemsTable tbody');
+itemsTable.innerHTML = items.map(item => `
+    <tr>
+        <td>${item.title}</td>
+        <td>${item.category}</td>
+        <td>${item.price}</td>
+        <td>
+            <button class="confirm-btn" onclick="confirmItem('${item._id}')">Confirm</button>
+            <button class="delete-btn" onclick="deleteItem('${item._id}')">Delete</button>
+            <button class="action-btn" onclick="openItemPage('${item._id}')">Open</button>
+        </td>
+    </tr>
+                `).join('');
+
+                // Fetch all orders
+                const ordersResponse = await fetch('http://127.0.0.1:3000/api/auth/get-all-orders');
+        const orders = await ordersResponse.json();
+        const ordersTable = document.querySelector('#ordersTable tbody');
+        ordersTable.innerHTML = orders.map(order => `
+            <tr>
+                <td>${order._id}</td>
+                <td>${order.firstName} ${order.lastName}</td>
+                <td>${order.total}</td>
+                <td>${order.status}</td>
+                <td>
+                    <button class="processing-btn" onclick="updateOrderStatus('${order._id}', 'Processing')">Mark as Processing</button>
+                    <button class="shipped-btn" onclick="updateOrderStatus('${order._id}', 'Shipped')">Mark as Shipped</button>
+                    <button class="delivered-btn" onclick="updateOrderStatus('${order._id}', 'Delivered')">Mark as Delivered</button>
+                    <button class="action-btn cancel-btn" onclick="updateOrderStatus('${order._id}', 'Cancelled')">Cancel</button>
+                </td>
+            </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        async function updateOrderStatus(orderId, newStatus) {
+    try {
+        const response = await fetch(`http://127.0.0.1:3000/api/auth/orders/${orderId}/status`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ status: newStatus }),
+        });
+
+        if (response.ok) {
+            alert(`Order status updated to ${newStatus} successfully!`);
+            fetchData(); // Refresh the orders table
+        } else {
+            const errorData = await response.json();
+            alert(`Error updating order status: ${errorData.message}`);
+        }
+    } catch (error) {
+        console.error('Error updating order status:', error);
+    }
+}
+function openItemPage(itemId) {
+    window.location.href = `item.html?id=${itemId}`;
+}
+
+async function deleteShop(shopId) {
+    try {
+        const response = await fetch(`http://127.0.0.1:3000/api/auth/shop/${shopId}`, { method: 'DELETE' });
+        if (response.ok) {
+            alert('Shop deleted successfully!');
+            fetchData(); // Refresh the data
+        } else {
+            alert('Failed to delete shop.');
+        }
+    } catch (error) {
+        console.error('Error deleting shop:', error);
+    }
+}
+async function deleteItem(itemId) {
+    try {
+        const response = await fetch(`http://127.0.0.1:3000/api/auth/delete-item/${itemId}`, { method: 'DELETE' });
+        if (response.ok) {
+            alert('Item deleted successfully!');
+            fetchData(); // Refresh the data
+        } else {
+            alert('Failed to delete item.');
+        }
+    } catch (error) {
+        console.error('Error deleting item:', error);
+    }
+}
+
+
+        async function confirmShop(shopId) {
+            try {
+                await fetch(`http://127.0.0.1:3000/api/auth/shops/${shopId}/confirm`, { method: 'PUT' });
+                alert('Shop confirmed successfully!');
+                fetchData();
+            } catch (error) {
+                console.error('Error confirming shop:', error);
+            }
+        }
+
+        async function confirmItem(itemId) {
+            try {
+                await fetch(`http://127.0.0.1:3000/api/auth/items/${itemId}/confirm`, { method: 'PUT' });
+                alert('Item confirmed successfully!');
+                fetchData();
+            } catch (error) {
+                console.error('Error confirming item:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchData);
+    </script>
+</body>
+</html>

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>HardwareBazaar - Sign Up</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        form input[type="text"],
+        form input[type="password"],
+        form input[type="email"],
+        form input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        form button {
+            padding: 10px;
+            width: 100%;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+        .back-btn {
+            background-color: #ff5a5f;
+            color: white;
+            margin-top: 10px;
+            display: block;
+            text-align: center;
+            padding: 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .back-btn:hover {
+            background-color: #ff7675;
+        }
+
+    .popup-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.8); /* Darker background with transparency */
+        z-index: 1000;
+        backdrop-filter: blur(10px); /* Enhance blur for modern UI look */
+    }
+
+    .popup-window {
+        background: #ffffff;
+        padding: 40px 30px;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        max-width: 450px;
+        width: 90%;
+        animation: fadeIn 0.4s ease-out;
+    }
+
+    .popup-window h2 {
+        margin-bottom: 20px;
+        font-size: 1.8em;
+        color: #333333;
+        font-weight: bold;
+    }
+
+    .popup-window p {
+        margin-bottom: 20px;
+        color: #555555;
+        font-size: 1em;
+    }
+
+    .popup-window input[type="email"],
+    .popup-window input[type="text"],
+    .popup-window input[type="password"] {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 15px;
+        border: 1px solid #cccccc;
+        border-radius: 8px;
+        font-size: 1em;
+    }
+
+    .popup-window button {
+        padding: 12px 20px;
+        margin-top: 10px;
+        background-color: #ff5a5f;
+        border: none;
+        color: white;
+        font-size: 1em;
+        font-weight: bold;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .popup-window button:hover {
+        background-color: #ff5a5f;
+    }
+
+    .popup-window button.cancel {
+        background-color: #ff5a5f;
+    }
+
+    .popup-window button.cancel:hover {
+        background-color: #e04e53;
+    }
+
+    /* Add a fade-in animation for the popup */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    
+
+    header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #333;
+            color: white;
+        }
+
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+        }
+
+        nav ul li {
+            margin-left: 20px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            margin: 100px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        form input[type="text"],
+        form input[type="password"],
+        form input[type="email"],
+        form input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        form button {
+            padding: 10px;
+            width: 100%;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        .back-btn {
+            background-color: #ff5a5f;
+            color: white;
+            margin-top: 10px;
+            display: block;
+            text-align: center;
+            padding: 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background-color: #ff7675;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 40px 20px;
+            font-family: Arial, sans-serif;
+            text-align: left;
+        }
+
+        footer a {
+            color: #ff5a5f;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            footer table {
+                display: block;
+                width: 100%;
+                text-align: center;
+            }
+
+            footer td {
+                display: block;
+                margin: 10px 0;
+            }
+        }
+
+        header .logo:hover {
+            color: #ff5a5f;
+        }
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        header .logo {
+        font-size: 24px;
+        font-weight: bold;
+        padding-left: 10px;
+        text-decoration: none;
+        color: white;
+    }
+
+    </style>
+</head>
+<body>
+    <header>
+        <a href="Home.html" class="logo">HardwareBazaar</a>
+        <nav>
+            <ul>
+                <li><a href="Home.html">Home</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+
+<div class="container">
+    <h2>Create Account</h2>
+    <form id="signupForm">
+        <input type="text" id="username" placeholder="Username" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="text" id="phoneNumber" placeholder="Phone Number (e.g., 05XXXXXXXX)" required>
+        <input type="date" id="birthdate" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+        <button type="submit">Sign Up</button>
+    </form>
+    <a href="SignIn.html" class="back-btn">Back to Login</a>
+</div>
+
+<footer>
+    <div style="width: 100%; max-width: 1200px; margin: 0 auto;">
+        <table width="100%" style="padding: 20px;">
+            <tbody>
+            <tr>
+                <td style="font-size: x-large; font-weight: bold; padding: 10px 0;">
+                    HardwareBazaar
+                </td>
+                <td style="padding: 10px 20px;">
+                    <div>
+                        Email: <a href="mailto:hardwarebazaarco@gmail.com">hardwarebazaarco@gmail.com</a><br>
+                        Phone: <a href="tel:+970599799230">+970 599 799 230</a>
+                    </div>
+                </td>
+                <td align="center" width="25%" style="padding: 10px;">
+                    ©Copyright 2025.<br>
+                    All rights reserved. Amer & Tariq.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</footer>
+<!-- Popup -->
+<div id="popup" class="popup-container">
+    <div class="popup-window">
+        <h2>Email Verification</h2>
+        <p>A verification code has been sent to your email.</p>
+        <input type="text" id="verificationCode" placeholder="Enter Verification Code">
+        <button onclick="verifyCode()">Verify</button>
+    </div>
+</div>
+<script>
+
+let verificationCode; // Store the verification code temporarily
+
+// Open popup
+function openPopup() {
+    document.getElementById('popup').style.display = 'flex';
+}
+
+// Close popup
+function closePopup() {
+    document.getElementById('popup').style.display = 'none';
+    window.location.href = 'Home.html'; // Redirect to Sign-In page after closing
+}
+
+// Handle Sign-Up Form Submission
+document.getElementById('signupForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const username = document.getElementById('username').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phoneNumber = document.getElementById('phoneNumber').value.trim();
+    const birthdate = document.getElementById('birthdate').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const confirmPassword = document.getElementById('confirmPassword').value.trim();
+
+    if (!username || !email || !phoneNumber || !birthdate || !password || !confirmPassword) {
+        alert('All fields must be filled!');
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        alert('Passwords do not match!');
+        return;
+    }
+
+    // Send Verification Code
+    try {
+        const response = await fetch('http://127.0.0.1:3000/api/auth/send-verification-code', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            verificationCode = result.verificationCode; // Assign the verification code
+            console.log('Verification Code:', verificationCode); // For debugging
+            openPopup(); // Show popup for code entry
+        } else {
+            alert(result.message || 'Failed to send verification code.');
+        }
+    } catch (error) {
+        console.error('Error during sending verification code:', error);
+        alert('Unable to connect to the server.');
+    }
+});
+
+// Verify the Code
+async function verifyCode() {
+        const enteredCode = document.getElementById('verificationCode').value.trim();
+
+        if (enteredCode !== verificationCode) {
+            alert('Incorrect verification code.');
+            return;
+        }
+
+        alert('Verification successful!');
+
+        // Proceed to register user
+        const username = document.getElementById('username').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const phoneNumber = document.getElementById('phoneNumber').value.trim();
+        const birthdate = document.getElementById('birthdate').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const confirmPassword = document.getElementById('confirmPassword').value.trim();
+
+        try {
+            const response = await fetch('http://127.0.0.1:3000/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, email, phoneNumber, birthdate, password, confirmPassword }),
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                alert(result.message || 'Registration successful!');
+                window.location.href = 'SignIn.html';
+            } else {
+                alert(result.error || 'Registration failed.');
+            }
+        } catch (error) {
+            console.error('Error during registration:', error);
+            alert('Unable to connect to the server.');
+        }
+    }
+</script>
+
+</body>
+</html>

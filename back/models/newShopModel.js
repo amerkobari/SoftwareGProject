@@ -1,10 +1,5 @@
 const mongoose = require('mongoose');
 
-// const logoSchema = new mongoose.Schema({
-//     data: Buffer,        // Binary data for the logo
-//     contentType: String, // MIME type of the logo
-// });
-
 const newShopSchema = new mongoose.Schema({
     city: { type: String, required: true },
     shopName: { type: String, required: true },
@@ -16,6 +11,7 @@ const newShopSchema = new mongoose.Schema({
         data: Buffer,        // Binary data for the logo
         contentType: String, // MIME type of the logo
     },
+    isConfirmed: { type: Boolean, default: false }, // Field to track admin confirmation
 }, { timestamps: true });
 
 module.exports = mongoose.model('NewShop', newShopSchema);

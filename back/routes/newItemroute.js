@@ -38,6 +38,7 @@ router.get('/user-balance/:username', itemController.getUserBalance);
 router.get('/get-items-by-user/:username', itemController.getItemsByUsername);
 router.get('/search', itemController.searchItemsByKeyword);
 router.get('/searchw', itemController.searchItemsByKeywordW);
-
+router.put('/items/:itemId/confirm', itemController.confirmItem);
+router.get('/unconfirmed-items', itemController.getUnconfirmedItems);
 
 module.exports = router;
