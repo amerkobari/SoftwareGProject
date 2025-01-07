@@ -17,5 +17,8 @@ router.get('/get-allshops', newShopController.getAllShops);
 router.get('/get-shop-id',verifyToken, newShopController.getShopId);
 router.get('/get-shop/:id' ,newShopController.getShopById);
 router.get('/get-shop/name', newShopController.getShopByName);
+router.put('/shops/:shopId/confirm', newShopController.confirmShop);
+router.get('/unconfirmed-shops', newShopController.getUnconfirmedShops);
+router.delete('/shop/:id', newShopController.deleteShopById);
 
 module.exports = router;

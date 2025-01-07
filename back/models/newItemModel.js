@@ -18,7 +18,8 @@ const itemSchema = new mongoose.Schema({
     location: { type: String },
     createdAt: { type: Date, default: Date.now },
     shopId: { type: mongoose.Schema.Types.ObjectId, required: false },
-    sold: { type: Boolean, default: false }, // New field to track sold status
+    sold: { type: Boolean, default: false }, // Field to track sold status
+    isConfirmed: { type: Boolean, default: false }, // Field to track admin confirmation
 });
 
 module.exports = mongoose.model('Item', itemSchema);

@@ -11,10 +11,18 @@
             padding: 0;
             box-sizing: border-box;
         }
+        html, body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    height: 100%; /* Full height of the viewport */
+    display: flex;
+    flex-direction: column; /* Stack header, content, and footer vertically */
+}
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-        }
+    background: url('Imgs/bg3.jpg') no-repeat center center;
+    background-size: cover;
+}
         header {
             display: flex;
             justify-content: space-between;
@@ -39,17 +47,21 @@
             color: white;
             text-decoration: none;
         }
-        .login-container {
-            max-width: 400px;
-            margin: 100px auto;
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
+       
+.login-container {
+    max-width: 400px;
+    margin: auto; /* Center the login container vertically and horizontally */
+    background-color: rgba(0, 0, 0, 0.559);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    flex: 1; /* Main content takes up remaining space */
+    padding-top: 110px;
+}
         .login-container h2 {
             margin-bottom: 20px;
             text-align: center;
+            color: white;
         }
         .login-container input[type="text"],
         .login-container input[type="password"],
@@ -63,7 +75,7 @@
         .login-container button {
             padding: 10px;
             width: 100%;
-            background-color: #333;
+            background-color: #ff5a5f;
             color: white;
             border: none;
             cursor: pointer;
@@ -100,11 +112,12 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         footer {
-            background-color: #333;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
+    flex-shrink: 0; /* Ensure the footer does not shrink */
+    background-color: #333;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
         footer a {
             color: white;
             text-decoration: none;
@@ -112,6 +125,7 @@
         header .logo:hover {
             color: #ff5a5f;
         }
+        
     </style>
 </head>
 <body>
@@ -122,10 +136,6 @@
     <nav>
         <ul>
             <li><a href="Home.html">Home</a></li>
-            <li><a href="#">Categories</a></li>
-            <li><a href="#howitworks" id="howItWorksLink">How It Works</a></li> <!-- Updated this line -->
-            <li><a href="#footer" id="contactLink">Contact Us</a></li>
-            <li><a href="SignIn.html">Sign In</a></li>
         </ul>
     </nav>
 </header>
@@ -134,12 +144,14 @@
 <div class="login-container">
     <h2 id="formTitle">Login</h2>
     <form id="loginForm">
-        <input type="text" placeholder="Username" required>
-        <input type="password" placeholder="Password" required>
+        <input type="text" id="text" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Password" required>
         <button type="submit">Login</button>
     </form>
-    <a href="#" class="forgot-password" id="forgotPasswordLink">Forgot your password?</a>
-    <button class="create-account-btn" id="createAccountBtn" onclick="toggleCreateAccount()">Create a new account</button>
+    
+    <a href="javascript:void(0);" class="forgot-password" id="forgotPasswordLink" onclick="forgotPassword()">Forgot your password?</a>
+
+    <button class="create-account-btn" id="createAccountBtn" onclick="redirectToSignup()">Create a new account</button>
 
     <!-- Account Creation Form -->
     <div class="create-account-form" id="createAccountForm">
@@ -155,10 +167,37 @@
     </div>
 </div>
 
+<div id="resetPasswordPopup" class="popup-container" style="display: none;">
+    <div class="popup-window">
+        <h2>Password Reset</h2>
+        <!-- Step 1: Enter Email -->
+        <div id="resetStep1">
+            <p>Enter your email to receive a reset code:</p>
+            <input type="email" id="resetEmail" placeholder="Enter your email">
+            <button onclick="sendResetCode()">Send Code</button>
+        </div>
+        <!-- Step 2: Verify Code -->
+        <div id="resetStep2" style="display: none;">
+            <p>Enter the verification code sent to your email:</p>
+            <input type="text" id="resetVerificationCode" placeholder="Enter verification code">
+            <button onclick="verifyResetCode()">Verify Code</button>
+        </div>
+        <!-- Step 3: Reset Password -->
+        <div id="resetStep3" style="display: none;">
+            <p>Enter your new password:</p>
+            <input type="password" id="newPassword" placeholder="New password">
+            <input type="password" id="confirmNewPassword" placeholder="Confirm new password">
+            <button onclick="resetPassword()">Reset Password</button>
+        </div>
+        <button onclick="closePopup()">Cancel</button>
+    </div>
+</div>
+
+
 <!-- Footer -->
-<footer id="footer" class="home-container8" style="background-color: #333; color: white; padding: 40px 20px;">
+<footer id="footer" class="home-container8" style="background-color: #333; color: white; padding-top: 20px; padding-bottom: 20px; ">
     <div id="contact" style="width: 100%; max-width: 1200px; margin: 0 auto;">
-        <table width="100%" style="padding: 20px;">
+        <table width="100%" style="border-collapse: collapse;">
             <tbody>
             <tr>
                 <td style="font-size: x-large; font-weight: bold; padding: 10px 0;">
@@ -217,38 +256,253 @@
         text-decoration: none;
         color: white;
     }
+    .popup-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.8); /* Darker background with transparency */
+        z-index: 1000;
+        backdrop-filter: blur(10px); /* Enhance blur for modern UI look */
+    }
+
+    .popup-window {
+        background: #ffffff;
+        padding: 40px 30px;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        max-width: 450px;
+        width: 90%;
+        animation: fadeIn 0.4s ease-out;
+    }
+
+    .popup-window h2 {
+        margin-bottom: 20px;
+        font-size: 1.8em;
+        color: #333333;
+        font-weight: bold;
+    }
+
+    .popup-window p {
+        margin-bottom: 20px;
+        color: #555555;
+        font-size: 1em;
+    }
+
+    .popup-window input[type="email"],
+    .popup-window input[type="text"],
+    .popup-window input[type="password"] {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 15px;
+        border: 1px solid #cccccc;
+        border-radius: 8px;
+        font-size: 1em;
+    }
+
+    .popup-window button {
+        padding: 12px 20px;
+        margin-top: 10px;
+        background-color: #ff5a5f;
+        border: none;
+        color: white;
+        font-size: 1em;
+        font-weight: bold;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .popup-window button:hover {
+        background-color: #ff5a5f;
+    }
+
+    .popup-window button.cancel {
+        background-color: #ff5a5f;
+    }
+
+    .popup-window button.cancel:hover {
+        background-color: #e04e53;
+    }
 </style>
 
 <script>
-    function toggleCreateAccount() {
-        const loginForm = document.getElementById('loginForm');
-        const createAccountForm = document.getElementById('createAccountForm');
-        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
-        const createAccountBtn = document.getElementById('createAccountBtn');
-        const formTitle = document.getElementById('formTitle');
+    
+    let verificationCode = null; // Store the verification code temporarily
+    let userEmail = null; // Store the user email for resetting the password
 
-        if (createAccountForm.style.display === 'none' || createAccountForm.style.display === '') {
-            createAccountForm.style.display = 'block';
-            loginForm.style.display = 'none';
-            forgotPasswordLink.style.display = 'none'; // Hide forgot password link
-            createAccountBtn.style.display = 'none'; // Hide create account button
-            formTitle.innerText = 'Create Account';
-        } else {
-            createAccountForm.style.display = 'none';
-            loginForm.style.display = 'block';
-            forgotPasswordLink.style.display = 'block'; // Show forgot password link
-            createAccountBtn.style.display = 'block'; // Show create account button
-            formTitle.innerText = 'Login';
-        }
+function redirectToSignup() {
+        window.location.href = 'SignUp.html'; // Replace 'SignUp.html' with the actual sign-up page URL
     }
 
     // Smooth scroll to footer when "Contact Us" is clicked
-    document.getElementById('contactLink').addEventListener('click', function(event) {
-        event.preventDefault(); // Prevent default anchor behavior
-        document.getElementById('footer').scrollIntoView({
-            behavior: 'smooth'
-        });
+
+    const loginForm = document.getElementById('loginForm');
+    
+    loginForm.addEventListener('submit', async (event) => {
+        event.preventDefault(); // Prevent form submission
+
+        const emailInput = loginForm.querySelector('input[type="text"]');
+        const passwordInput = loginForm.querySelector('input[type="password"]');
+        const email = emailInput.value.trim();
+        const password = passwordInput.value.trim();
+
+        if (!email || !password) {
+            alert('Please fill in both email and password!');
+            return;
+        }
+
+        try {
+            const response = await fetch('http://127.0.0.1:3000/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                // Store the token in localStorage
+                localStorage.setItem('token', result.token);
+
+                // Decode the JWT to retrieve user details
+                const decodedToken = parseJwt(result.token);
+                const username = decodedToken.username || 'Guest';
+                const role = decodedToken.role || 'user'; // Check the user's role
+
+
+
+                // Redirect to the appropriate page based on the role
+                if (username === 'admin') {
+                    window.location.href = 'AdminDashboard.html'; // Replace with your admin page
+                } else {
+                    window.location.href = 'Home.html'; // Replace with the regular user homepage
+                }
+            } else {
+                alert(result.error || 'Login failed. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error during login:', error);
+            alert('Unable to connect to the server. Please try again later.');
+        }
     });
+
+    // Function to decode JWT
+    function parseJwt(token) {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+            atob(base64)
+                .split('')
+                .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                .join('')
+        );
+
+        return JSON.parse(jsonPayload);
+    }
+
+    // Function to handle Forgot Password process
+    document.getElementById('forgotPasswordLink').addEventListener('click', async () => {
+        forgotPassword();
+    });
+
+    // Open the password reset popup
+    function forgotPassword() {
+        document.getElementById('resetPasswordPopup').style.display = 'flex';
+        document.getElementById('resetStep1').style.display = 'block';
+        document.getElementById('resetStep2').style.display = 'none';
+        document.getElementById('resetStep3').style.display = 'none';
+    }
+
+    // Close the popup
+    function closePopup() {
+        document.getElementById('resetPasswordPopup').style.display = 'none';
+    }
+
+    // Send reset code to the email
+    async function sendResetCode() {
+        const email = document.getElementById('resetEmail').value.trim();
+        if (!email) {
+            alert("Email is required!");
+            return;
+        }
+
+        try {
+            const response = await fetch('http://127.0.0.1:3000/api/auth/send-reset-code', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email }),
+            });
+            console.log(response);
+            const result = await response.json();
+            if (result.success) {
+                verificationCode = result.resetCode; // Store the reset code
+                userEmail = email; // Store the email
+
+                document.getElementById('resetStep1').style.display = 'none';
+                document.getElementById('resetStep2').style.display = 'block';
+            } else {
+                alert(result.message || "Failed to send reset code.");
+            }
+        } catch (error) {
+            console.error("Error during sending reset code:", error);
+            alert("Unable to connect to the server.");
+        }
+    }
+
+    // Verify the reset code
+    function verifyResetCode() {
+        const enteredCode = document.getElementById('resetVerificationCode').value.trim();
+        if (enteredCode === verificationCode) {
+            document.getElementById('resetStep2').style.display = 'none';
+            document.getElementById('resetStep3').style.display = 'block';
+        } else {
+            alert("Invalid verification code. Please try again.");
+        }
+    }
+
+    // Reset the password
+    async function resetPassword() {
+        const newPassword = document.getElementById('newPassword').value.trim();
+        const confirmPassword = document.getElementById('confirmNewPassword').value.trim();
+
+        if (!newPassword || !confirmPassword) {
+            alert("Password fields cannot be empty.");
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            alert("Passwords do not match.");
+            return;
+        }
+
+        try {
+            const response = await fetch('http://127.0.0.1:3000/api/auth/reset-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: userEmail, password: newPassword, code: verificationCode }),
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                alert(result.message || "Password reset successfully!");
+                closePopup();
+                window.location.href = 'SignIn.html'; // Redirect to Sign-In page
+            } else {
+                alert(result.message || "Failed to reset the password.");
+            }
+        } catch (error) {
+            console.error("Error during resetting password:", error);
+            alert("Unable to connect to the server.");
+        }
+    }
 </script>
 
 </body>

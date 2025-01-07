@@ -103,7 +103,7 @@ exports.addItemId = async (req, res) => {
 // Get all items (with images as base64)
 exports.getAllItems = async (req, res) => {
     try {
-        const items = await Item.find({ sold: false }).sort({ createdAt: -1 });
+        const items = await Item.find({ sold: false, isConfirmed: true }).sort({ createdAt: -1 });
         const itemsWithImages = items.map(item => ({
             ...item.toObject(),
             images: item.images.map(image => ({
@@ -145,7 +145,7 @@ exports.getItemById = async (req, res) => {
 
 exports.getShopItems = async (req, res) => {
     try {
-        const items = await Item.find({ shopId: req.params.shopId, sold: false });
+        const items = await Item.find({ shopId: req.params.shopId, sold: false, isConfirmed: true });
         res.json(items);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -214,7 +214,7 @@ exports.deleteItem = async (req, res) => {
 // Get items by username
 exports.getItemsByUsername = async (req, res) => {
     try {
-        const items = await Item.find({ username: req.params.username, sold: false });
+        const items = await Item.find({ username: req.params.username, sold: false, isConfirmed: true  });
         res.json(items);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -225,7 +225,7 @@ exports.getItemsByUsername = async (req, res) => {
 // Get items by category
 exports.getItemsByCategory = async (req, res) => {
     try {
-        const items = await Item.find({ category: req.params.category, sold: false });
+        const items = await Item.find({ category: req.params.category, sold: false, isConfirmed: true  });
         res.json(items);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -235,7 +235,7 @@ exports.getItemsByCategory = async (req, res) => {
 exports.getItemsByShopw = async (req, res) => {
     try {
         // Fetch items that belong to the shop and are not sold
-        const items = await Item.find({ shopId: req.params.shopId, sold: false });
+        const items = await Item.find({ shopId: req.params.shopId, sold: false, isConfirmed: true  });
 
         // Format each item's images
         const formattedItems = items.map(item => ({
@@ -260,7 +260,7 @@ exports.getItemsByShopw = async (req, res) => {
 
 exports.getItemsByCategoryW = async (req, res) => {
         try {
-            const items = await Item.find({ category: req.params.category, sold: false });
+            const items = await Item.find({ category: req.params.category, sold: false, isConfirmed: true  });
     
             // Format each item's images
             const formattedItems = items.map(item => ({
@@ -288,7 +288,7 @@ exports.getItemsByTitle = async (req, res) => {
     try {
         const items = await Item.find({
             title: { $regex: req.params.title, $options: 'i' },
-            sold: false,
+            sold: false, isConfirmed: true ,
         });
         res.json(items);
     } catch (err) {
@@ -303,7 +303,7 @@ exports.getItemsByPriceRange = async (req, res) => {
         const { minPrice, maxPrice } = req.query;
         const items = await Item.find({
             price: { $gte: minPrice, $lte: maxPrice },
-            sold: false,
+            sold: false,  isConfirmed: true ,
         });
         res.json(items);
     } catch (err) {
@@ -315,7 +315,7 @@ exports.getItemsByPriceRange = async (req, res) => {
 // Get items by condition
 exports.getItemsByCondition = async (req, res) => {
     try {
-        const items = await Item.find({ condition: req.params.condition, sold: false });
+        const items = await Item.find({ condition: req.params.condition, sold: false, isConfirmed: true });
         res.json(items);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -328,7 +328,7 @@ exports.getItemsByDate = async (req, res) => {
     try {
         const items = await Item.find({
             createdAt: { $gte: new Date(req.params.date) },
-            sold: false,
+            sold: false, isConfirmed: true ,
         });
         res.json(items);
     } catch (err) {
@@ -544,4 +544,49 @@ exports.searchItemsByKeyword = async (req, res) => {
     }
 };
 
-  
+exports.confirmItem = async (req, res) => {
+    const { itemId } = req.params;
+
+    try {
+        // Find and update the item
+        const updatedItem = await Item.findByIdAndUpdate(
+            itemId,
+            { isConfirmed: true },
+            { new: true }
+        );
+
+        if (!updatedItem) {
+            return res.status(404).json({ success: false, message: 'Item not found' });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Item confirmed successfully',
+            item: updatedItem
+        });
+    } catch (error) {
+        console.error('Error confirming item:', error);
+        res.status(500).json({ success: false, message: 'Server error', error });
+    }
+};
+
+exports.getUnconfirmedItems = async (req, res) => {
+    try {
+        // Fetch items where isConfirmed is false
+        const items = await Item.find({ isConfirmed: false }).sort({ createdAt: -1 });
+
+        // Format items with images in Base64
+        const formattedItems = items.map(item => ({
+            ...item.toObject(),
+            images: item.images?.map(image => ({
+                contentType: image.contentType,
+                data: image.data.toString('base64') // Convert Buffer to Base64 string
+            })) || []
+        }));
+
+        res.status(200).json(formattedItems);
+    } catch (error) {
+        console.error('Error fetching unconfirmed items:', error);
+        res.status(500).json({ error: 'An error occurred while fetching unconfirmed items.' });
+    }
+};

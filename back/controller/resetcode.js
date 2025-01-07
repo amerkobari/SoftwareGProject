@@ -211,5 +211,34 @@ exports.sendOrderMail = async (req, res) => {
   }
 };
 
+exports.sendOrderStatusUpdateMail = async (email, orderId, status) => {
+  try {
+    // Email content
+    const emailContent = `
+      <html>
+        <body>
+          <h2>Hello,</h2>
+          <p>Your order with ID <strong>${orderId}</strong> has been updated to the following status: <strong>${status}</strong>.</p>
+          <p>Thank you for shopping with us!</p>
+        </body>
+      </html>
+    `;
+
+    // Send the email
+    await transporter.sendMail({
+      from: 'rentitoutco@gmail.com',
+      to: email,
+      subject: 'Order Status Update',
+      html: emailContent,
+    });
+
+    console.log(`Order status update email sent to ${email}`);
+    return true;
+  } catch (error) {
+    console.error('Error sending order status update email:', error);
+    return false;
+  }
+};
+
 
 
