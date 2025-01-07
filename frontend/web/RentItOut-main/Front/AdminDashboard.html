@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - HardwareBazaar</title>
@@ -9,7 +10,7 @@
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
-            margin: 0;
+                
         }
         header {
             display: flex;
@@ -67,7 +68,7 @@
             text-align: left;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: #ff5a5f;
         }
         .confirm-btn {
             background-color: #4CAF50;
@@ -178,6 +179,101 @@
     background-color: #ca6218;
 }
 
+.stats-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+  }
+  .card {
+    background: #f4f4f4;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 16px;
+  }
+  table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    table thead {
+        background-color: #f4f4f4;
+    }
+
+    table th, table td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #000000;
+    }
+
+    table th {
+        font-weight: bold;
+    }
+
+    .charts-container {
+    display: flex;
+    flex-wrap: wrap; /* Allows wrapping to the next row */
+    gap: 20px;       /* Adds space between chart items */
+    justify-content: center; /* Center-aligns the charts */
+  }
+
+  .chart-item {
+    flex: 1 1 calc(50% - 20px); /* Each chart takes 50% width minus the gap */
+    max-width: 320px;           /* Sets a max width for charts */
+    text-align: center;         /* Centers chart titles */
+    background: #fff;           /* Optional: adds a background to each chart */
+    padding: 15px;
+    border-radius: 10px;        /* Adds rounded corners */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for professional look */
+  }
+
+  canvas {
+    width: 100%;  /* Makes the canvas responsive */
+    height: 400px;
+  }
+
+  .stats-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 16px;
+        text-align: left;
+    }
+
+    .stats-table th, .stats-table td {
+        border: 1px solid #ddd;
+        padding: 10px;
+    }
+
+    .stats-table th {
+        background-color: #ff5a5f;
+        color: white;
+    }
+
+    .stats-table td {
+        vertical-align: middle;
+    }
+
+    .stats-table tbody tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    .stats-table tbody tr:nth-child(odd) {
+        background-color: #ffffff;
+    }
+
+    .stats-table th:first-child, 
+    .stats-table td:first-child {
+        width: 70%; /* Adjust column width for "Metric" */
+    }
+
+    .stats-table th:last-child, 
+    .stats-table td:last-child {
+        width: 30%; /* Adjust column width for "Value" */
+        text-align: center; /* Align values in the center */
+    }
 
     </style>
 </head>
@@ -193,10 +289,92 @@
     <div class="tabs">
         <div class="tab active" onclick="switchTab('requests')">Requests</div>
         <div class="tab" onclick="switchTab('orders')">Orders</div>
+        <div class="tab" onclick="switchTab('statistics')">Statistics</div>
     </div>
+    
+    <div id="statistics" class="tab-content">
+        <h2>Statistics Dashboard</h2>
+      
+        <!-- Chart Container -->
+        <div class="charts-container">
+      
+          <!-- Bar Chart for Order Status -->
+          <div class="chart-item">
+            <h3>Order Status Overview</h3>
+            <canvas id="orderStatusChart" style="margin-top: 70px;"></canvas>
+          </div>
+      
+          <!-- Pie Chart for Delivery Fee Distribution -->
+          <div class="chart-item">
+            <h3>Delivery Fee Distribution</h3>
+            <canvas id="deliveryFeeChart" ></canvas>
+          </div>
+      
+          <!-- Line Chart for Charge Fees -->
+          <div class="chart-item">
+            <h3>Charge Fees per Order</h3>
+            <canvas id="chargeFeeChart" style="margin-top: 70px;"></canvas>
+          </div>
+      
+          <!-- Line Chart for Revenue Growth -->
+          <div class="chart-item">
+            <h3>Revenue Growth</h3>
+            <canvas id="revenueGrowthChart" style="margin-top: 70px;"></canvas>
+          </div>
+      
+        </div>
+      
+      
+    
+        <h2>User Statistics</h2>
+        <table id="userStatsTable" class="stats-table">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    
+        <h2>Shop Statistics</h2>
+        <table id="shopStatsTable"class="stats-table">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    
+        <h2>Item Statistics</h2>
+        <table id="itemStatsTable"class="stats-table">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    
+        <h2>Order Statistics</h2>
+        <table id="orderStatsTable"class="stats-table">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    </div>
+    
     <div id="requests" class="tab-content active">
         <h2>Unconfirmed Shops</h2>
-        <table id="shopsTable">
+        <table id="shopsTable"class="stats-table">
             <thead>
                 <tr>
                     <th>Shop Name</th>
@@ -208,18 +386,20 @@
             <tbody></tbody>
         </table>
         <h2>Unconfirmed Items</h2>
-        <table id="itemsTable">
+        <table id="itemsTable"class="stats-table">
             <thead>
                 <tr>
                     <th>Item Name</th>
                     <th>Category</th>
                     <th>Price</th>
+                    <th>Username</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody></tbody>
         </table>
     </div>
+    
     <div id="orders" class="tab-content">
         <h2>Orders</h2>
         <table id="ordersTable">
@@ -236,15 +416,19 @@
         </table>
     </div>
     
+    
+    
     <script>
-        function switchTab(tabId) {
+    function switchTab(tabId) {
+    // Remove 'active' class from all tabs
     document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-    // Add the active class to the clicked tab and its corresponding content
+    // Add 'active' class to the clicked tab and its content
     document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add('active');
     document.getElementById(tabId).classList.add('active');
 }
+
 
 
 
@@ -275,6 +459,7 @@ itemsTable.innerHTML = items.map(item => `
         <td>${item.title}</td>
         <td>${item.category}</td>
         <td>${item.price}</td>
+        <td>${item.username}</td>
         <td>
             <button class="confirm-btn" onclick="confirmItem('${item._id}')">Confirm</button>
             <button class="delete-btn" onclick="deleteItem('${item._id}')">Delete</button>
@@ -380,6 +565,201 @@ async function deleteItem(itemId) {
         }
 
         document.addEventListener('DOMContentLoaded', fetchData);
+
+        async function fetchStatistics() {
+    const userStats = await fetch('http://127.0.0.1:3000/api/auth/users-stat').then(res => res.json());
+    const shopStats = await fetch('http://127.0.0.1:3000/api/auth/shops-stat').then(res => res.json());
+    const itemStats = await fetch('http://127.0.0.1:3000/api/auth/items-stat').then(res => res.json());
+    const orderStats = await fetch('http://127.0.0.1:3000/api/auth/orders-stat').then(res => res.json());
+
+    // Populate User Statistics Table
+    document.querySelector('#userStatsTable tbody').innerHTML = `
+        <tr><td>Total Users</td><td>${userStats.totalUsers}</td></tr>
+        <tr><td>New Users (Last 7 Days)</td><td>${userStats.newUsersLast7Days}</td></tr>
+        <tr><td>Average User Rating</td><td>${userStats.averageUserRating.toFixed(2)}</td></tr>
+    `;
+
+    // Populate Shop Statistics Table
+    document.querySelector('#shopStatsTable tbody').innerHTML = `
+        <tr><td>Total Shops</td><td>${shopStats.totalShops}</td></tr>
+        <tr><td>Confirmed Shops</td><td>${shopStats.confirmedShops}</td></tr>
+        <tr><td>Unconfirmed Shops</td><td>${shopStats.unconfirmedShops}</td></tr>
+    `;
+
+    // Populate Item Statistics Table
+    document.querySelector('#itemStatsTable tbody').innerHTML = `
+        <tr><td>Total Items</td><td>${itemStats.totalItems}</td></tr>
+        <tr><td>Active Items</td><td>${itemStats.activeItems}</td></tr>
+        <tr><td>Confirmed Items</td><td>${itemStats.confirmedItems}</td></tr>
+    `;
+
+    // Populate Order Statistics Table
+    document.querySelector('#orderStatsTable tbody').innerHTML = `
+      <tr><td>Total Orders</td><td>${orderStats.totalOrders}</td></tr>
+      <tr><td>Completed Orders</td><td>${orderStats.completedOrders}</td></tr>
+      <tr><td>Pending Orders</td><td>${orderStats.pendingOrders}</td></tr>
+      <tr><td>Total Revenue</td><td>$${orderStats.totalRevenue.toFixed(2)}</td></tr>
+      <tr><td>Total Delivery Fees</td><td>$${orderStats.totalDeliveryFees.toFixed(2)}</td></tr>
+      <tr><td>Total Charge Fees</td><td>$${orderStats.totalChargeFees.toFixed(2)}</td></tr>
+  `;
+}
+
+// Fetch statistics on page load
+fetchStatistics();
+
+
+
+
+
+async function fetchStatistics2() {
+  const orderStats = await fetch('http://127.0.0.1:3000/api/auth/orders-stat2').then(res => res.json());
+    console.log(orderStats);
+  // Render Bar Chart for Order Status
+  renderOrderStatusChart(orderStats);
+
+  // Render Pie Chart for Delivery Fee Distribution
+//   renderDeliveryFeeChart(orderStats.deliveryFeeData);
+
+  // Render Line Chart for Charge Fees
+  renderChargeFeeChart(orderStats.chargeFeeData);
+
+  // Render Line Chart for Revenue Growth
+  renderRevenueGrowthChart(orderStats.monthlyRevenue);
+}
+
+// Bar Chart for Order Status
+function renderOrderStatusChart(data) {
+  const ctx = document.getElementById('orderStatusChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Total Orders', 'Completed Orders', 'Pending Orders'],
+      datasets: [{
+        label: 'Orders',
+        data: [data.totalOrders, data.completedOrders, data.pendingOrders],
+        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+      }]
+    },
+    options: { responsive: true },
+  });
+}
+
+// Pie Chart for Delivery Fee Distribution
+// function renderDeliveryFeeChart(data) {
+//   const ctx = document.getElementById('deliveryFeeChart').getContext('2d');
+//   const labels = Object.keys(data);
+//   const values = Object.values(data);
+//   new Chart(ctx, {
+//     type: 'pie',
+//     data: {
+//       labels: labels.map(fee => `$${fee}`),
+//       datasets: [{
+//         label: 'Delivery Fee Distribution',
+//         data: values,
+//         backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
+//       }]
+//     },
+//     options: { responsive: true },
+//   });
+// }
+
+// Line Chart for Charge Fees
+function renderChargeFeeChart(data) {
+  const ctx = document.getElementById('chargeFeeChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: Array.from({ length: data.length }, (_, i) => `Order ${i + 1}`),
+      datasets: [{
+        label: 'Charge Fees',
+        data: data,
+        borderColor: '#36A2EB',
+        fill: false,
+      }]
+    },
+    options: { responsive: true },
+  });
+}
+
+// Line Chart for Revenue Growth
+function renderRevenueGrowthChart(data) {
+  const ctx = document.getElementById('revenueGrowthChart').getContext('2d');
+  const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const values = labels.map((_, i) => data[i] || 0);
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Monthly Revenue',
+        data: values,
+        borderColor: '#FF6384',
+        fill: false,
+      }]
+    },
+    options: { responsive: true },
+  });
+}
+function renderDeliveryFeeChart(data) {
+  const ctx = document.getElementById('deliveryFeeChart').getContext('2d');
+  
+  // Extract the values from the API response
+  const totalRevenue = data.totalRevenue || 0;
+  const totalDeliveryFees = data.totalDeliveryFees || 0;
+  const totalChargeFees = data.totalChargeFees || 0;
+
+  // Create the chart
+  new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: ['Total Revenue', 'Total Delivery Fees', 'Total Charge Fees'],
+      datasets: [{
+        label: 'Comparison of Revenue, Delivery Fees, and Charge Fees',
+        data: [totalRevenue, totalDeliveryFees, totalChargeFees],
+        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'], // Colors for the chart
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+        },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              const label = context.label || '';
+              const value = context.raw || 0;
+              return `${label}: $${value.toFixed(2)}`;
+            }
+          }
+        }
+      },
+    },
+  });
+}
+
+// Fetch and Render Charts
+fetchStatistics2();
+
+
+async function fetchStatistics3() {
+  try {
+    const response = await fetch('http://127.0.0.1:3000/api/auth/orders-stat3');
+    const data = await response.json();
+
+    // Render the updated pie chart
+    renderDeliveryFeeChart(data);
+  } catch (error) {
+    console.error('Error fetching statistics:', error);
+  }
+}
+
+
+// Fetch data when the page loads
+document.addEventListener('DOMContentLoaded', fetchStatistics3);
+
     </script>
 </body>
 </html>

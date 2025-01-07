@@ -243,3 +243,21 @@ exports.getUserRating = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
+exports.getUserStatistics = async (req, res) => {
+  try {
+    const totalUsers = await User.countDocuments();
+    const newUsersLast7Days = await User.countDocuments({ createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } });
+    const averageUserRating = await User.aggregate([
+      { $unwind: "$ratings" },
+      { $group: { _id: null, averageRating: { $avg: "$ratings.score" } } }
+    ]);
+    res.json({
+      totalUsers,
+      newUsersLast7Days,
+      averageUserRating: averageUserRating[0]?.averageRating || 0,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

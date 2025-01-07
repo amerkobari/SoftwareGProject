@@ -240,5 +240,61 @@ exports.sendOrderStatusUpdateMail = async (email, orderId, status) => {
   }
 };
 
+exports.sendShopConfirmationEmail = async (email, shopName) => {
+  try {
+      // Email content
+      const emailContent = `
+          <html>
+              <body>
+                  <h2>Congratulations!</h2>
+                  <p>Your shop <strong>${shopName}</strong> has been successfully confirmed and is now live on our platform.</p>
+                  <p>Thank you for joining us and we look forward to seeing your success!</p>
+              </body>
+          </html>
+      `;
 
+      // Send the email
+      await transporter.sendMail({
+          from: 'rentitoutco@gmail.com',
+          to: email,
+          subject: 'Shop Confirmation',
+          html: emailContent,
+      });
+
+      console.log(`Shop confirmation email sent to ${email}`);
+      return true;
+  } catch (error) {
+      console.error('Error sending shop confirmation email:', error);
+      return false;
+  }
+};
+
+exports.sendItemConfirmationEmail = async (email, itemName) => {
+  try {
+      // Email content
+      const emailContent = `
+          <html>
+              <body>
+                  <h2>Item Confirmation</h2>
+                  <p>Congratulations! Your item <strong>${itemName}</strong> has been successfully confirmed and is now live on our platform.</p>
+                  <p>Thank you for listing your item with us!</p>
+              </body>
+          </html>
+      `;
+
+      // Send the email
+      await transporter.sendMail({
+          from: 'rentitoutco@gmail.com',
+          to: email,
+          subject: 'Item Confirmation',
+          html: emailContent,
+      });
+
+      console.log(`Item confirmation email sent to ${email}`);
+      return true;
+  } catch (error) {
+      console.error('Error sending item confirmation email:', error);
+      return false;
+  }
+};
 

@@ -1,6 +1,6 @@
 const Item = require('../models/newItemModel');
 const Shop = require('../models/newShopModel'); 
-
+const { sendItemConfirmationEmail  } = require('./resetcode'); // Adjust path as needed
 // Add a new item
 exports.addItem = async (req, res) => {
     try {
@@ -544,6 +544,8 @@ exports.searchItemsByKeyword = async (req, res) => {
     }
 };
 
+const User = require('../models/user'); // Import the User model
+
 exports.confirmItem = async (req, res) => {
     const { itemId } = req.params;
 
@@ -559,16 +561,31 @@ exports.confirmItem = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Item not found' });
         }
 
+        // Retrieve the owner's email using the username
+        const owner = await User.findOne({ username: updatedItem.username }); // Replace "username" with the correct field if different
+
+        if (!owner) {
+            return res.status(404).json({ success: false, message: 'Owner not found' });
+        }
+
+        // Send confirmation email
+        const emailSent = await sendItemConfirmationEmail(
+            owner.email, // Use the email retrieved from the user document
+            updatedItem.title
+        );
+
         res.status(200).json({
             success: true,
-            message: 'Item confirmed successfully',
-            item: updatedItem
+            message: `Item confirmed successfully. Email sent: ${emailSent ? 'Yes' : 'No'}`,
+            item: updatedItem,
         });
     } catch (error) {
         console.error('Error confirming item:', error);
         res.status(500).json({ success: false, message: 'Server error', error });
     }
 };
+
+
 
 exports.getUnconfirmedItems = async (req, res) => {
     try {
@@ -590,3 +607,14 @@ exports.getUnconfirmedItems = async (req, res) => {
         res.status(500).json({ error: 'An error occurred while fetching unconfirmed items.' });
     }
 };
+
+exports.getItemStatistics = async (req, res) => {
+    try {
+      const totalItems = await Item.countDocuments();
+      const activeItems = await Item.countDocuments({ sold: false });
+      const confirmedItems = await Item.countDocuments({ isConfirmed: true });
+      res.json({ totalItems, activeItems, confirmedItems });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
