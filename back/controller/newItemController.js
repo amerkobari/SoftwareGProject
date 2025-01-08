@@ -142,6 +142,30 @@ exports.getItemById = async (req, res) => {
     }
 };
 
+exports.getItemByIdw = async (req, res) => {
+    try {
+        const item = await Item.findOne({ _id: req.params.id });
+        if (!item) {
+            return res.status(404).json({ message: 'Item not found or already sold' });
+        }
+
+        const formattedItem = {
+            ...item.toObject(),
+            imageUrls: item.images?.map(image => {
+                if (image?.data) {
+                    return `data:${image.contentType};base64,${image.data.toString('base64')}`;
+                }
+                return null;
+            }) || [],
+        };
+
+        res.json(formattedItem);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+
 
 exports.getShopItems = async (req, res) => {
     try {

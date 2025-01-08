@@ -17,6 +17,7 @@ router.get('/get-items', itemController.getAllItems);
 
 // Get a single item by ID
 router.get('/get-item/:id', itemController.getItemById);
+router.get('/get-itemw/:id', itemController.getItemByIdw);
 
 // Other routes remain the same
 // router.get('/get-items-by-user/:userId', itemController.getItemsByUser);

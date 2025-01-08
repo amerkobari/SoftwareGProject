@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Orders - HardwareBazaar</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header .logo {
+            font-size: 24px;
+            font-weight: bold;
+            padding-left: 10px;
+            text-decoration: none;
+            color: white;
+        }
+        header .logo:hover {
+            color: #ff5a5f;
+        }
+        header .nav-buttons {
+            margin-right: 10px;
+        }
+        header .nav-button {
+            background-color: #ff5a5f;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 10px;
+        }
+        header .nav-button:hover {
+            background-color: #e04343;
+        }
+
+        .orders-table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .orders-table th, .orders-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .orders-table th {
+            background-color: #ff5a5f;
+            color: white;
+        }
+
+        .orders-table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .orders-table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .back-btn {
+            background-color: #ff5a5f;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 20px auto;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: block;
+            width: fit-content;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background-color: #ff5a5f;
+        }
+
+        .filter-container {
+    display: flex;
+    justify-content: center; /* Center the search bar and button */
+    align-items: center;
+    margin: 20px 0; /* Add space around the filter container */
+    gap: 10px; /* Space between the search bar and button */
+}
+
+/* Search bar styling */
+.filter-container input {
+    width: 400px; /* Adjust the width of the search bar */
+    padding: 10px; /* Add padding inside the input */
+    font-size: 16px; /* Slightly larger font for better visibility */
+    border: 1px solid #ddd; /* Border for the input */
+    border-radius: 5px; /* Rounded corners */
+    outline: none; /* Remove focus outline */
+    transition: border-color 0.3s ease; /* Smooth transition for border color */
+}
+
+/* Add focus effect on the search bar */
+.filter-container input:focus {
+    border-color: #ff5a5f; /* Highlight border when focused */
+}
+
+/* Search button styling */
+.filter-container .search-btn {
+    background-color: #ff5a5f; /* Button color */
+    color: white; /* Text color */
+    padding: 10px 20px; /* Padding inside the button */
+    font-size: 16px; /* Font size */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+/* Add hover effect to the button */
+.filter-container .search-btn:hover {
+    background-color: #e04343; /* Darker color on hover */
+}
+
+/* Modal styling */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 80%;
+    max-width: 600px;
+    text-align: center;
+    position: relative;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #ff5a5f;
+}
+
+.order-item-image {
+    max-width: 100px;
+    max-height: 100px;
+    margin: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+/* Button styling for "View Item" */
+.view-item-btn {
+    background-color: #ff5a5f;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.view-item-btn:hover {
+    background-color: #ff4d53;
+}
+
+
+    </style>
+</head>
+<body>
+    <header>
+        <a href="Home.html" class="logo">HardwareBazaar</a>
+        <div class="nav-buttons">
+            <button class="nav-button" onclick="window.location.href='AdminDashboard.html'">Back</button>
+            
+        </div>
+    </header>
+
+    <h1 style="text-align: center; margin: 20px 0;">All Orders</h1>
+
+    <div class="filter-container">
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search by customer name, city, or status..."
+        >
+        <button class="search-btn" onclick="filterOrders()">Search</button>
+    </div>
+    
+    <table class="orders-table">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Customer Name</th>
+                <th>Total</th>
+                <th>Delivery Address</th>
+                <th>City</th>
+                <th>Status</th>
+                <th>Created At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="ordersTableBody"></tbody>
+    </table>
+    
+    <!-- Modal for Order Details -->
+    <div id="orderDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2>Order Details</h2>
+            <div id="orderDetails"></div>
+        </div>
+    </div>
+
+    <script>
+
+let orders = []; // Global variable to store orders
+
+// Fetch all orders from the API
+async function fetchOrders() {
+    try {
+        const response = await fetch('http://127.0.0.1:3000/api/auth/get-all-orders');
+        orders = await response.json(); // Store orders globally
+        renderOrders(orders); // Render all orders initially
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+    }
+}
+
+// Render orders in the table
+function renderOrders(orderList) {
+    const ordersTableBody = document.getElementById('ordersTableBody');
+    if (orderList.length === 0) {
+        ordersTableBody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No orders found</td></tr>';
+        return;
+    }
+    ordersTableBody.innerHTML = orderList.map(order => `
+        <tr>
+            <td>${order._id}</td>
+            <td>${order.firstName} ${order.lastName}</td>
+            <td>₪${order.total.toFixed(2)}</td>
+            <td>${order.deliveryAddress}</td>
+            <td>${order.city}</td>
+            <td>${order.status}</td>
+            <td>${new Date(order.createdAt).toLocaleString()}</td>
+            <td><button class="view-details-btn" onclick="viewOrderDetails('${order._id}')">View Details</button></td>
+        </tr>
+    `).join('');
+}
+
+// Open modal and display order details
+// Open modal and display order details
+// Open modal and display order details
+function viewOrderDetails(orderId) {
+    const order = orders.find(o => o._id === orderId);
+    if (!order) return;
+
+    const orderDetailsDiv = document.getElementById('orderDetails');
+    orderDetailsDiv.innerHTML = `
+        <p><strong>Order ID:</strong> ${order._id}</p>
+        <p><strong>Customer Name:</strong> ${order.firstName} ${order.lastName}</p>
+        <p><strong>Total:</strong> ₪${order.total.toFixed(2)}</p>
+        <p><strong>Delivery Address:</strong> ${order.deliveryAddress}</p>
+        <p><strong>City:</strong> ${order.city}</p>
+        <p><strong>Status:</strong> ${order.status}</p>
+        <p><strong>Created At:</strong> ${new Date(order.createdAt).toLocaleString()}</p>
+        <h3>Items:</h3>
+        <div>
+            ${order.items.map(item => `
+                <div>
+                    <p><strong>Name:</strong> ${item.name}</p>
+                    <p><strong>Price:</strong> ₪${item.price.toFixed(2)}</p>
+                    <button class="view-item-btn" onclick="viewItemDetails('${item.itemId}')">View Item</button>
+                </div>
+            `).join('')}
+        </div>
+    `;
+
+    // Show the modal
+    document.getElementById('orderDetailsModal').style.display = 'flex';
+}
+
+// Redirect to item page
+function viewItemDetails(itemId) {
+    window.location.href = `item.html?id=${itemId}`;
+}
+
+
+
+// Close the modal
+function closeModal() {
+    document.getElementById('orderDetailsModal').style.display = 'none';
+}
+
+// Fetch orders on page load
+document.addEventListener('DOMContentLoaded', fetchOrders);
+
+    </script>
+</body>
+</html>

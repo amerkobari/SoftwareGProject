@@ -275,6 +275,21 @@
         text-align: center; /* Align values in the center */
     }
 
+
+    .view-details-btn {
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 14px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .view-details-btn:hover {
+        background-color: #0056b3;
+    }
     </style>
 </head>
 <body>
@@ -359,8 +374,11 @@
             <tbody></tbody>
         </table>
     
-        <h2>Order Statistics</h2>
-        <table id="orderStatsTable"class="stats-table">
+        <h2 style="display: flex; align-items: center; justify-content: space-between;">
+            Order Statistics
+            <button class="view-details-btn" style="margin-right: 79%;" onclick="viewOrderDetails()">View Details</button>
+        </h2>
+        <table id="orderStatsTable" class="stats-table">
             <thead>
                 <tr>
                     <th>Metric</th>
@@ -369,6 +387,7 @@
             </thead>
             <tbody></tbody>
         </table>
+        
     </div>
     </div>
     
@@ -598,9 +617,9 @@ async function deleteItem(itemId) {
       <tr><td>Total Orders</td><td>${orderStats.totalOrders}</td></tr>
       <tr><td>Completed Orders</td><td>${orderStats.completedOrders}</td></tr>
       <tr><td>Pending Orders</td><td>${orderStats.pendingOrders}</td></tr>
-      <tr><td>Total Revenue</td><td>$${orderStats.totalRevenue.toFixed(2)}</td></tr>
-      <tr><td>Total Delivery Fees</td><td>$${orderStats.totalDeliveryFees.toFixed(2)}</td></tr>
-      <tr><td>Total Charge Fees</td><td>$${orderStats.totalChargeFees.toFixed(2)}</td></tr>
+      <tr><td>Total Revenue</td><td>₪${orderStats.totalRevenue.toFixed(2)}</td></tr>
+      <tr><td>Total Delivery Fees</td><td>₪${orderStats.totalDeliveryFees.toFixed(2)}</td></tr>
+      <tr><td>Total Charge Fees</td><td>₪${orderStats.totalChargeFees.toFixed(2)}</td></tr>
   `;
 }
 
@@ -643,25 +662,6 @@ function renderOrderStatusChart(data) {
     options: { responsive: true },
   });
 }
-
-// Pie Chart for Delivery Fee Distribution
-// function renderDeliveryFeeChart(data) {
-//   const ctx = document.getElementById('deliveryFeeChart').getContext('2d');
-//   const labels = Object.keys(data);
-//   const values = Object.values(data);
-//   new Chart(ctx, {
-//     type: 'pie',
-//     data: {
-//       labels: labels.map(fee => `$${fee}`),
-//       datasets: [{
-//         label: 'Delivery Fee Distribution',
-//         data: values,
-//         backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
-//       }]
-//     },
-//     options: { responsive: true },
-//   });
-// }
 
 // Line Chart for Charge Fees
 function renderChargeFeeChart(data) {
@@ -760,6 +760,10 @@ async function fetchStatistics3() {
 // Fetch data when the page loads
 document.addEventListener('DOMContentLoaded', fetchStatistics3);
 
+
+function viewOrderDetails() {
+    window.location.href = 'orders.html'; // Redirect to the orders page
+}
     </script>
 </body>
 </html>
