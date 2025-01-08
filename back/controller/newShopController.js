@@ -1,5 +1,5 @@
 const NewShop = require('../models/newShopModel');
-
+const { sendShopConfirmationEmail } = require('./resetcode'); // Adjust path as needed
 // Add a new shop
 exports.addNewShop = async (req, res) => {
     try {
@@ -146,10 +146,16 @@ exports.confirmShop = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Shop not found' });
         }
 
+        // Send confirmation email
+        const emailSent = await sendShopConfirmationEmail(
+            updatedShop.email,
+            updatedShop.shopName
+        );
+
         res.status(200).json({
             success: true,
-            message: 'Shop confirmed successfully',
-            shop: updatedShop
+            message: `Shop confirmed successfully. Email sent: ${emailSent ? 'Yes' : 'No'}`,
+            shop: updatedShop,
         });
     } catch (error) {
         console.error('Error confirming shop:', error);
@@ -201,3 +207,14 @@ exports.deleteShopById = async (req, res) => {
         res.status(500).json({ success: false, message: 'Failed to delete shop', error: error.message });
     }
 };
+
+exports.getShopStatistics = async (req, res) => {
+    try {
+      const totalShops = await NewShop.countDocuments();
+      const confirmedShops = await NewShop.countDocuments({ isConfirmed: true });
+      const unconfirmedShops = await NewShop.countDocuments({ isConfirmed: false });
+      res.json({ totalShops, confirmedShops, unconfirmedShops });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };

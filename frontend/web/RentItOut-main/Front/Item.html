@@ -149,7 +149,7 @@
     itemDetailsContainer.innerHTML = ''; // Clear previous content
 
     try {
-        const response = await fetch(`http://127.0.0.1:3000/api/auth/get-item/${itemId}`);
+        const response = await fetch(`http://127.0.0.1:3000/api/auth/get-itemw/${itemId}`);
         if (!response.ok) {
             throw new Error(`Error: ${response.status} - ${response.statusText}`);
         }
@@ -183,7 +183,7 @@
                     <p><strong>Location:</strong> ${item.location || 'Not specified'}</p>
                     <p><strong>Posted on:</strong> ${new Date(item.createdAt).toLocaleDateString()}</p>
                 </div>
-                <div class="price">$${item.price}</div>
+                <div class="price">₪${item.price}</div>
                 <div class="description">${item.description || 'No description provided.'}</div>
             </div>
         `;

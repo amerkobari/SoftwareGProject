@@ -110,7 +110,7 @@ exports.getOrderDetails = async (req, res) => {
 exports.updateOrderStatus = async (req, res) => {
   const { orderId } = req.params;
   const { status } = req.body;
-.
+
   if (!['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].includes(status)) {
     return res.status(400).json({ success: false, message: 'Invalid status value' });
   }
@@ -158,3 +158,143 @@ exports.getAllOrders = async (req, res) => {
       res.status(500).json({ error: 'An error occurred while fetching orders.' });
   }
 }
+
+
+exports.getOrderStatistics = async (req, res) => {
+  try {
+    const totalOrders = await Order.countDocuments();
+    const completedOrders = await Order.countDocuments({ status: 'Delivered' });
+    const pendingOrders = await Order.countDocuments({ status: 'Pending' });
+
+    const orders = await Order.find({ status: 'Delivered' });
+
+    let totalRevenue = 0;
+    let totalDeliveryFees = 0;
+    let totalChargeFees = 0;
+
+    orders.forEach(order => {
+      const itemPricesSum = order.items.reduce((sum, item) => sum + item.price, 0); // Sum of item prices
+      const deliveryFee = Math.abs(order.total - itemPricesSum); // Calculate delivery fee with absolute value
+      totalDeliveryFees += deliveryFee;
+
+      const chargeFees = order.items.reduce((sum, item) => {
+        let feePercentage;
+        const price = item.price;
+
+        if (price >= 1000) {
+          feePercentage = 8.0;
+        } else if (price >= 800) {
+          feePercentage = 7.0;
+        } else if (price >= 300) {
+          feePercentage = 5.0;
+        } else {
+          feePercentage = 3.0;
+        }
+
+        const chargeFee = (price * feePercentage) / 100;
+        return sum + chargeFee;
+      }, 0);
+
+      totalChargeFees += chargeFees;
+      totalRevenue += order.total;
+    });
+
+    res.json({
+      totalOrders,
+      completedOrders,
+      pendingOrders,
+      totalRevenue,
+      totalDeliveryFees,
+      totalChargeFees,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getOrderStatistics2 = async (req, res) => {
+  try {
+    const orders = await Order.find({ status: 'Delivered' });
+
+    let totalOrders = orders.length;
+    let completedOrders = await Order.countDocuments({ status: 'Delivered' });
+    let pendingOrders = await Order.countDocuments({ status: 'Pending' });
+
+    let totalRevenue = 0;
+    let deliveryFeeData = {};
+    let chargeFeeData = [];
+    let monthlyRevenue = {};
+
+    orders.forEach(order => {
+      const itemPricesSum = order.items.reduce((sum, item) => sum + item.price, 0);
+      const deliveryFee = order.total - itemPricesSum;
+      totalRevenue += order.total;
+
+      // Aggregate delivery fee distribution
+      deliveryFeeData[deliveryFee] = (deliveryFeeData[deliveryFee] || 0) + 1;
+
+      // Calculate charge fees per order
+      let chargeFees = order.items.reduce((sum, item) => {
+        let feePercentage;
+        if (item.price >= 1000) feePercentage = 8.0;
+        else if (item.price >= 800) feePercentage = 7.0;
+        else if (item.price >= 300) feePercentage = 5.0;
+        else feePercentage = 3.0;
+        return sum + (item.price * feePercentage) / 100;
+      }, 0);
+      chargeFeeData.push(chargeFees);
+
+      // Revenue by month
+      const month = new Date(order.createdAt).getMonth(); // 0 = Jan, 11 = Dec
+      monthlyRevenue[month] = (monthlyRevenue[month] || 0) + order.total;
+    });
+
+    res.json({
+      totalOrders,
+      completedOrders,
+      pendingOrders,
+      totalRevenue,
+      deliveryFeeData,
+      chargeFeeData,
+      monthlyRevenue,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getOrderStatistics3 = async (req, res) => {
+  try {
+    const orders = await Order.find({ status: 'Delivered' });
+
+    let totalRevenue = 0;
+    let totalDeliveryFees = 0;
+    let totalChargeFees = 0;
+
+    orders.forEach(order => {
+      const itemPricesSum = order.items.reduce((sum, item) => sum + item.price, 0);
+      const deliveryFee = order.total - itemPricesSum;
+      totalDeliveryFees += deliveryFee;
+      totalRevenue += order.total;
+
+      // Calculate charge fees per order
+      const chargeFees = order.items.reduce((sum, item) => {
+        let feePercentage;
+        if (item.price >= 1000) feePercentage = 8.0;
+        else if (item.price >= 800) feePercentage = 7.0;
+        else if (item.price >= 300) feePercentage = 5.0;
+        else feePercentage = 3.0;
+        return sum + (item.price * feePercentage) / 100;
+      }, 0);
+      totalChargeFees += chargeFees;
+    });
+
+    res.json({
+      totalRevenue,
+      totalDeliveryFees,
+      totalChargeFees,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
